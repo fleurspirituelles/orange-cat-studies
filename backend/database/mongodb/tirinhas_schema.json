@@ -1,0 +1,29 @@
+{
+    "title": "Tirinha Resgatada",
+    "type": "object",
+    "properties": {
+        "id_usuario": {
+            "type": "string",
+            "description": ""
+        },
+        "data": {
+            "type": "string",
+            "format": "date",
+            "description": ""
+        },
+        "id_album": {
+            "type": "string",
+            "description": ""
+        },
+        "url": {
+            "type": "string",
+            "description": ""
+        }
+    },
+    "required": [
+        "id_usuario",
+        "data",
+        "id_album",
+        "url"
+    ]
+}
