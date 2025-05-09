@@ -1,6 +1,6 @@
 const Comic = require("../models/comic.model");
 
-async function listComics(req, res) {
+async function getAll(req, res) {
   try {
     const comics = await Comic.find();
     res.status(200).json(comics);
@@ -9,7 +9,7 @@ async function listComics(req, res) {
   }
 }
 
-async function createComic(req, res) {
+async function create(req, res) {
   try {
     const newComic = await Comic.create(req.body);
     res.status(201).json(newComic);
@@ -18,7 +18,7 @@ async function createComic(req, res) {
   }
 }
 
-async function getComic(req, res) {
+async function getById(req, res) {
   try {
     const comic = await Comic.findById(req.params.id);
     if (comic) {
@@ -31,7 +31,7 @@ async function getComic(req, res) {
   }
 }
 
-async function updateComic(req, res) {
+async function update(req, res) {
   try {
     const updatedComic = await Comic.findByIdAndUpdate(
       req.params.id,
@@ -50,7 +50,7 @@ async function updateComic(req, res) {
   }
 }
 
-async function deleteComic(req, res) {
+async function remove(req, res) {
   try {
     const deletedComic = await Comic.findByIdAndDelete(req.params.id);
     if (deletedComic) {
@@ -64,9 +64,9 @@ async function deleteComic(req, res) {
 }
 
 module.exports = {
-  listComics,
-  createComic,
-  getComic,
-  updateComic,
-  deleteComic,
+  getAll,
+  create,
+  getById,
+  update,
+  remove,
 };
