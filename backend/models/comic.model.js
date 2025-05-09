@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const comicSchema = new mongoose.Schema({
-  codigo: {
+  code: {
     type: String,
     required: true,
     unique: true,
@@ -10,24 +10,26 @@ const comicSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  dia: {
+  day: {
     type: Number,
     required: true,
-    min: 1,
-    max: 31,
   },
-  mes: {
+  month: {
     type: Number,
     required: true,
-    min: 1,
-    max: 12,
   },
-  ano: {
+  year: {
     type: Number,
     required: true,
-    min: 1978,
-    max: 2099,
+  },
+  id_user: {
+    type: Number,
+    required: true,
+  },
+  id_album: {
+    type: Number,
+    required: true,
   },
 });
 
-module.exports = mongoose.model("comic", comicSchema);
+module.exports = mongoose.model("Comic", comicSchema);

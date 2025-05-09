@@ -1,72 +1,58 @@
 const Comic = require("../models/comic.model");
 
 async function getAll(req, res) {
-  try {
-    const comics = await Comic.find();
-    res.status(200).json(comics);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching comics." });
-  }
-}
-
-async function create(req, res) {
-  try {
-    const newComic = await Comic.create(req.body);
-    res.status(201).json(newComic);
-  } catch (error) {
-    res.status(500).json({ error: "Error creating comic." });
-  }
+  const comics = await Comic.find();
+  res.status(200).json(comics);
 }
 
 async function getById(req, res) {
-  try {
-    const comic = await Comic.findById(req.params.id);
-    if (comic) {
-      res.status(200).json(comic);
-    } else {
-      res.status(404).json({ error: "Comic not found." });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching comic." });
-  }
+  const comic = await Comic.findById(req.params.id);
+  if (!comic) return res.status(404).end();
+  res.status(200).json(comic);
+}
+
+async function getByCode(req, res) {
+  const comic = await Comic.findOne({ code: req.params.code });
+  if (!comic) return res.status(404).end();
+  res.status(200).json(comic);
+}
+
+async function getByUser(req, res) {
+  const comics = await Comic.find({ id_user: req.params.id_user });
+  res.status(200).json(comics);
+}
+
+async function getByAlbum(req, res) {
+  const comics = await Comic.find({ id_album: req.params.id_album });
+  res.status(200).json(comics);
+}
+
+async function create(req, res) {
+  const comic = await Comic.create(req.body);
+  res.status(201).json(comic);
 }
 
 async function update(req, res) {
-  try {
-    const updatedComic = await Comic.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-      }
-    );
-    if (updatedComic) {
-      res.status(200).json(updatedComic);
-    } else {
-      res.status(404).json({ error: "Comic not found." });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Error updating comic." });
-  }
+  const comic = await Comic.findById(req.params.id);
+  if (!comic) return res.status(404).end();
+  await comic.updateOne(req.body);
+  res.status(200).json(comic);
 }
 
 async function remove(req, res) {
-  try {
-    const deletedComic = await Comic.findByIdAndDelete(req.params.id);
-    if (deletedComic) {
-      res.status(200).json({ message: "Comic successfully deleted." });
-    } else {
-      res.status(404).json({ error: "Comic not found." });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Error deleting comic." });
-  }
+  const comic = await Comic.findById(req.params.id);
+  if (!comic) return res.status(404).end();
+  await comic.deleteOne();
+  res.status(204).end();
 }
 
 module.exports = {
   getAll,
-  create,
   getById,
+  getByCode,
+  getByUser,
+  getByAlbum,
+  create,
   update,
   remove,
 };
