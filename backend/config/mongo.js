@@ -1,12 +1,11 @@
-const mongoose = require("mongoose");
-require("dotenv").config();
+const mongoose = require('mongoose');
 
 async function connectMongo() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("Connected to MongoDB successfully!");
+    await mongoose.connect('mongodb://localhost:27017/purrfect_studies');
+    console.log('Connected to local MongoDB successfully.');
   } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
+    console.error('Error connecting to local MongoDB:', error);
   }
 }
 
