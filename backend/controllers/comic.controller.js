@@ -36,7 +36,7 @@ async function update(req, res) {
   const comic = await Comic.findById(req.params.id);
   if (!comic) return res.status(404).end();
   await comic.updateOne(req.body);
-  res.status(200).json(comic);
+  res.status(200).json(await Comic.findById(req.params.id));
 }
 
 async function remove(req, res) {

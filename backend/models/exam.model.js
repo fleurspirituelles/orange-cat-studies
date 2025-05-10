@@ -1,10 +1,10 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../database/mysql");
+const { sequelize } = require("../config/database");
 
 const Exam = sequelize.define(
-  "Exam",
+  "exams",
   {
-    id: {
+    id_exam: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -29,7 +29,7 @@ const Exam = sequelize.define(
     position: {
       type: DataTypes.STRING(100),
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
