@@ -1,5 +1,5 @@
 {
-    "title": "Tirinha Resgatada",
+    "title": "Comic",
     "type": "object",
     "properties": {
         "id_usuario": {
@@ -21,8 +21,8 @@
         }
     },
     "required": [
-        "id_usuario",
-        "data",
+        "id_user",
+        "date",
         "id_album",
         "url"
     ]
