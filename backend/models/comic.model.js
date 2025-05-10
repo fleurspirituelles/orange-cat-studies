@@ -31,4 +31,6 @@ const comicSchema = new mongoose.Schema({
   },
 });
 
+comicSchema.index({ code: 1, id_user: 1, id_album: 1 }, { unique: true });
+
 module.exports = mongoose.model("Comic", comicSchema);
