@@ -1,30 +1,30 @@
 const Exam = require("../models/exam.model");
 
-async function createExam(req, res) {
+async function create(req, res) {
   const data = req.body;
   const exam = await Exam.create(data);
   res.status(201).json(exam);
 }
 
-async function getAllExams(req, res) {
+async function getAll(req, res) {
   const exams = await Exam.findAll();
   res.status(200).json(exams);
 }
 
-async function getExamById(req, res) {
+async function getById(req, res) {
   const exam = await Exam.findByPk(req.params.id);
   if (!exam) return res.status(404).end();
   res.status(200).json(exam);
 }
 
-async function updateExam(req, res) {
+async function update(req, res) {
   const exam = await Exam.findByPk(req.params.id);
   if (!exam) return res.status(404).end();
   await exam.update(req.body);
   res.status(200).json(exam);
 }
 
-async function deleteExam(req, res) {
+async function remove(req, res) {
   const exam = await Exam.findByPk(req.params.id);
   if (!exam) return res.status(404).end();
   await exam.destroy();
@@ -32,9 +32,9 @@ async function deleteExam(req, res) {
 }
 
 module.exports = {
-  createExam,
-  getAllExams,
-  getExamById,
-  updateExam,
-  deleteExam,
+  create,
+  getAll,
+  getById,
+  update,
+  remove,
 };
