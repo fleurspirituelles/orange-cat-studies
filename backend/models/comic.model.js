@@ -4,7 +4,6 @@ const comicSchema = new mongoose.Schema({
   code: {
     type: String,
     required: true,
-    unique: true,
   },
   url: {
     type: String,
