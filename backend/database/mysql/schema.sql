@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS albums (
     FOREIGN KEY (id_user) REFERENCES users (id_user) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS notices (
-    id_notice INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS exams (
+    id_exam INT AUTO_INCREMENT PRIMARY KEY,
     id_user INT NOT NULL,
     exam_name VARCHAR(100) NOT NULL,
     board VARCHAR(50),
@@ -39,10 +39,10 @@ CREATE TABLE IF NOT EXISTS notices (
 
 CREATE TABLE IF NOT EXISTS questions (
     id_question INT AUTO_INCREMENT PRIMARY KEY,
-    id_notice INT NOT NULL,
+    id_exam INT NOT NULL,
     statement TEXT NOT NULL,
     answer_key CHAR(1) NOT NULL CHECK (answer_key IN ('A', 'B', 'C', 'D', 'E')),
-    FOREIGN KEY (id_notice) REFERENCES notices (id_notice) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_exam) REFERENCES exams (id_exam) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS choices (
