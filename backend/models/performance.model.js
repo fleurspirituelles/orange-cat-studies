@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../database/mysql");
+const { sequelize } = require("../config/database");
 
 const Performance = sequelize.define(
   "performance",

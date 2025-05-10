@@ -21,7 +21,19 @@ router.post(
   ]),
   controller.create
 );
-router.put("/:id", controller.update);
+router.put(
+  "/:id",
+  validateFields([
+    "code",
+    "url",
+    "day",
+    "month",
+    "year",
+    "id_user",
+    "id_album",
+  ]),
+  controller.update
+);
 router.delete("/:id", controller.remove);
 
 module.exports = router;

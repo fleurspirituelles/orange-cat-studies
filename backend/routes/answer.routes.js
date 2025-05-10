@@ -10,7 +10,11 @@ router.post(
   validateFields(["id_user", "id_question", "selected_choice"]),
   controller.create
 );
-router.put("/:id", controller.update);
+router.put(
+  "/:id",
+  validateFields(["id_user", "id_question", "selected_choice"]),
+  controller.update
+);
 router.delete("/:id", controller.remove);
 
 module.exports = router;

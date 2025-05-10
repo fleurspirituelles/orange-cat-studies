@@ -10,7 +10,11 @@ router.post(
   validateFields(["name", "email", "password"]),
   controller.create
 );
-router.put("/:id", controller.update);
+router.put(
+  "/:id",
+  validateFields(["name", "email", "password"]),
+  controller.update
+);
 router.delete("/:id", controller.remove);
 
 module.exports = router;

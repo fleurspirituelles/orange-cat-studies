@@ -10,7 +10,11 @@ router.post(
   validateFields(["id_question", "letter", "description"]),
   controller.create
 );
-router.put("/:id", controller.update);
+router.put(
+  "/:id",
+  validateFields(["id_question", "letter", "description"]),
+  controller.update
+);
 router.delete("/:id", controller.remove);
 
 module.exports = router;
