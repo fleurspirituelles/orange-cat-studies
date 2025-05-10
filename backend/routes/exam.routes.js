@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/exam.controller");
+const validateFields = require("../middlewares/validateFields");
 
-router.post("/", controller.createExam);
-router.get("/", controller.getAllExams);
-router.get("/:id", controller.getExamById);
-router.put("/:id", controller.updateExam);
-router.delete("/:id", controller.deleteExam);
+router.get("/", controller.getAll);
+router.get("/:id", controller.getById);
+router.post("/", validateFields(["id_user", "title"]), controller.create);
+router.put("/:id", controller.update);
+router.delete("/:id", controller.remove);
 
 module.exports = router;

@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const {
-  getAllExamBoards,
-  createExamBoard,
-} = require("../controllers/examBoard.controller");
+const controller = require("../controllers/examBoard.controller");
+const validateFields = require("../middlewares/validateFields");
 
-router.get("/exam-boards", getAllExamBoards);
-router.post("/exam-boards", createExamBoard);
+router.get("/", controller.getAll);
+router.post("/", validateFields(["name"]), controller.create);
 
 module.exports = router;
