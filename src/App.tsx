@@ -1,8 +1,9 @@
 import React from "react";
-import "./App.css";
 
 function App() {
-  return <div className="App"></div>;
+  return (
+    <div className="text-3xl font-bold text-orange-500">Hello, student!</div>
+  );
 }
 
 export default App;
