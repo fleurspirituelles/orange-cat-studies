@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
+import { auth, googleProvider } from "../firebase/config";
+import { signInWithPopup } from "firebase/auth";
 
 interface LoginFormProps {
   switchToRegister: () => void;
@@ -11,6 +13,15 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      console.log("Login com Google realizado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao fazer login com Google:", error);
+    }
+  };
 
   return (
     <div className="bg-white p-8 rounded-2xl shadow-sm border max-w-md w-full">
@@ -64,7 +75,11 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
           <div className="flex-1 h-px bg-gray-300" />
         </div>
 
-        <Button variant="outline" className="w-full">
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={handleGoogleLogin}
+        >
           <img src="/google-icon.svg" className="w-4 h-4 mr-2" />
           Entrar com Google
         </Button>
