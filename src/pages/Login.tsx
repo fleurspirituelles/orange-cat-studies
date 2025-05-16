@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase/config";
-import { Input } from "components/ui/Input";
-import { Button } from "components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -17,22 +17,39 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      alert("Logged in with Google!");
+    } catch (error: any) {
+      alert(error.message);
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-4">
+    <div className="flex flex-col items-center justify-center h-screen space-y-4">
       <h1 className="text-2xl font-bold">Login</h1>
+
       <Input
         placeholder="Email"
-        type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
+
       <Input
-        placeholder="Password"
         type="password"
+        placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
+
       <Button onClick={handleLogin}>Login</Button>
+      <Button
+        onClick={handleGoogleLogin}
+        className="bg-red-500 hover:bg-red-600"
+      >
+        Login with Google
+      </Button>
     </div>
   );
 }
