@@ -2,7 +2,10 @@ const express = require("express");
 const connectMongo = require("./config/mongo");
 const connectMySQL = require("./config/database");
 
+<<<<<<< HEAD
 const authRoutes = require("./routes/auth.routes");
+=======
+>>>>>>> d819ca1c2f98ef6a3c6a38210b7c8f6699f87c70
 const albumRoutes = require("./routes/album.routes");
 const answerRoutes = require("./routes/answer.routes");
 const choiceRoutes = require("./routes/choice.routes");
@@ -19,7 +22,10 @@ const userRoutes = require("./routes/user.routes");
 const app = express();
 app.use(express.json());
 
+<<<<<<< HEAD
 app.use("/auth", authRoutes);
+=======
+>>>>>>> d819ca1c2f98ef6a3c6a38210b7c8f6699f87c70
 app.use("/api/albums", albumRoutes);
 app.use("/api/answers", answerRoutes);
 app.use("/api/choices", choiceRoutes);
