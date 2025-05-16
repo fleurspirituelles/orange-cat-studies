@@ -2,6 +2,7 @@ const express = require("express");
 const connectMongo = require("./config/mongo");
 const connectMySQL = require("./config/database");
 
+const authRoutes = require("./routes/auth.routes");
 const albumRoutes = require("./routes/album.routes");
 const answerRoutes = require("./routes/answer.routes");
 const choiceRoutes = require("./routes/choice.routes");
@@ -18,6 +19,7 @@ const userRoutes = require("./routes/user.routes");
 const app = express();
 app.use(express.json());
 
+app.use("/auth", authRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/answers", answerRoutes);
 app.use("/api/choices", choiceRoutes);
