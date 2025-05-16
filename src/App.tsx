@@ -1,6 +1,5 @@
 import React from "react";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Login from "./pages/Home";
 
 function App() {
   return (
