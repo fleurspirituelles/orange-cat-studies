@@ -8,7 +8,7 @@ export default function Navbar({ setFormType }: NavbarProps) {
   return (
     <nav className="flex items-center justify-between px-6 py-3 bg-orange-500 text-white">
       <span className="font-bold text-lg">😺</span>
-      <ul className="flex gap-4">
+      <ul className="flex gap-4 text-sm font-medium">
         <li>
           <button onClick={() => setFormType("login")}>Início</button>
         </li>

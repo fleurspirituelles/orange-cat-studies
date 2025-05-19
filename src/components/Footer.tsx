@@ -6,9 +6,7 @@ export default function Footer() {
           <div className="text-2xl mb-2">😺</div>
           <p className="mb-2">suporte@garfieldstudies.com</p>
           <p className="mb-2">+55 (XX) XXXXX-XXXX</p>
-          <p>
-            Apoio para sua jornada rumo à aprovação - estude de onde quiser!
-          </p>
+          <p>Apoio para sua jornada rumo à aprovação. Estude de onde quiser!</p>
         </div>
         <div>
           <h3 className="font-semibold mb-2">Início</h3>
@@ -34,12 +32,12 @@ export default function Footer() {
               <a href="#">Por que utilizar</a>
             </li>
             <li>
-              <a href="#">Perguntas Frequentes</a>
+              <a href="#">Perguntas frequentes</a>
             </li>
           </ul>
         </div>
         <div>
-          <h3 className="font-semibold mb-2">Redes Sociais</h3>
+          <h3 className="font-semibold mb-2">Redes sociais</h3>
           <div className="flex gap-2">
             <a href="#">
               <span>📘</span>

@@ -17,10 +17,10 @@ export default function Home() {
           </h1>
           <p className="text-gray-700">
             Transforme seus estudos para concursos em uma experiência
-            interativa! Resolva desafios diários, extraia questões diretamente
+            interativa. Resolva desafios diários, extraia questões diretamente
             dos editais e acompanhe seu progresso com estatísticas detalhadas. E
             o melhor: desbloqueie tirinhas exclusivas do Garfield a cada dia de
-            estudo!
+            estudo.
           </p>
         </div>
         <div className="w-full max-w-md mt-10 lg:mt-0">
