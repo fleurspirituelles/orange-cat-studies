@@ -1,56 +1,23 @@
 const express = require("express");
-const connectMongo = require("./config/mongo");
-const connectMySQL = require("./config/database");
-
-<<<<<<< HEAD
-const authRoutes = require("./routes/auth.routes");
-=======
->>>>>>> d819ca1c2f98ef6a3c6a38210b7c8f6699f87c70
-const albumRoutes = require("./routes/album.routes");
-const answerRoutes = require("./routes/answer.routes");
-const choiceRoutes = require("./routes/choice.routes");
-const comicRoutes = require("./routes/comic.routes");
-const examBoardRoutes = require("./routes/examBoard.routes");
-const examRoutes = require("./routes/exam.routes");
-const performanceRoutes = require("./routes/performance.routes");
-const questionRoutes = require("./routes/question.routes");
-const questionTopicRoutes = require("./routes/questionTopic.routes");
-const reviewRoutes = require("./routes/review.routes");
-const topicRoutes = require("./routes/topic.routes");
-const userRoutes = require("./routes/user.routes");
-
+const cors = require("cors");
 const app = express();
+
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
-<<<<<<< HEAD
+const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
-=======
->>>>>>> d819ca1c2f98ef6a3c6a38210b7c8f6699f87c70
-app.use("/api/albums", albumRoutes);
-app.use("/api/answers", answerRoutes);
-app.use("/api/choices", choiceRoutes);
-app.use("/api/comics", comicRoutes);
-app.use("/api/exam-boards", examBoardRoutes);
-app.use("/api/exams", examRoutes);
-app.use("/api/performance", performanceRoutes);
-app.use("/api/questions", questionRoutes);
-app.use("/api/question-topics", questionTopicRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/topics", topicRoutes);
-app.use("/api/users", userRoutes);
 
-const port = 3000;
+app.get("/", (req, res) => {
+  res.send("Servidor rodando!");
+});
 
-async function startServer() {
-  try {
-    await connectMongo();
-    await connectMySQL();
-    app.listen(port, () => {
-      console.log(`Server running on port ${port}.`);
-    });
-  } catch (error) {
-    console.error("Failed to start server:", error);
-  }
-}
-
-startServer();
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}.`);
+});

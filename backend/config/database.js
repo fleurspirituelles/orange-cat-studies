@@ -1,19 +1,10 @@
-const { Sequelize } = require("sequelize");
+const mysql = require("mysql2/promise");
 
-const sequelize = new Sequelize("purrfect_studies", "root", "root", {
+const connection = mysql.createPool({
   host: "localhost",
-  dialect: "mysql",
+  user: "root",
+  password: "root",
+  database: "purrfect_studies",
 });
 
-async function connectMySQL() {
-  try {
-    await sequelize.authenticate();
-    console.log("Connected to MySQL successfully.");
-  } catch (error) {
-    console.error("Error connecting to MySQL:", error);
-    throw error;
-  }
-}
-
-module.exports = connectMySQL;
-module.exports.sequelize = sequelize;
+module.exports = connection;

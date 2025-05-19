@@ -1,13 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const {
-  registerWithEmailPassword,
-  loginWithEmailPassword,
-  loginWithGoogle,
-} = require("../controllers/auth.controller");
+const authController = require("../controllers/auth.controller");
 
-router.post("/register", registerWithEmailPassword);
-router.post("/login", loginWithEmailPassword);
-router.post("/google-login", loginWithGoogle);
+router.post("/", authController.handleAuth);
 
 module.exports = router;
