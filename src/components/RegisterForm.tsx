@@ -149,7 +149,7 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
         <p className="text-center text-sm mt-4">
           Já tem uma conta?{" "}
           <button onClick={switchToLogin} className="underline font-semibold">
-            Faça login aqui
+            Faça login aqui!
           </button>
         </p>
       </div>

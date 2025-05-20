@@ -116,7 +116,7 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
             onClick={switchToRegister}
             className="underline font-semibold"
           >
-            Cadastre-se
+            Cadastre-se!
           </button>
         </p>
       </div>
