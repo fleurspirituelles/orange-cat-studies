@@ -14,16 +14,15 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) {
-    console.error("Error connecting to MySQL:", err);
+    console.error("Erro ao conectar ao MySQL:", err.message);
     return;
   }
-  console.log("Connected to MySQL. Running schema.sql.");
 
   connection.query(schema, (err) => {
     if (err) {
-      console.error("Error executing schema.sql:", err);
+      console.error("Erro ao executar schema.sql:", err.message);
     } else {
-      console.log("Database created successfully.");
+      console.log("Banco e tabelas criados com sucesso.");
     }
     connection.end();
   });
