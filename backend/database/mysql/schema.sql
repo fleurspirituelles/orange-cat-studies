@@ -1,12 +1,14 @@
-CREATE DATABASE IF NOT EXISTS purrfect_studies;
-
+DROP DATABASE IF EXISTS purrfect_studies;
+CREATE DATABASE purrfect_studies;
 USE purrfect_studies;
 
-CREATE TABLE IF NOT EXISTS users (
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
     id_user INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255) DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
