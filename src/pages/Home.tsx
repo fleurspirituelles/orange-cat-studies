@@ -11,7 +11,7 @@ export default function Home() {
     <>
       <Navbar setFormType={setFormType} />
 
-      <section className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-2 items-start gap-12">
+      <section className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
         <div className="max-w-xl">
           <h1 className="text-4xl font-bold mb-6">
             Bem-vinda(o) ao Orange Cat Studies!
