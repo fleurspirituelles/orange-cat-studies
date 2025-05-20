@@ -5,8 +5,7 @@
 @tailwind utilities;
 
 body {
-  font-family: "Be Vietnam Pro", sans-serif;
-  color: #262626;
+  @apply font-sans text-neutral-900;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

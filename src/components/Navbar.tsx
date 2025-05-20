@@ -26,8 +26,8 @@ export default function Navbar({ setFormType }: NavbarProps) {
       <header className="bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <div className="text-2xl mb-3">😺</div>
-            <nav className="hidden md:flex gap-6 text-sm text-gray-700">
+            <div className="mb-3 text-2xl">😺</div>
+            <nav className="hidden md:flex gap-6 text-sm">
               <a href="#" className="hover:text-orange-500">
                 Questões
               </a>

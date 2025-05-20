@@ -45,7 +45,6 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
       const user = result.user;
 
       await axios.post(`${API_URL}/auth`, {
-        uid: user.uid,
         name: user.displayName,
         email: user.email,
       });
@@ -61,20 +60,20 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
     <div className="bg-white p-8 rounded-2xl shadow-sm border max-w-md w-full">
       <div className="space-y-2 text-center mb-6">
         <h2 className="text-2xl font-bold">Entrar</h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm">
           Acesse sua conta para continuar sua jornada com o Garfield.
         </p>
       </div>
 
       <div className="space-y-4">
-        <label className="text-sm font-medium">E-mail</label>
+        <label className="block text-sm font-medium">E-mail</label>
         <Input
           placeholder="Digite seu e-mail."
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        <label className="text-sm font-medium">Senha</label>
+        <label className="block text-sm font-medium mt-4">Senha</label>
         <div className="relative">
           <Input
             type={showPassword ? "text" : "password"}
@@ -85,7 +84,7 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-2/4 -translate-y-2/4 text-gray-500"
+            className="absolute right-3 top-2/4 -translate-y-2/4"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -97,7 +96,7 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
 
         <div className="flex items-center gap-2 my-2">
           <div className="flex-1 h-px bg-gray-300" />
-          <span className="text-sm text-gray-400">OU</span>
+          <span className="text-sm">OU</span>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
 
