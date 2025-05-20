@@ -1,8 +1,15 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+export default {
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./public/index.html"
+  ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['"Be Vietnam Pro"', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 };
