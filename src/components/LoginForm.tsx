@@ -28,7 +28,6 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
       const user = result.user;
 
       await axios.post(`${API_URL}/auth`, {
-        uid: user.uid,
         name: user.displayName,
         email: user.email,
       });
