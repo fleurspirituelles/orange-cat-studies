@@ -1,12 +1,14 @@
 export default function Footer() {
   return (
-    <footer className="px-6 py-10 bg-gray-100 text-sm text-gray-700 mt-10">
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+    <footer className="px-6 py-12 bg-gray-100 text-sm text-gray-700 mt-16 border-t">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-10">
         <div>
-          <div className="text-2xl mb-2">😺</div>
+          <div className="text-2xl mb-3">😺</div>
           <p className="mb-2">suporte@garfieldstudies.com</p>
           <p className="mb-2">+55 (XX) XXXXX-XXXX</p>
-          <p>Apoio para sua jornada rumo à aprovação. Estude de onde quiser!</p>
+          <p className="mt-2">
+            Apoio para sua jornada rumo à aprovação. Estude de onde quiser!
+          </p>
         </div>
         <div>
           <h3 className="font-semibold mb-2">Início</h3>
@@ -38,22 +40,16 @@ export default function Footer() {
         </div>
         <div>
           <h3 className="font-semibold mb-2">Redes sociais</h3>
-          <div className="flex gap-2">
-            <a href="#">
-              <span>📘</span>
-            </a>
-            <a href="#">
-              <span>🐦</span>
-            </a>
-            <a href="#">
-              <span>💼</span>
-            </a>
+          <div className="flex gap-3">
+            <span>📘</span>
+            <span>🐦</span>
+            <span>💼</span>
           </div>
         </div>
       </div>
-      <p className="text-center mt-6">
+      <div className="text-center mt-10 text-xs text-gray-500">
         © 2025 Orange Cat Studies. Todos os direitos reservados.
-      </p>
+      </div>
     </footer>
   );
 }

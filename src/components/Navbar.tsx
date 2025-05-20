@@ -16,43 +16,56 @@ export default function Navbar({ setFormType }: NavbarProps) {
   };
 
   return (
-    <nav className="flex items-center justify-between px-6 py-3 bg-orange-500 text-white">
-      <span className="font-bold text-lg">😺</span>
+    <>
+      {!user && (
+        <div className="w-full bg-orange-500 px-4 py-2 text-white text-sm font-medium text-center">
+          Inscreva-se agora!
+        </div>
+      )}
 
-      <ul className="flex gap-4 text-sm font-medium">
-        <li>
-          <a href="#">Questões</a>
-        </li>
-        <li>
-          <a href="#">Editais</a>
-        </li>
-        <li>
-          <a href="#">Álbuns</a>
-        </li>
-        <li>
-          <a href="#">Estatísticas</a>
-        </li>
-      </ul>
-
-      <div className="flex gap-2 items-center">
-        {user ? (
-          <>
-            <span className="text-sm font-semibold hidden sm:block">
-              {user.displayName || user.name}
-            </span>
-            <Button variant="outline" onClick={handleLogout}>
-              Sair
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button variant="outline" onClick={() => setFormType?.("register")}>
-              Cadastrar-se
-            </Button>
-            <Button onClick={() => setFormType?.("login")}>Entrar</Button>
-          </>
-        )}
-      </div>
-    </nav>
+      <header className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <div className="text-2xl mb-3">😺</div>
+            <nav className="hidden md:flex gap-6 text-sm text-gray-700">
+              <a href="#" className="hover:text-orange-500">
+                Questões
+              </a>
+              <a href="#" className="hover:text-orange-500">
+                Editais
+              </a>
+              <a href="#" className="hover:text-orange-500">
+                Álbuns
+              </a>
+              <a href="#" className="hover:text-orange-500">
+                Estatísticas
+              </a>
+            </nav>
+          </div>
+          <div className="flex gap-2 items-center">
+            {user ? (
+              <>
+                <span className="text-sm font-semibold hidden sm:block">
+                  {user.displayName || user.name}
+                </span>
+                <Button variant="outline" onClick={handleLogout}>
+                  Sair
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => setFormType?.("register")}
+                >
+                  Cadastrar-se
+                </Button>
+                <Button onClick={() => setFormType?.("login")}>Entrar</Button>
+              </>
+            )}
+          </div>
+        </div>
+      </header>
+    </>
   );
 }

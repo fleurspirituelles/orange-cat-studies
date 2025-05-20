@@ -10,12 +10,13 @@ export default function Home() {
   return (
     <>
       <Navbar setFormType={setFormType} />
-      <div className="flex flex-col lg:flex-row justify-between items-start max-w-7xl mx-auto px-6 py-16">
-        <div className="max-w-lg">
-          <h1 className="text-4xl font-bold mb-4">
+
+      <section className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-2 items-start gap-12">
+        <div className="max-w-xl">
+          <h1 className="text-4xl font-bold mb-6">
             Bem-vinda(o) ao Orange Cat Studies!
           </h1>
-          <p className="text-gray-700">
+          <p className="text-gray-700 text-lg">
             Transforme seus estudos para concursos em uma experiência
             interativa. Resolva desafios diários, extraia questões diretamente
             dos editais e acompanhe seu progresso com estatísticas detalhadas. E
@@ -23,14 +24,15 @@ export default function Home() {
             estudo.
           </p>
         </div>
-        <div className="w-full max-w-md mt-10 lg:mt-0">
+        <div className="w-full max-w-md mx-auto">
           {formType === "login" ? (
             <LoginForm switchToRegister={() => setFormType("register")} />
           ) : (
             <RegisterForm switchToLogin={() => setFormType("login")} />
           )}
         </div>
-      </div>
+      </section>
+
       <Footer />
     </>
   );
