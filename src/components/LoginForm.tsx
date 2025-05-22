@@ -33,7 +33,7 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
       });
 
       localStorage.setItem("user", JSON.stringify(user));
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     } catch (error: any) {
       alert(error.message);
     }
@@ -50,7 +50,7 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
       });
 
       localStorage.setItem("user", JSON.stringify(user));
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     } catch (error: any) {
       alert(error.message);
     }
