@@ -1,11 +1,7 @@
 import { Button } from "./ui/Button";
 import { useNavigate } from "react-router-dom";
 
-interface NavbarProps {
-  setFormType?: (type: "login" | "register") => void;
-}
-
-export default function Navbar({ setFormType }: NavbarProps) {
+export default function Navbar() {
   const navigate = useNavigate();
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
@@ -56,11 +52,13 @@ export default function Navbar({ setFormType }: NavbarProps) {
               <>
                 <Button
                   variant="outline"
-                  onClick={() => setFormType?.("register")}
+                  onClick={() => navigate("/auth?type=register")}
                 >
                   Cadastrar-se
                 </Button>
-                <Button onClick={() => setFormType?.("login")}>Entrar</Button>
+                <Button onClick={() => navigate("/auth?type=login")}>
+                  Entrar
+                </Button>
               </>
             )}
           </div>
