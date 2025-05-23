@@ -1,25 +1,17 @@
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
+
 const app = express();
+const PORT = 5000;
 
-require("./run-sql");
-
-const corsOptions = {
-  origin: "http://localhost:3000",
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
-const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Servidor rodando!");
-});
-
-const PORT = 5000;
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}.`);
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

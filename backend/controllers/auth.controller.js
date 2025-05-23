@@ -1,34 +1,29 @@
-const connection = require("../config/database");
+import db from "../config/database.js";
 
-async function handleAuth(req, res) {
-  const { name, email } = req.body;
-
-  if (!email || !name) {
-    return res.status(400).json({ error: "Nome e e-mail são obrigatórios." });
-  }
+export const registerUser = async (req, res) => {
+  const { name, email, password } = req.body;
 
   try {
-    const [rows] = await connection.execute(
+    const [existingUser] = await db.query(
       "SELECT * FROM users WHERE email = ?",
       [email]
     );
 
-    if (rows.length > 0) {
-      return res.status(200).json({ message: "Usuário já existe." });
+    if (existingUser.length > 0) {
+      return res.status(409).json({ message: "User already exists" });
     }
 
-    await connection.execute("INSERT INTO users (name, email) VALUES (?, ?)", [
-      name,
-      email,
+    const [result] = await db.query(
+      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+      [name, email, password || null]
+    );
+
+    const [newUser] = await db.query("SELECT * FROM users WHERE id_user = ?", [
+      result.insertId,
     ]);
 
-    res.status(201).json({ message: "Usuário criado com sucesso." });
+    res.status(201).json(newUser[0]);
   } catch (error) {
-    console.error("Erro ao registrar usuário:", error);
-    res.status(500).json({ error: "Erro interno do servidor." });
+    res.status(500).json({ message: "Error registering user", error });
   }
-}
-
-module.exports = {
-  handleAuth,
 };

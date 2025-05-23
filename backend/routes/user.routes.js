@@ -1,20 +1,10 @@
-const express = require("express");
+import express from "express";
+import { getAll, getById, getByEmail } from "../controllers/user.controller.js";
+
 const router = express.Router();
-const controller = require("../controllers/user.controller");
-const validateFields = require("../middlewares/validateFields");
 
-router.get("/", controller.getAll);
-router.get("/:id", controller.getById);
-router.post(
-  "/",
-  validateFields(["name", "email", "password"]),
-  controller.create
-);
-router.put(
-  "/:id",
-  validateFields(["name", "email", "password"]),
-  controller.update
-);
-router.delete("/:id", controller.remove);
+router.get("/", getAll);
+router.get("/:id", getById);
+router.get("/email/:email", getByEmail);
 
-module.exports = router;
+export default router;

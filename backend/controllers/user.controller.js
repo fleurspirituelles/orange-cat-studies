@@ -1,59 +1,53 @@
-const User = require("../models/user.model");
+import db from "../config/database.js";
 
-async function getAll(req, res) {
+export const getAll = async (req, res) => {
   try {
-    const users = await User.findAll();
-    res.status(200).json(users);
-  } catch {
-    res.status(500).json({ error: "Failed to retrieve users." });
+    const [rows] = await db.query("SELECT * FROM users");
+    res.status(200).json(rows);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving users", error });
   }
-}
+};
 
-async function getById(req, res) {
+export const getById = async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ error: "User not found." });
-    res.status(200).json(user);
-  } catch {
-    res.status(500).json({ error: "Failed to retrieve user." });
+    const [rows] = await db.query("SELECT * FROM users WHERE id_user = ?", [
+      req.params.id,
+    ]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving user", error });
   }
-}
+};
 
-async function create(req, res) {
+export const getByEmail = async (req, res) => {
+  const email = req.params.email;
+
   try {
-    const user = await User.create(req.body);
-    res.status(201).json(user);
-  } catch {
-    res.status(400).json({ error: "Failed to create user." });
-  }
-}
+    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
 
-async function update(req, res) {
-  try {
-    const user = await User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ error: "User not found." });
-    await user.update(req.body);
-    res.status(200).json(user);
-  } catch {
-    res.status(400).json({ error: "Failed to update user." });
-  }
-}
+    if (rows.length > 0) {
+      return res.status(200).json(rows[0]);
+    }
 
-async function remove(req, res) {
-  try {
-    const user = await User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ error: "User not found." });
-    await user.destroy();
-    res.status(204).end();
-  } catch {
-    res.status(500).json({ error: "Failed to delete user." });
-  }
-}
+    const name = email.split("@")[0];
 
-module.exports = {
-  getAll,
-  getById,
-  create,
-  update,
-  remove,
+    const [result] = await db.query(
+      "INSERT INTO users (name, email) VALUES (?, ?)",
+      [name, email]
+    );
+
+    const [newUser] = await db.query("SELECT * FROM users WHERE id_user = ?", [
+      result.insertId,
+    ]);
+
+    res.status(201).json(newUser[0]);
+  } catch (error) {
+    res.status(500).json({ message: "Error handling user email", error });
+  }
 };
