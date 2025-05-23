@@ -3,7 +3,11 @@ import { Eye, EyeOff } from "lucide-react";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import { auth, googleProvider } from "../firebase/config";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
 import axios from "axios";
 
 interface RegisterFormProps {
@@ -37,11 +41,15 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
         email,
         password
       );
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, { displayName: fullName });
+      }
       const user = result.user;
 
       await axios.post(`${API_URL}/auth`, {
         name: fullName,
         email: user.email,
+        password: password,
       });
 
       localStorage.setItem("user", JSON.stringify(user));
@@ -69,89 +77,95 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
   };
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm border max-w-md w-full">
-      <div className="space-y-2 text-center mb-6">
-        <h2 className="text-2xl font-bold">Registrar</h2>
-        <p className="text-sm">
-          Crie sua conta para entrar no Orange Cat Studies.
-        </p>
-      </div>
-
+    <div className="w-full max-w-md p-8 rounded-xl bg-white shadow-md">
+      <h2 className="text-2xl font-bold mb-2 text-center">Cadastrar</h2>
+      <p className="text-sm text-center text-muted-foreground mb-6">
+        Crie sua conta e transforme sua preparação para concursos em uma
+        experiência interativa!
+      </p>
       <div className="space-y-4">
-        <label className="block text-sm font-medium">Nome completo</label>
-        <Input
-          placeholder="Digite seu nome completo."
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
-
-        <label className="block text-sm font-medium mt-4">E-mail</label>
-        <Input
-          placeholder="Digite seu e-mail."
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <label className="block text-sm font-medium mt-4">Senha</label>
-        <div className="relative">
+        <div>
+          <label className="text-sm font-medium mb-1 block">
+            Nome completo
+          </label>
           <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Crie uma senha forte."
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Digite seu nome completo."
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
           />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-2/4 -translate-y-2/4"
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
         </div>
-
-        <label className="block text-sm font-medium mt-4">
-          Confirmar senha
-        </label>
-        <div className="relative">
+        <div>
+          <label className="text-sm font-medium mb-1 block">E-mail</label>
           <Input
-            type={showConfirmPassword ? "text" : "password"}
-            placeholder="Confirme sua senha."
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Digite seu melhor e-mail."
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-2/4 -translate-y-2/4"
-          >
-            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
         </div>
-
-        <Button className="w-full mt-2" onClick={handleRegister}>
-          Registrar
+        <div>
+          <label className="text-sm font-medium mb-1 block">Senha</label>
+          <div className="relative">
+            <Input
+              placeholder="Crie uma senha segura."
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <div className="absolute right-3 top-3 cursor-pointer">
+              {showPassword ? (
+                <EyeOff onClick={() => setShowPassword(false)} />
+              ) : (
+                <Eye onClick={() => setShowPassword(true)} />
+              )}
+            </div>
+          </div>
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-1 block">
+            Confirmação de senha
+          </label>
+          <div className="relative">
+            <Input
+              placeholder="Confirme sua senha."
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <div className="absolute right-3 top-3 cursor-pointer">
+              {showConfirmPassword ? (
+                <EyeOff onClick={() => setShowConfirmPassword(false)} />
+              ) : (
+                <Eye onClick={() => setShowConfirmPassword(true)} />
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="text-xs text-muted-foreground mb-2">
+          Ao continuar, você concorda com nossos{" "}
+          <a href="#" className="underline">
+            Termos e Políticas de Privacidade
+          </a>
+          .
+        </div>
+        <Button className="w-full" onClick={handleRegister}>
+          Criar conta
         </Button>
-
-        <div className="flex items-center gap-2 my-2">
-          <div className="flex-1 h-px bg-gray-300" />
-          <span className="text-sm">OU</span>
-          <div className="flex-1 h-px bg-gray-300" />
-        </div>
-
         <Button
           variant="outline"
           className="w-full"
           onClick={handleGoogleRegister}
         >
-          <img src="/google-icon.svg" className="w-4 h-4 mr-2" />
-          Registrar com Google
+          <img src="/google-icon.svg" alt="Google" className="h-4 w-4 mr-2" />
+          Cadastrar-se com Google
         </Button>
-
-        <p className="text-center text-sm mt-4">
+        <p className="text-sm text-center">
           Já tem uma conta?{" "}
-          <button onClick={switchToLogin} className="underline font-semibold">
-            Faça login aqui!
-          </button>
+          <span
+            className="underline text-orange-600 cursor-pointer font-medium"
+            onClick={switchToLogin}
+          >
+            Faça login!
+          </span>
         </p>
       </div>
     </div>

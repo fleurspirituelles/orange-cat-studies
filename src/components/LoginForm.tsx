@@ -27,12 +27,8 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
       const result = await signInWithEmailAndPassword(auth, email, password);
       const user = result.user;
 
-      await axios.post(`${API_URL}/auth`, {
-        name: user.displayName,
-        email: user.email,
-      });
-
-      localStorage.setItem("user", JSON.stringify(user));
+      const response = await axios.get(`${API_URL}/users/email/${user.email}`);
+      localStorage.setItem("user", JSON.stringify(response.data));
       window.location.href = "/";
     } catch (error: any) {
       alert(error.message);
@@ -44,12 +40,8 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      await axios.post(`${API_URL}/auth`, {
-        name: user.displayName,
-        email: user.email,
-      });
-
-      localStorage.setItem("user", JSON.stringify(user));
+      const response = await axios.get(`${API_URL}/users/email/${user.email}`);
+      localStorage.setItem("user", JSON.stringify(response.data));
       window.location.href = "/";
     } catch (error: any) {
       alert(error.message);
@@ -57,66 +49,69 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
   };
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm border max-w-md w-full">
-      <div className="space-y-2 text-center mb-6">
-        <h2 className="text-2xl font-bold">Entrar</h2>
-        <p className="text-sm">
-          Acesse sua conta para continuar sua jornada com o Garfield.
-        </p>
-      </div>
-
+    <div className="w-full max-w-md p-8 rounded-xl bg-white shadow-md">
+      <h2 className="text-2xl font-bold mb-2 text-center">Entrar</h2>
+      <p className="text-sm text-center text-muted-foreground mb-6">
+        Bem-vindo(a) de volta! Acesse sua conta para continuar.
+      </p>
       <div className="space-y-4">
-        <label className="block text-sm font-medium">E-mail</label>
-        <Input
-          placeholder="Digite seu e-mail."
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <label className="block text-sm font-medium mt-4">Senha</label>
-        <div className="relative">
+        <div>
+          <label className="text-sm font-medium mb-1 block">E-mail</label>
           <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Digite sua senha."
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Digite seu e-mail."
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-2/4 -translate-y-2/4"
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
         </div>
-
-        <Button className="w-full mt-2" onClick={handleLogin}>
+        <div>
+          <label className="text-sm font-medium mb-1 block">Senha</label>
+          <div className="relative">
+            <Input
+              placeholder="Digite sua senha."
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <div className="absolute right-3 top-3 cursor-pointer">
+              {showPassword ? (
+                <EyeOff onClick={() => setShowPassword(false)} />
+              ) : (
+                <Eye onClick={() => setShowPassword(true)} />
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="text-right text-sm text-muted-foreground mb-1">
+          <a href="#" className="hover:underline">
+            Esqueceu sua senha?
+          </a>
+        </div>
+        <div className="text-xs text-muted-foreground mb-2">
+          Ao continuar, você concorda com nossos{" "}
+          <a href="#" className="underline">
+            Termos e Políticas de Privacidade
+          </a>
+          .
+        </div>
+        <Button className="w-full" onClick={handleLogin}>
           Entrar
         </Button>
-
-        <div className="flex items-center gap-2 my-2">
-          <div className="flex-1 h-px bg-gray-300" />
-          <span className="text-sm">OU</span>
-          <div className="flex-1 h-px bg-gray-300" />
-        </div>
-
         <Button
           variant="outline"
           className="w-full"
           onClick={handleGoogleLogin}
         >
-          <img src="/google-icon.svg" className="w-4 h-4 mr-2" />
+          <img src="/google-icon.svg" alt="Google" className="h-4 w-4 mr-2" />
           Entrar com Google
         </Button>
-
-        <p className="text-center text-sm mt-4">
+        <p className="text-sm text-center">
           Não tem uma conta?{" "}
-          <button
+          <span
+            className="underline text-orange-600 cursor-pointer font-medium"
             onClick={switchToRegister}
-            className="underline font-semibold"
           >
             Cadastre-se!
-          </button>
+          </span>
         </p>
       </div>
     </div>
