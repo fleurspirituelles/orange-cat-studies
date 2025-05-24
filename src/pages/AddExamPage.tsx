@@ -116,9 +116,6 @@ export default function AddExamPage() {
 
   return (
     <>
-      <div className="w-full bg-orange-500 py-2 text-white text-sm font-medium text-center">
-        Checar álbuns! →
-      </div>
       <Navbar />
       <main className="bg-[#f8f8f8] min-h-screen px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-4xl mx-auto text-center">
