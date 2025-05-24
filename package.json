@@ -13,6 +13,7 @@
     "lucide-react": "^0.511.0",
     "mongoose": "^8.14.3",
     "mysql2": "^3.14.1",
+    "pdfjs-dist": "^2.10.377",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.0",
@@ -45,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "@types/pdfjs-dist": "^2.10.377",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "autoprefixer": "^10.4.16",
