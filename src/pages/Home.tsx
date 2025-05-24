@@ -42,8 +42,8 @@ export default function Home() {
       <Navbar />
 
       <section className="bg-white px-6 pt-12 text-center">
-        <div className="inline-block px-8 py-8 border border-gray-200 rounded-xl shadow-sm mb-10 mx-auto bg-white">
-          <p className="text-2xl md:text-3xl text-gray-900 font-semibold leading-tight max-w-2xl mx-auto">
+        <div className="inline-block px-8 py-8 mx-auto bg-white max-w-3xl mb-16">
+          <p className="text-2xl md:text-3xl text-gray-900 font-semibold leading-tight">
             <span className="text-orange-500 font-extrabold">Comece agora</span>{" "}
             a estudar para concursos <br /> com{" "}
             <span className="text-orange-500 font-extrabold">
@@ -56,15 +56,21 @@ export default function Home() {
         <img
           src="/logo-large.svg"
           alt="Logo"
-          className="mx-auto w-64 md:w-80 mb-8"
+          className="mx-auto w-64 md:w-80 mb-24"
         />
-        <p className="text-neutral-700 text-lg max-w-xl mx-auto mb-20">
-          Nosso sistema transforma a preparação para concursos em uma
-          experiência interativa e motivadora. Com extração inteligente de
-          questões, recompensas diárias e estatísticas detalhadas, você estuda
-          com mais eficiência e mantém a constância necessária para alcançar sua
-          aprovação.
-        </p>
+
+        <section className="max-w-5xl mx-auto px-6 text-center mb-10">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Por que utilizar o Orange Cat Studies?
+          </h2>
+          <p className="text-gray-700 text-base leading-relaxed max-w-3xl mx-auto">
+            Nosso sistema transforma a preparação para concursos em uma
+            experiência interativa e motivadora. Com extração inteligente de
+            questões, recompensas diárias e estatísticas detalhadas, você estuda
+            com mais eficiência e mantém a constância necessária para alcançar
+            sua aprovação.
+          </p>
+        </section>
       </section>
 
       <section className="max-w-7xl mx-auto px-6 py-20">
