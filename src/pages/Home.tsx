@@ -40,76 +40,105 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <section className="bg-orange-100 py-20 px-6 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          Comece agora a estudar para concursos com questões extraídas dos
-          editais!
-        </h1>
-        <p className="text-lg md:text-xl text-neutral-700 max-w-3xl mx-auto">
-          Transforme seus estudos em uma jornada divertida com Garfield e
-          conquiste recompensas enquanto aprende.
+
+      <section className="bg-white px-6 pt-12 text-center">
+        <div className="inline-block px-8 py-8 border border-gray-200 rounded-xl shadow-sm mb-10 mx-auto bg-white">
+          <p className="text-2xl md:text-3xl text-gray-900 font-semibold leading-tight max-w-2xl mx-auto">
+            <span className="text-orange-500 font-extrabold">Comece agora</span>{" "}
+            a estudar para concursos <br /> com{" "}
+            <span className="text-orange-500 font-extrabold">
+              questões extraídas
+            </span>{" "}
+            dos editais!
+          </p>
+        </div>
+
+        <img
+          src="/logo-large.svg"
+          alt="Logo"
+          className="mx-auto w-64 md:w-80 mb-8"
+        />
+        <p className="text-neutral-700 text-lg max-w-xl mx-auto mb-20">
+          Nosso sistema transforma a preparação para concursos em uma
+          experiência interativa e motivadora. Com extração inteligente de
+          questões, recompensas diárias e estatísticas detalhadas, você estuda
+          com mais eficiência e mantém a constância necessária para alcançar sua
+          aprovação.
         </p>
       </section>
 
       <section className="max-w-7xl mx-auto px-6 py-20">
-        <h2 className="text-2xl font-bold text-center mb-12">
-          Benefícios do sistema
-        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="p-6 border rounded-lg shadow-sm bg-white">
+            <p className="text-4xl font-bold text-orange-500 mb-4">01</p>
             <h3 className="text-xl font-semibold mb-2">
               Extração Inteligente de Editais
             </h3>
             <p className="text-sm text-neutral-700">
-              Faça upload do seu PDF e o sistema identificará banca, disciplinas
-              e questões automaticamente.
+              Acesse questões diretamente dos editais cadastrados ou adicione
+              novos documentos.
             </p>
           </div>
           <div className="p-6 border rounded-lg shadow-sm bg-white">
+            <p className="text-4xl font-bold text-orange-500 mb-4">02</p>
             <h3 className="text-xl font-semibold mb-2">
               Recompensas Diárias com Tirinhas
             </h3>
             <p className="text-sm text-neutral-700">
-              Ao completar 10 questões por dia, desbloqueie tirinhas exclusivas
-              do Garfield e monte seu álbum.
+              Resolva questões e desbloqueie tirinhas para adicionar ao seu
+              álbum de figurinhas.
             </p>
           </div>
           <div className="p-6 border rounded-lg shadow-sm bg-white">
+            <p className="text-4xl font-bold text-orange-500 mb-4">03</p>
             <h3 className="text-xl font-semibold mb-2">
               Estatísticas e Relatórios
             </h3>
             <p className="text-sm text-neutral-700">
-              Acompanhe sua evolução com relatórios semanais e gráficos de
-              desempenho por tema.
+              Identifique temas mais errados, veja seu desempenho e melhore sua
+              preparação.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="bg-neutral-100 py-20 px-6">
-        <h2 className="text-2xl font-bold text-center mb-12">
-          Perguntas Frequentes
-        </h2>
-        <div className="max-w-4xl mx-auto space-y-4">
-          {faqs.map((item, index) => (
-            <div
-              key={index}
-              className="border rounded-lg overflow-hidden bg-white"
-            >
-              <button
-                className="w-full text-left p-4 font-semibold flex justify-between items-center"
-                onClick={() => toggleFAQ(index)}
+      <section className="bg-neutral-50 py-20 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-10">
+          <div className="md:w-1/3">
+            <h2 className="text-2xl font-bold mb-4">Perguntas Frequentes</h2>
+            <p className="text-sm text-neutral-700">
+              Ainda tem dúvidas? Entre em contato com nossa equipe pelo e-mail{" "}
+              <a
+                href="mailto:suporte@garfieldstudies.com"
+                className="text-orange-500 underline"
               >
-                {item.question}
-                <span>{openIndex === index ? "−" : "+"}</span>
-              </button>
-              {openIndex === index && (
-                <div className="p-4 border-t text-sm text-neutral-700">
-                  {item.answer}
-                </div>
-              )}
-            </div>
-          ))}
+                suporte@garfieldstudies.com
+              </a>
+              .
+            </p>
+          </div>
+
+          <div className="md:w-2/3 space-y-4">
+            {faqs.map((item, index) => (
+              <div
+                key={index}
+                className="border rounded-lg overflow-hidden bg-white"
+              >
+                <button
+                  className="w-full text-left p-4 font-semibold flex justify-between items-center"
+                  onClick={() => toggleFAQ(index)}
+                >
+                  {item.question}
+                  <span>{openIndex === index ? "−" : "+"}</span>
+                </button>
+                {openIndex === index && (
+                  <div className="p-4 border-t text-sm text-neutral-700">
+                    {item.answer}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
