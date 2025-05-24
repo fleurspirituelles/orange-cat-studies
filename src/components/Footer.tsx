@@ -36,10 +36,10 @@ export default function Footer() {
           <h3 className="font-semibold mb-2">Sobre</h3>
           <ul className="space-y-1">
             <li>
-              <a href="#">Por que utilizar</a>
+              <a href="/#por-que-utilizar">Por que utilizar?</a>
             </li>
             <li>
-              <a href="#">Perguntas Frequentes</a>
+              <a href="/#faq">Perguntas frequentes</a>
             </li>
           </ul>
         </div>
