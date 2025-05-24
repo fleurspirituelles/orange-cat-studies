@@ -12,13 +12,16 @@ export default function Footer() {
         </div>
 
         <div className="md:col-span-1 min-w-[140px]">
-          <h3 className="font-semibold mb-2">Início</h3>
+          <h3 className="font-semibold mb-2">Navegação</h3>
           <ul className="space-y-1">
+            <li>
+              <a href="/">Início</a>
+            </li>
             <li>
               <a href="#">Questões</a>
             </li>
             <li>
-              <a href="#">Editais</a>
+              <a href="/add-exam">Editais</a>
             </li>
             <li>
               <a href="#">Álbuns</a>
