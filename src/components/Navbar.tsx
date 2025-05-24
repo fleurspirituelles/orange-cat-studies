@@ -15,7 +15,7 @@ export default function Navbar() {
     <>
       {!user && (
         <div className="w-full bg-orange-500 px-4 py-2 text-white text-sm font-medium text-center">
-          Inscreva-se agora!
+          Cadastre-se agora!
         </div>
       )}
 
