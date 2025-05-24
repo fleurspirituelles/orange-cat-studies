@@ -3,19 +3,51 @@ import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import axios from "axios";
 
 export default function ManualExamForm() {
   const [form, setForm] = useState({
-    name: "",
+    exam_name: "",
     board: "",
     level: "",
     year: "",
-    role: "",
-    subjects: "",
+    position: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async () => {
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+
+    if (!user?.id_user) {
+      alert("Usuário não identificado.");
+      return;
+    }
+
+    const { exam_name, board, level, year, position } = form;
+
+    if (!exam_name || !board || !level || !year || !position) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    try {
+      await axios.post("http://localhost:5000/exams", {
+        id_user: user.id_user,
+        exam_name,
+        board,
+        level,
+        year,
+        position,
+      });
+
+      alert("Edital cadastrado com sucesso!");
+      window.location.href = "/dashboard";
+    } catch (error: any) {
+      alert("Erro ao cadastrar edital: " + error.message);
+    }
   };
 
   return (
@@ -36,8 +68,8 @@ export default function ManualExamForm() {
                 Nome do concurso
               </label>
               <Input
-                name="name"
-                value={form.name}
+                name="exam_name"
+                value={form.exam_name}
                 onChange={handleChange}
                 placeholder="Ex: Tribunal de Justiça"
               />
@@ -76,25 +108,16 @@ export default function ManualExamForm() {
             <div>
               <label className="text-sm font-medium mb-1 block">Cargo</label>
               <Input
-                name="role"
-                value={form.role}
+                name="position"
+                value={form.position}
                 onChange={handleChange}
                 placeholder="Ex: Escrevente Técnico Judiciário"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium mb-1 block">
-                Disciplinas (separadas por vírgula)
-              </label>
-              <Input
-                name="subjects"
-                value={form.subjects}
-                onChange={handleChange}
-                placeholder="Ex: Português, Informática, RLM"
-              />
-            </div>
             <div className="pt-2">
-              <Button className="w-full">Avançar</Button>
+              <Button className="w-full" onClick={handleSubmit}>
+                Avançar
+              </Button>
             </div>
           </div>
         </div>
