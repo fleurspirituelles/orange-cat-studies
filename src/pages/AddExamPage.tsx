@@ -117,23 +117,22 @@ export default function AddExamPage() {
   return (
     <>
       <Navbar />
-      <main className="bg-[#f8f8f8] min-h-screen px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+      <main className="bg-[#f8f8f8] min-h-screen px-4 sm:px-6 lg:px-8 py-20">
+        <div className="max-w-4xl mx-auto text-center mb-20">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Adicione um novo edital!
           </h1>
-          <p className="text-gray-700 text-sm md:text-base max-w-2xl mx-auto">
+          <p className="text-gray-700 text-base max-w-2xl mx-auto leading-relaxed">
             Escolha abaixo como deseja adicionar seu edital. Você pode carregar
             um arquivo PDF com a prova e o gabarito, e o sistema fará a extração
             automática das questões, ou, se preferir, inserir os dados
             manualmente preenchendo as informações como banca organizadora,
             nível do concurso, cargo e outras.
           </p>
-          <hr className="my-12 border-gray-300" />
         </div>
 
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div className="bg-white rounded-xl border border-gray-200 flex flex-col justify-between min-h-[520px]">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-14 items-start">
+          <div className="bg-white rounded-xl border border-gray-200 flex flex-col justify-between min-h-[520px] shadow-sm">
             <div>
               <div className="bg-orange-50 rounded-t-xl px-6 py-3 border-b border-gray-200 text-sm font-semibold text-gray-800">
                 Upload de PDF
@@ -143,7 +142,7 @@ export default function AddExamPage() {
                   Envie o edital em PDF e deixe que o sistema cuide da extração
                   das questões para você.
                 </p>
-                <div className="space-y-2 mb-6">
+                <div className="space-y-3 mb-8">
                   <FeatureItem text="Extração automática de questões e gabaritos." />
                   <FeatureItem text="Identificação de banca, ano e disciplina." />
                   <FeatureItem text="Associação das questões a temas específicos." />
@@ -193,7 +192,7 @@ export default function AddExamPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 flex flex-col justify-between min-h-[520px]">
+          <div className="bg-white rounded-xl border border-gray-200 flex flex-col justify-between min-h-[520px] shadow-sm">
             <div>
               <div className="bg-orange-50 rounded-t-xl px-6 py-3 border-b border-gray-200 text-sm font-semibold text-gray-800">
                 Adicionar manualmente
@@ -201,9 +200,9 @@ export default function AddExamPage() {
               <div className="p-6">
                 <p className="text-sm text-gray-600 mb-6">
                   Preencha as informações do edital com total controle sobre
-                  cada etapa.
+                  cada etapa e adicione o conteúdo manualmente.
                 </p>
-                <div className="space-y-2 mb-6">
+                <div className="space-y-3 mb-8">
                   <FeatureItem text="Inserção manual de banca, nível e disciplinas." />
                   <FeatureItem text="Cadastro de questões individualmente." />
                   <FeatureItem text="Associação direta aos temas do sistema." />
@@ -211,7 +210,6 @@ export default function AddExamPage() {
                   <FeatureItem text="Visualização das informações inseridas." />
                 </div>
                 <Button
-                  variant="outline"
                   className="w-full flex items-center justify-center gap-2"
                   onClick={handleManualAdd}
                 >
