@@ -60,7 +60,7 @@ export default function Home() {
         />
       </section>
 
-      <section className="max-w-7xl mx-auto px-6 py-20" id="porque-utilizar">
+      <section className="max-w-7xl mx-auto px-6 py-20" id="por-que-utilizar">
         <div className="text-center max-w-4xl mx-auto mb-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Por que utilizar o Orange Cat Studies?
