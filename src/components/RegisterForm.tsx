@@ -46,13 +46,13 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
       }
       const user = result.user;
 
-      await axios.post(`${API_URL}/auth`, {
+      const response = await axios.post(`${API_URL}/auth`, {
         name: fullName,
         email: user.email,
-        password: password,
+        password,
       });
 
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(response.data));
       window.location.href = "/";
     } catch (error: any) {
       alert(error.message);
@@ -64,12 +64,12 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      await axios.post(`${API_URL}/auth`, {
+      const response = await axios.post(`${API_URL}/auth`, {
         name: user.displayName,
         email: user.email,
       });
 
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(response.data));
       window.location.href = "/";
     } catch (error: any) {
       alert(error.message);
@@ -139,13 +139,6 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
               )}
             </div>
           </div>
-        </div>
-        <div className="text-xs text-muted-foreground mb-2">
-          Ao continuar, você concorda com nossos{" "}
-          <a href="#" className="underline">
-            Termos e Políticas de Privacidade
-          </a>
-          .
         </div>
         <Button className="w-full" onClick={handleRegister}>
           Criar conta
