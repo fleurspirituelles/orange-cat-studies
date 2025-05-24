@@ -30,7 +30,7 @@ export default function Navbar() {
               <a href="/add-exam" className="hover:text-orange-500">
                 Editais
               </a>
-              <a href="#" className="hover:text-orange-500">
+              <a href="/questions" className="hover:text-orange-500">
                 Questões
               </a>
               <a href="#" className="hover:text-orange-500">

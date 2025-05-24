@@ -18,7 +18,7 @@ export default function Footer() {
               <a href="/">Início</a>
             </li>
             <li>
-              <a href="#">Questões</a>
+              <a href="/questions">Questões</a>
             </li>
             <li>
               <a href="/add-exam">Editais</a>
