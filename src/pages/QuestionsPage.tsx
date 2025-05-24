@@ -1,7 +1,18 @@
+import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function QuestionsPage() {
+  const [selectedOptions, setSelectedOptions] = useState<number[]>(
+    Array(10).fill(-1)
+  );
+
+  const handleSelect = (questionIndex: number, optionIndex: number) => {
+    const updated = [...selectedOptions];
+    updated[questionIndex] = optionIndex;
+    setSelectedOptions(updated);
+  };
+
   return (
     <>
       <Navbar />
@@ -36,19 +47,20 @@ export default function QuestionsPage() {
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {["16.", "17.", "14.", "18.", "20."].map((alt, idx) => (
-                    <div
+                    <button
                       key={idx}
-                      className={`rounded-lg border px-4 py-4 text-sm font-medium ${
-                        idx === 2
-                          ? "bg-orange-500 text-white"
-                          : "bg-white text-gray-700 border-gray-200"
+                      onClick={() => handleSelect(i, idx)}
+                      className={`rounded-lg border px-4 py-4 text-sm font-medium transition-all duration-200 text-left ${
+                        selectedOptions[i] === idx
+                          ? "bg-orange-500 text-white border-orange-500"
+                          : "bg-white text-gray-700 border-gray-200 hover:border-orange-500"
                       }`}
                     >
                       <span className="block font-bold mb-1">
                         {String.fromCharCode(65 + idx)})
                       </span>
                       {alt}
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>
