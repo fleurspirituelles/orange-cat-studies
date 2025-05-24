@@ -55,7 +55,7 @@ export default function ManualExamForm() {
       <Navbar />
       <main className="bg-[#f8f8f8] min-h-screen px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl p-8">
-          <h2 className="text-2xl font-bold text-orange-600 mb-2 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
             Cadastro Manual de Edital
           </h2>
           <p className="text-sm text-gray-600 text-center mb-8">
@@ -64,7 +64,7 @@ export default function ManualExamForm() {
 
           <div className="space-y-5">
             <div>
-              <label className="text-sm font-medium mb-1 block">
+              <label className="text-sm font-medium mb-1 block text-gray-700">
                 Nome do concurso
               </label>
               <Input
@@ -75,7 +75,7 @@ export default function ManualExamForm() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">
+              <label className="text-sm font-medium mb-1 block text-gray-700">
                 Banca organizadora
               </label>
               <Input
@@ -86,7 +86,7 @@ export default function ManualExamForm() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">
+              <label className="text-sm font-medium mb-1 block text-gray-700">
                 Nível do concurso
               </label>
               <Input
@@ -97,7 +97,9 @@ export default function ManualExamForm() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">Ano</label>
+              <label className="text-sm font-medium mb-1 block text-gray-700">
+                Ano
+              </label>
               <Input
                 name="year"
                 value={form.year}
@@ -106,7 +108,9 @@ export default function ManualExamForm() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">Cargo</label>
+              <label className="text-sm font-medium mb-1 block text-gray-700">
+                Cargo
+              </label>
               <Input
                 name="position"
                 value={form.position}

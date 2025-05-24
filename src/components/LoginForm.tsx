@@ -107,7 +107,7 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
         <p className="text-sm text-center">
           Não tem uma conta?{" "}
           <span
-            className="underline text-orange-600 cursor-pointer font-medium"
+            className="underline text-orange-500 cursor-pointer font-medium"
             onClick={switchToRegister}
           >
             Cadastre-se!

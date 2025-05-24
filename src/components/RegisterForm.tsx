@@ -154,7 +154,7 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
         <p className="text-sm text-center">
           Já tem uma conta?{" "}
           <span
-            className="underline text-orange-600 cursor-pointer font-medium"
+            className="underline text-orange-500 cursor-pointer font-medium"
             onClick={switchToLogin}
           >
             Faça login!

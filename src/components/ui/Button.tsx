@@ -11,7 +11,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       default:
-        "bg-orange-500 text-white hover:bg-orange-600 focus:ring-orange-500",
+        "bg-orange-500 text-white focus:ring-orange-500",
       outline:
         "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100",
     };
