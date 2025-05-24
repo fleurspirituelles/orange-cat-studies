@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker.entry";
+import axios from "axios";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -31,7 +32,7 @@ export default function AddExamPage() {
     document.getElementById("pdfInput")?.click();
   };
 
-  const detectInfo = (text: string) => {
+  const detectInfo = async (text: string) => {
     const lower = text.toLowerCase();
 
     const board =
@@ -56,9 +57,26 @@ export default function AddExamPage() {
       level = "Municipal";
     else if (/união|ministério|federal/i.test(text)) level = "Federal";
 
-    setInfo({ board, year, position, examName, level });
-
+    const updatedInfo = { board, year, position, examName, level };
+    setInfo(updatedInfo);
     setStatus("Extração concluída.");
+
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!user || !user.id_user) return alert("Usuário não encontrado.");
+
+    try {
+      await axios.post("http://localhost:5000/exams", {
+        id_user: user.id_user,
+        exam_name: updatedInfo.examName,
+        board: updatedInfo.board,
+        level: updatedInfo.level,
+        year: updatedInfo.year,
+        position: updatedInfo.position,
+      });
+      alert("Edital salvo com sucesso!");
+    } catch (error) {
+      alert("Erro ao salvar o edital.");
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,7 +100,7 @@ export default function AddExamPage() {
         fullText += text + " ";
       }
 
-      detectInfo(fullText);
+      await detectInfo(fullText);
       setLoading(false);
     };
 
