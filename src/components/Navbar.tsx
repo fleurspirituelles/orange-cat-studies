@@ -24,11 +24,14 @@ export default function Navbar() {
           <div className="flex items-center gap-8">
             <div className="mb-3 text-2xl">😺</div>
             <nav className="hidden md:flex gap-6 text-sm">
-              <a href="#" className="hover:text-orange-500">
-                Questões
+              <a href="/" className="hover:text-orange-500">
+                Início
+              </a>
+              <a href="/add-exam" className="hover:text-orange-500">
+                Editais
               </a>
               <a href="#" className="hover:text-orange-500">
-                Editais
+                Questões
               </a>
               <a href="#" className="hover:text-orange-500">
                 Álbuns
