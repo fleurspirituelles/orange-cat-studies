@@ -1,12 +1,10 @@
-const express = require("express");
+import express from "express";
+import { create, getAll, getById } from "../controllers/exam.controller.js";
+
 const router = express.Router();
-const controller = require("../controllers/exam.controller");
-const validateFields = require("../middlewares/validateFields");
 
-router.get("/", controller.getAll);
-router.get("/:id", controller.getById);
-router.post("/", validateFields(["id_user", "title"]), controller.create);
-router.put("/:id", validateFields(["id_user", "title"]), controller.update);
-router.delete("/:id", controller.remove);
+router.post("/", create);
+router.get("/", getAll);
+router.get("/:id", getById);
 
-module.exports = router;
+export default router;
