@@ -55,7 +55,7 @@ Additionally, the platform includes performance tracking, content review tools, 
 ## System Architecture
 
 ```
-purrfect-studies/
+orange-cat-studies/
 ├── public/
 ├── src/
 │   ├── assets/
@@ -102,8 +102,8 @@ purrfect-studies/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/fleurspirituelles/purrfect-studies.git
-   cd purrfect-studies
+   git clone https://github.com/fleurspirituelles/orange-cat-studies.git
+   cd orange-cat-studies
    ```
 
 2. Install dependencies:
