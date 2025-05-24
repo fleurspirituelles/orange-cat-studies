@@ -1,53 +1,47 @@
-const Exam = require("../models/exam.model");
+import db from "../config/database.js";
 
-async function getAll(req, res) {
+export const create = async (req, res) => {
+  const { id_user, exam_name, board, level, year, position } = req.body;
+
+  if (!id_user || !exam_name || !board || !level || !year || !position) {
+    return res.status(400).json({ message: "Missing required fields." });
+  }
+
   try {
-    const exams = await Exam.findAll();
+    const [result] = await db.query(
+      "INSERT INTO exams (id_user, exam_name, board, level, year, position) VALUES (?, ?, ?, ?, ?, ?)",
+      [id_user, exam_name, board, level, year, position]
+    );
+
+    res.status(201).json({ id_exam: result.insertId });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating exam.", error });
+  }
+};
+
+export const getAll = async (_req, res) => {
+  try {
+    const [exams] = await db.query("SELECT * FROM exams");
     res.status(200).json(exams);
-  } catch {
-    res.status(500).json({ error: "Failed to retrieve exams." });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving exams.", error });
   }
-}
+};
 
-async function getById(req, res) {
+export const getById = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const exam = await Exam.findByPk(req.params.id);
-    if (!exam) return res.status(404).json({ error: "Exam not found." });
-    res.status(200).json(exam);
-  } catch {
-    res.status(500).json({ error: "Failed to retrieve exam." });
-  }
-}
+    const [rows] = await db.query("SELECT * FROM exams WHERE id_exam = ?", [
+      id,
+    ]);
 
-async function create(req, res) {
-  try {
-    const exam = await Exam.create(req.body);
-    res.status(201).json(exam);
-  } catch {
-    res.status(400).json({ error: "Failed to create exam." });
-  }
-}
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Exam not found." });
+    }
 
-async function update(req, res) {
-  try {
-    const exam = await Exam.findByPk(req.params.id);
-    if (!exam) return res.status(404).json({ error: "Exam not found." });
-    await exam.update(req.body);
-    res.status(200).json(exam);
-  } catch {
-    res.status(400).json({ error: "Failed to update exam." });
+    res.status(200).json(rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving exam.", error });
   }
-}
-
-async function remove(req, res) {
-  try {
-    const exam = await Exam.findByPk(req.params.id);
-    if (!exam) return res.status(404).json({ error: "Exam not found." });
-    await exam.destroy();
-    res.status(204).end();
-  } catch {
-    res.status(500).json({ error: "Failed to delete exam." });
-  }
-}
-
-module.exports = { getAll, getById, create, update, remove };
+};
