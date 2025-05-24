@@ -4,8 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  @apply font-sans text-neutral-900;
+  font-family: "Be Vietnam Pro", sans-serif;
+  color: #59595a;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
