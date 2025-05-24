@@ -56,10 +56,12 @@ export default function Home() {
         <img
           src="/logo-large.svg"
           alt="Logo"
-          className="mx-auto w-64 md:w-80 mb-24"
+          className="mx-auto w-64 md:w-80 mb-16"
         />
+      </section>
 
-        <section className="max-w-5xl mx-auto px-6 text-center mb-10">
+      <section className="max-w-7xl mx-auto px-6 py-20" id="porque-utilizar">
+        <div className="text-center max-w-4xl mx-auto mb-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Por que utilizar o Orange Cat Studies?
           </h2>
@@ -70,10 +72,8 @@ export default function Home() {
             com mais eficiência e mantém a constância necessária para alcançar
             sua aprovação.
           </p>
-        </section>
-      </section>
+        </div>
 
-      <section className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="p-6 border rounded-lg shadow-sm bg-white">
             <p className="text-4xl font-bold text-orange-500 mb-4">01</p>
@@ -108,7 +108,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-neutral-50 py-20 px-6">
+      <section className="bg-neutral-50 py-20 px-6" id="faq">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-10">
           <div className="md:w-1/3">
             <h2 className="text-2xl font-bold mb-4">Perguntas Frequentes</h2>
