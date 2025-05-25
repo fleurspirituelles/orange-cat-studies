@@ -61,6 +61,18 @@ export default function AddExamPage() {
     setInfo(updatedInfo);
     setStatus("Extração concluída.");
 
+    if (
+      updatedInfo.board === "Banca não identificada" ||
+      updatedInfo.level === "Não identificado" ||
+      updatedInfo.examName === "Concurso não identificado"
+    ) {
+      alert(
+        "Não foi possível identificar todas as informações do edital. Redirecionando para o preenchimento manual."
+      );
+      navigate("/add-exam/manual");
+      return;
+    }
+
     const user = JSON.parse(localStorage.getItem("user") || "null");
     if (!user || !user.id_user) return alert("Usuário não encontrado.");
 
