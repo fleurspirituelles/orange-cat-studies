@@ -24,9 +24,26 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const handleRegister = async () => {
     if (!fullName || !email || !password || !confirmPassword) {
       alert("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    if (fullName.trim().length < 3) {
+      alert("O nome deve ter pelo menos 3 caracteres.");
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      alert("Digite um e-mail válido.");
+      return;
+    }
+
+    if (password.length < 8) {
+      alert("A senha deve ter no mínimo 8 caracteres.");
       return;
     }
 
@@ -55,7 +72,13 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
       localStorage.setItem("user", JSON.stringify(response.data));
       window.location.href = "/";
     } catch (error: any) {
-      alert(error.message);
+      const code = error.code;
+      const messages: { [key: string]: string } = {
+        "auth/email-already-in-use": "Este e-mail já está cadastrado.",
+        "auth/invalid-email": "E-mail inválido.",
+        "auth/weak-password": "A senha é muito fraca.",
+      };
+      alert(messages[code] || "Erro ao criar conta.");
     }
   };
 

@@ -17,9 +17,21 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const handleLogin = async () => {
     if (!email || !password) {
       alert("Por favor, preencha o e-mail e a senha.");
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      alert("Digite um e-mail válido.");
+      return;
+    }
+
+    if (password.length < 8) {
+      alert("A senha deve ter pelo menos 8 caracteres.");
       return;
     }
 
@@ -31,7 +43,13 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
       localStorage.setItem("user", JSON.stringify(response.data));
       window.location.href = "/";
     } catch (error: any) {
-      alert(error.message);
+      const code = error.code;
+      const messages: { [key: string]: string } = {
+        "auth/invalid-email": "E-mail inválido.",
+        "auth/user-not-found": "Usuário não encontrado.",
+        "auth/wrong-password": "Senha incorreta.",
+      };
+      alert(messages[code] || "Erro ao fazer login.");
     }
   };
 
