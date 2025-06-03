@@ -60,14 +60,6 @@ CREATE TABLE IF NOT EXISTS topics (
     name VARCHAR(100) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS questions_topics (
-    id_question INT NOT NULL,
-    id_topic INT NOT NULL,
-    PRIMARY KEY (id_question, id_topic),
-    FOREIGN KEY (id_question) REFERENCES questions (id_question) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_topic) REFERENCES topics (id_topic) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS answers (
     id_answer INT AUTO_INCREMENT PRIMARY KEY,
     id_user INT NOT NULL,
