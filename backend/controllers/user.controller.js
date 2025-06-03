@@ -1,53 +1,36 @@
-import db from "../config/database.js";
+import UserModel from "../models/user.model.js";
 
-export const getAll = async (req, res) => {
-  try {
-    const [rows] = await db.query("SELECT * FROM users");
-    res.status(200).json(rows);
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving users", error });
-  }
-};
+const UserController = {
+  getAll: async (req, res) => {
+    const users = await UserModel.getAll();
+    res.status(200).json(users);
+  },
 
-export const getById = async (req, res) => {
-  try {
-    const [rows] = await db.query("SELECT * FROM users WHERE id_user = ?", [
-      req.params.id,
-    ]);
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json(rows[0]);
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving user", error });
-  }
-};
-
-export const getByEmail = async (req, res) => {
-  const email = req.params.email;
-
-  try {
-    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
-
-    if (rows.length > 0) {
-      return res.status(200).json(rows[0]);
+  create: async (req, res) => {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const name = email.split("@")[0];
+    const user = await UserModel.create({ name, email, password });
+    res.status(201).json(user);
+  },
 
-    const [result] = await db.query(
-      "INSERT INTO users (name, email) VALUES (?, ?)",
-      [name, email]
-    );
+  update: async (req, res) => {
+    const id = req.params.id;
+    const { name, email, password } = req.body;
 
-    const [newUser] = await db.query("SELECT * FROM users WHERE id_user = ?", [
-      result.insertId,
-    ]);
+    const updated = await UserModel.update(id, { name, email, password });
+    if (!updated) return res.sendStatus(404);
+    res.status(200).json(updated);
+  },
 
-    res.status(201).json(newUser[0]);
-  } catch (error) {
-    res.status(500).json({ message: "Error handling user email", error });
-  }
+  remove: async (req, res) => {
+    const id = req.params.id;
+    const deleted = await UserModel.remove(id);
+    if (!deleted) return res.sendStatus(404);
+    res.status(200).json({ message: "User deleted" });
+  },
 };
+
+export default UserController;

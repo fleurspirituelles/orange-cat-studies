@@ -1,35 +1,41 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
+import db from "../config/database.js";
 
-const User = sequelize.define(
-  "users",
-  {
-    id_user: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
+const UserModel = {
+  getAll: async () => {
+    const [rows] = await db.query("SELECT * FROM users");
+    return rows;
   },
-  {
-    timestamps: false,
-  }
-);
 
-module.exports = User;
+  getById: async (id) => {
+    const [rows] = await db.query("SELECT * FROM users WHERE id_user = ?", [
+      id,
+    ]);
+    return rows[0];
+  },
+
+  create: async ({ name, email, password }) => {
+    const [result] = await db.query(
+      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+      [name, email, password]
+    );
+    return { id_user: result.insertId, name, email };
+  },
+
+  update: async (id, { name, email, password }) => {
+    const [result] = await db.query(
+      "UPDATE users SET name = ?, email = ?, password = ? WHERE id_user = ?",
+      [name, email, password, id]
+    );
+    if (result.affectedRows === 0) return null;
+    return { id_user: id, name, email };
+  },
+
+  remove: async (id) => {
+    const [result] = await db.query("DELETE FROM users WHERE id_user = ?", [
+      id,
+    ]);
+    return result.affectedRows > 0;
+  },
+};
+
+export default UserModel;
