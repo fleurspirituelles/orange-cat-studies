@@ -1,20 +1,12 @@
-const express = require("express");
+import express from "express";
+import ChoiceController from "../controllers/choice.controller.js";
+
 const router = express.Router();
-const controller = require("../controllers/choice.controller");
-const validateFields = require("../middlewares/validateFields");
 
-router.get("/", controller.getAll);
-router.get("/:id", controller.getById);
-router.post(
-  "/",
-  validateFields(["id_question", "letter", "description"]),
-  controller.create
-);
-router.put(
-  "/:id",
-  validateFields(["id_question", "letter", "description"]),
-  controller.update
-);
-router.delete("/:id", controller.remove);
+router.get("/", ChoiceController.getAll);
+router.get("/:id", ChoiceController.getById);
+router.post("/", ChoiceController.create);
+router.put("/:id", ChoiceController.update);
+router.delete("/:id", ChoiceController.remove);
 
-module.exports = router;
+export default router;

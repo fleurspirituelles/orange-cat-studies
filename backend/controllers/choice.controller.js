@@ -1,53 +1,42 @@
-const Choice = require("../models/choice.model");
+import ChoiceModel from "../models/choice.model.js";
 
-async function getAll(req, res) {
-  try {
-    const choices = await Choice.findAll();
+const ChoiceController = {
+  getAll: async (_req, res) => {
+    const choices = await ChoiceModel.getAll();
     res.status(200).json(choices);
-  } catch {
-    res.status(500).json({ error: "Failed to retrieve choices." });
-  }
-}
+  },
 
-async function getById(req, res) {
-  try {
-    const choice = await Choice.findByPk(req.params.id);
-    if (!choice) return res.status(404).json({ error: "Choice not found." });
+  getById: async (req, res) => {
+    const choice = await ChoiceModel.getById(req.params.id);
+    if (!choice) return res.sendStatus(404);
     res.status(200).json(choice);
-  } catch {
-    res.status(500).json({ error: "Failed to retrieve choice." });
-  }
-}
+  },
 
-async function create(req, res) {
-  try {
-    const choice = await Choice.create(req.body);
+  create: async (req, res) => {
+    const { id_question, description, letter } = req.body;
+    if (!id_question || !description || !letter) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const choice = await ChoiceModel.create({
+      id_question,
+      description,
+      letter,
+    });
     res.status(201).json(choice);
-  } catch {
-    res.status(400).json({ error: "Failed to create choice." });
-  }
-}
+  },
 
-async function update(req, res) {
-  try {
-    const choice = await Choice.findByPk(req.params.id);
-    if (!choice) return res.status(404).json({ error: "Choice not found." });
-    await choice.update(req.body);
+  update: async (req, res) => {
+    const choice = await ChoiceModel.update(req.params.id, req.body);
+    if (!choice) return res.sendStatus(404);
     res.status(200).json(choice);
-  } catch {
-    res.status(400).json({ error: "Failed to update choice." });
-  }
-}
+  },
 
-async function remove(req, res) {
-  try {
-    const choice = await Choice.findByPk(req.params.id);
-    if (!choice) return res.status(404).json({ error: "Choice not found." });
-    await choice.destroy();
-    res.status(204).end();
-  } catch {
-    res.status(500).json({ error: "Failed to delete choice." });
-  }
-}
+  remove: async (req, res) => {
+    const deleted = await ChoiceModel.remove(req.params.id);
+    if (!deleted) return res.sendStatus(404);
+    res.status(200).json({ message: "Choice deleted" });
+  },
+};
 
-module.exports = { getAll, getById, create, update, remove };
+export default ChoiceController;
