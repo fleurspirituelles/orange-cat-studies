@@ -1,53 +1,42 @@
-const Answer = require("../models/answer.model");
+import AnswerModel from "../models/answer.model.js";
 
-async function getAll(req, res) {
-  try {
-    const answers = await Answer.findAll();
+const AnswerController = {
+  getAll: async (_req, res) => {
+    const answers = await AnswerModel.getAll();
     res.status(200).json(answers);
-  } catch {
-    res.status(500).json({ error: "Failed to retrieve answers." });
-  }
-}
+  },
 
-async function getById(req, res) {
-  try {
-    const answer = await Answer.findByPk(req.params.id);
-    if (!answer) return res.status(404).json({ error: "Answer not found." });
+  getById: async (req, res) => {
+    const answer = await AnswerModel.getById(req.params.id);
+    if (!answer) return res.sendStatus(404);
     res.status(200).json(answer);
-  } catch {
-    res.status(500).json({ error: "Failed to retrieve answer." });
-  }
-}
+  },
 
-async function create(req, res) {
-  try {
-    const answer = await Answer.create(req.body);
+  create: async (req, res) => {
+    const { id_user, id_question, selected_choice } = req.body;
+    if (!id_user || !id_question || !selected_choice) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const answer = await AnswerModel.create({
+      id_user,
+      id_question,
+      selected_choice,
+    });
     res.status(201).json(answer);
-  } catch {
-    res.status(400).json({ error: "Failed to create answer." });
-  }
-}
+  },
 
-async function update(req, res) {
-  try {
-    const answer = await Answer.findByPk(req.params.id);
-    if (!answer) return res.status(404).json({ error: "Answer not found." });
-    await answer.update(req.body);
+  update: async (req, res) => {
+    const answer = await AnswerModel.update(req.params.id, req.body);
+    if (!answer) return res.sendStatus(404);
     res.status(200).json(answer);
-  } catch {
-    res.status(400).json({ error: "Failed to update answer." });
-  }
-}
+  },
 
-async function remove(req, res) {
-  try {
-    const answer = await Answer.findByPk(req.params.id);
-    if (!answer) return res.status(404).json({ error: "Answer not found." });
-    await answer.destroy();
-    res.status(204).end();
-  } catch {
-    res.status(500).json({ error: "Failed to delete answer." });
-  }
-}
+  remove: async (req, res) => {
+    const deleted = await AnswerModel.remove(req.params.id);
+    if (!deleted) return res.sendStatus(404);
+    res.status(200).json({ message: "Answer deleted" });
+  },
+};
 
-module.exports = { getAll, getById, create, update, remove };
+export default AnswerController;

@@ -1,20 +1,12 @@
-const express = require("express");
+import express from "express";
+import AnswerController from "../controllers/answer.controller.js";
+
 const router = express.Router();
-const controller = require("../controllers/answer.controller");
-const validateFields = require("../middlewares/validateFields");
 
-router.get("/", controller.getAll);
-router.get("/:id", controller.getById);
-router.post(
-  "/",
-  validateFields(["id_user", "id_question", "selected_choice"]),
-  controller.create
-);
-router.put(
-  "/:id",
-  validateFields(["id_user", "id_question", "selected_choice"]),
-  controller.update
-);
-router.delete("/:id", controller.remove);
+router.get("/", AnswerController.getAll);
+router.get("/:id", AnswerController.getById);
+router.post("/", AnswerController.create);
+router.put("/:id", AnswerController.update);
+router.delete("/:id", AnswerController.remove);
 
-module.exports = router;
+export default router;

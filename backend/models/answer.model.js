@@ -1,40 +1,46 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config/database");
+import db from "../config/database.js";
 
-const Answer = sequelize.define(
-  "answers",
-  {
-    id_answer: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    id_user: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    id_question: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    selected_choice: {
-      type: DataTypes.CHAR(1),
-      allowNull: false,
-      validate: {
-        isIn: [["A", "B", "C", "D", "E"]],
-      },
-    },
-    answer_time: {
-      type: DataTypes.INTEGER,
-    },
-    answer_date: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
+const AnswerModel = {
+  getAll: async () => {
+    const [rows] = await db.query("SELECT * FROM answers");
+    return rows;
   },
-  {
-    timestamps: false,
-  }
-);
 
-module.exports = Answer;
+  getById: async (id) => {
+    const [rows] = await db.query("SELECT * FROM answers WHERE id_answer = ?", [
+      id,
+    ]);
+    return rows[0];
+  },
+
+  create: async ({ id_user, id_question, selected_choice }) => {
+    const [result] = await db.query(
+      "INSERT INTO answers (id_user, id_question, selected_choice) VALUES (?, ?, ?)",
+      [id_user, id_question, selected_choice]
+    );
+    return {
+      id_answer: result.insertId,
+      id_user,
+      id_question,
+      selected_choice,
+    };
+  },
+
+  update: async (id, { id_user, id_question, selected_choice }) => {
+    const [result] = await db.query(
+      "UPDATE answers SET id_user = ?, id_question = ?, selected_choice = ? WHERE id_answer = ?",
+      [id_user, id_question, selected_choice, id]
+    );
+    if (result.affectedRows === 0) return null;
+    return { id_answer: id, id_user, id_question, selected_choice };
+  },
+
+  remove: async (id) => {
+    const [result] = await db.query("DELETE FROM answers WHERE id_answer = ?", [
+      id,
+    ]);
+    return result.affectedRows > 0;
+  },
+};
+
+export default AnswerModel;
