@@ -14,27 +14,29 @@ const QuestionModel = {
     return rows[0];
   },
 
-  create: async (question) => {
-    const { id_exam, statement, answer_key } = question;
+  create: async ({ id_exam, statement, answer_key }) => {
     const [result] = await db.query(
       "INSERT INTO questions (id_exam, statement, answer_key) VALUES (?, ?, ?)",
       [id_exam, statement, answer_key]
     );
-    return { id_question: result.insertId, ...question };
+    return { id_question: result.insertId, id_exam, statement, answer_key };
   },
 
-  update: async (id, question) => {
-    const { id_exam, statement, answer_key } = question;
-    await db.query(
+  update: async (id, { id_exam, statement, answer_key }) => {
+    const [result] = await db.query(
       "UPDATE questions SET id_exam = ?, statement = ?, answer_key = ? WHERE id_question = ?",
       [id_exam, statement, answer_key, id]
     );
-    return { id_question: id, ...question };
+    if (result.affectedRows === 0) return null;
+    return { id_question: id, id_exam, statement, answer_key };
   },
 
   remove: async (id) => {
-    await db.query("DELETE FROM questions WHERE id_question = ?", [id]);
-    return { message: "Question deleted" };
+    const [result] = await db.query(
+      "DELETE FROM questions WHERE id_question = ?",
+      [id]
+    );
+    return result.affectedRows > 0;
   },
 };
 
