@@ -77,7 +77,7 @@ describe("Exam endpoints", () => {
   test("DELETE /exams/:id should delete an exam", async () => {
     const response = await API().delete(`/exams/${createdExamId}`);
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("message", "Exam deleted");
+    expect(response.body).toHaveProperty("message", "Exam deleted.");
   });
 
   test("GET /exams/:id with invalid ID should return 404", async () => {
