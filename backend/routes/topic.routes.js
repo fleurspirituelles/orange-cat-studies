@@ -1,12 +1,12 @@
-const express = require("express");
+import express from "express";
+import TopicController from "../controllers/topic.controller.js";
+
 const router = express.Router();
-const controller = require("../controllers/topic.controller");
-const validateFields = require("../middlewares/validateFields");
 
-router.get("/", controller.getAll);
-router.get("/:id", controller.getById);
-router.post("/", validateFields(["name"]), controller.create);
-router.put("/:id", validateFields(["name"]), controller.update);
-router.delete("/:id", controller.remove);
+router.get("/", TopicController.getAll);
+router.get("/:id", TopicController.getById);
+router.post("/", TopicController.create);
+router.put("/:id", TopicController.update);
+router.delete("/:id", TopicController.remove);
 
-module.exports = router;
+export default router;
