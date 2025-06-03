@@ -1,53 +1,32 @@
-const Review = require("../models/review.model");
+import ReviewModel from "../models/review.model.js";
 
-async function getAll(req, res) {
-  try {
-    const reviews = await Review.findAll();
+const ReviewController = {
+  getAll: async (_req, res) => {
+    const reviews = await ReviewModel.getAll();
     res.status(200).json(reviews);
-  } catch {
-    res.status(500).json({ error: "Failed to retrieve reviews." });
-  }
-}
+  },
 
-async function getById(req, res) {
-  try {
-    const review = await Review.findByPk(req.params.id);
-    if (!review) return res.status(404).json({ error: "Review not found." });
+  getById: async (req, res) => {
+    const review = await ReviewModel.getById(req.params.id);
+    if (!review) return res.sendStatus(404);
     res.status(200).json(review);
-  } catch {
-    res.status(500).json({ error: "Failed to retrieve review." });
-  }
-}
+  },
 
-async function create(req, res) {
-  try {
-    const review = await Review.create(req.body);
+  create: async (req, res) => {
+    const { id_user, id_question } = req.body;
+    if (!id_user || !id_question) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const review = await ReviewModel.create({ id_user, id_question });
     res.status(201).json(review);
-  } catch {
-    res.status(400).json({ error: "Failed to create review." });
-  }
-}
+  },
 
-async function update(req, res) {
-  try {
-    const review = await Review.findByPk(req.params.id);
-    if (!review) return res.status(404).json({ error: "Review not found." });
-    await review.update(req.body);
-    res.status(200).json(review);
-  } catch {
-    res.status(400).json({ error: "Failed to update review." });
-  }
-}
+  remove: async (req, res) => {
+    const deleted = await ReviewModel.remove(req.params.id);
+    if (!deleted) return res.sendStatus(404);
+    res.status(200).json({ message: "Review deleted" });
+  },
+};
 
-async function remove(req, res) {
-  try {
-    const review = await Review.findByPk(req.params.id);
-    if (!review) return res.status(404).json({ error: "Review not found." });
-    await review.destroy();
-    res.status(204).end();
-  } catch {
-    res.status(500).json({ error: "Failed to delete review." });
-  }
-}
-
-module.exports = { getAll, getById, create, update, remove };
+export default ReviewController;
