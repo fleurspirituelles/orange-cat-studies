@@ -1,29 +1,14 @@
-const fs = require("fs");
-const path = require("path");
-const mysql = require("mysql2");
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import runSQL from "./run-sql.js";
 
-const schemaPath = path.join(__dirname, "database", "mysql", "schema.sql");
-const schema = fs.readFileSync(schemaPath, "utf-8");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  multipleStatements: true,
-});
+const schemaPath = path.resolve(__dirname, "database/mysql/schema.sql");
+const schema = fs.readFileSync(schemaPath, "utf8");
 
-connection.connect((err) => {
-  if (err) {
-    console.error("Erro ao conectar ao MySQL:", err.message);
-    return;
-  }
+await runSQL(schema);
 
-  connection.query(schema, (err) => {
-    if (err) {
-      console.error("Erro ao executar o schema.sql:", err.message);
-    } else {
-      console.log("Banco apagado e recriado com sucesso.");
-    }
-    connection.end();
-  });
-});
+console.log("Banco de dados resetado com sucesso.");
