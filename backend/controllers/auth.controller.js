@@ -1,29 +1,61 @@
 import db from "../config/database.js";
 
-export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
-
-  try {
-    const [existingUser] = await db.query(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
-    );
-
-    if (existingUser.length > 0) {
-      return res.status(409).json({ message: "User already exists" });
+const AuthController = {
+  register: async (req, res) => {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Missing required fields." });
     }
 
-    const [result] = await db.query(
-      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-      [name, email, password || null]
-    );
+    try {
+      const [existing] = await db.query("SELECT * FROM users WHERE email = ?", [
+        email,
+      ]);
+      if (existing.length > 0) {
+        return res.status(409).json({ message: "Email already registered." });
+      }
 
-    const [newUser] = await db.query("SELECT * FROM users WHERE id_user = ?", [
-      result.insertId,
-    ]);
+      const [result] = await db.query(
+        "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+        [name, email, password]
+      );
 
-    res.status(201).json(newUser[0]);
-  } catch (error) {
-    res.status(500).json({ message: "Error registering user", error });
-  }
+      res.status(201).json({
+        id_user: result.insertId,
+        name,
+        email,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error registering user." });
+    }
+  },
+
+  login: async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ message: "Missing email or password." });
+    }
+
+    try {
+      const [users] = await db.query(
+        "SELECT * FROM users WHERE email = ? AND password = ?",
+        [email, password]
+      );
+
+      if (users.length === 0) {
+        return res.status(401).json({ message: "Invalid credentials." });
+      }
+
+      const user = users[0];
+      res.status(200).json({
+        id_user: user.id_user,
+        name: user.name,
+        email: user.email,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error during login." });
+    }
+  },
 };
+
+export default AuthController;
