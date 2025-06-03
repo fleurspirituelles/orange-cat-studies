@@ -4,6 +4,7 @@ const controller = require("../controllers/question.controller");
 const validateFields = require("../middlewares/validateFields");
 
 router.get("/", controller.getAll);
+router.get("/user/:id_user", controller.getByUserId);
 router.get("/:id", controller.getById);
 router.post(
   "/",

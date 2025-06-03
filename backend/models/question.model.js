@@ -1,33 +1,41 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config/database");
+import db from "../config/database.js";
 
-const Question = sequelize.define(
-  "questions",
-  {
-    id_question: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    id_exam: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    statement: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    answer_key: {
-      type: DataTypes.CHAR(1),
-      allowNull: false,
-      validate: {
-        isIn: [["A", "B", "C", "D", "E"]],
-      },
-    },
+const QuestionModel = {
+  getAll: async () => {
+    const [rows] = await db.query("SELECT * FROM questions");
+    return rows;
   },
-  {
-    timestamps: false,
-  }
-);
 
-module.exports = Question;
+  getById: async (id) => {
+    const [rows] = await db.query(
+      "SELECT * FROM questions WHERE id_question = ?",
+      [id]
+    );
+    return rows[0];
+  },
+
+  create: async (question) => {
+    const { id_exam, statement, answer_key } = question;
+    const [result] = await db.query(
+      "INSERT INTO questions (id_exam, statement, answer_key) VALUES (?, ?, ?)",
+      [id_exam, statement, answer_key]
+    );
+    return { id_question: result.insertId, ...question };
+  },
+
+  update: async (id, question) => {
+    const { id_exam, statement, answer_key } = question;
+    await db.query(
+      "UPDATE questions SET id_exam = ?, statement = ?, answer_key = ? WHERE id_question = ?",
+      [id_exam, statement, answer_key, id]
+    );
+    return { id_question: id, ...question };
+  },
+
+  remove: async (id) => {
+    await db.query("DELETE FROM questions WHERE id_question = ?", [id]);
+    return { message: "Question deleted" };
+  },
+};
+
+export default QuestionModel;

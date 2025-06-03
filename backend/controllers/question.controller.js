@@ -1,3 +1,4 @@
+const pool = require("../config/database");
 const Question = require("../models/question.model");
 
 async function getAll(req, res) {
@@ -53,4 +54,56 @@ async function remove(req, res) {
   }
 }
 
-module.exports = { getAll, getById, create, update, remove };
+async function getByUserId(req, res) {
+  const { id_user } = req.params;
+
+  try {
+    const [questions] = await pool.query(
+      `
+      SELECT 
+        q.id_question, 
+        q.statement, 
+        q.answer_key, 
+        c.letter, 
+        c.description 
+      FROM questions q
+      JOIN exams e ON q.id_exam = e.id_exam
+      JOIN choices c ON q.id_question = c.id_question
+      WHERE e.id_user = ?
+      ORDER BY q.id_question, c.letter
+    `,
+      [id_user]
+    );
+
+    const grouped = questions.reduce((acc, curr) => {
+      const question = acc.find((q) => q.id_question === curr.id_question);
+      const choice = { letter: curr.letter, description: curr.description };
+
+      if (question) {
+        question.choices.push(choice);
+      } else {
+        acc.push({
+          id_question: curr.id_question,
+          statement: curr.statement,
+          answer_key: curr.answer_key,
+          choices: [choice],
+        });
+      }
+
+      return acc;
+    }, []);
+
+    res.status(200).json(grouped);
+  } catch {
+    res.status(500).json({ error: "Failed to retrieve user questions." });
+  }
+}
+
+module.exports = {
+  getAll,
+  getById,
+  create,
+  update,
+  remove,
+  getByUserId,
+};

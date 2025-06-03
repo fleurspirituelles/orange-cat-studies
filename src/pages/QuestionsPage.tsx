@@ -1,11 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+type Choice = {
+  letter: string;
+  description: string;
+};
+
+type Question = {
+  id_question: number;
+  statement: string;
+  answer_key: string;
+  choices: Choice[];
+};
+
 export default function QuestionsPage() {
-  const [selectedOptions, setSelectedOptions] = useState<number[]>(
-    Array(10).fill(-1)
-  );
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
+
+  useEffect(() => {
+    axios
+      .get("/questions/user/1")
+      .then((res) => {
+        console.log("QUESTÕES RECEBIDAS:", res.data);
+        setQuestions(res.data);
+        setSelectedOptions(Array(res.data.length).fill(-1));
+      })
+      .catch((err) => console.error("ERRO AO BUSCAR QUESTÕES:", err));
+  }, []);
 
   const handleSelect = (questionIndex: number, optionIndex: number) => {
     const updated = [...selectedOptions];
@@ -32,21 +55,14 @@ export default function QuestionsPage() {
           </div>
 
           <div className="space-y-10">
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className="space-y-4">
+            {questions.map((q, i) => (
+              <div key={q.id_question} className="space-y-4">
                 <h2 className="text-sm font-semibold text-gray-900">
-                  Escrevente Técnico Judiciário – TJ/SP (Vunesp/2021)
+                  Questão {i + 1}
                 </h2>
-                <p className="text-sm text-gray-700">
-                  Na gaveta de camisetas de Jeferson há 5 camisetas pretas, 7
-                  camisetas vermelhas e 9 camisetas azuis. O menor número de
-                  camisetas que Jeferson precisará retirar da gaveta, de maneira
-                  aleatória e sem saber quais camisetas estão saindo, para ter
-                  certeza de ter retirado pelo menos uma camiseta preta e uma
-                  camiseta azul, é:
-                </p>
+                <p className="text-sm text-gray-700">{q.statement}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {["16.", "17.", "14.", "18.", "20."].map((alt, idx) => (
+                  {q.choices.map((choice, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleSelect(i, idx)}
@@ -57,9 +73,9 @@ export default function QuestionsPage() {
                       }`}
                     >
                       <span className="block font-bold mb-1">
-                        {String.fromCharCode(65 + idx)})
+                        {choice.letter})
                       </span>
-                      {alt}
+                      {choice.description}
                     </button>
                   ))}
                 </div>
