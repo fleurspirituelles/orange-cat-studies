@@ -46,7 +46,6 @@ Additionally, the platform includes performance tracking, content review tools, 
 - **Authentication:** Firebase Authentication.
 - **Databases:**
   - **MySQL:** Stores relational content (users, exams, questions).
-  - **MongoDB Atlas:** Stores comic strips metadata.
 - **PDF Processing:** `pdfjs-dist` for in-browser text extraction.
 - **Other Libraries:** Axios, Lucide React, Concurrently, PostCSS.
 
@@ -95,7 +94,6 @@ orange-cat-studies/
 
 - Node.js and npm.
 - MySQL or compatible database.
-- MongoDB Atlas URI.
 - Firebase project with Admin SDK JSON.
 
 ### Steps
