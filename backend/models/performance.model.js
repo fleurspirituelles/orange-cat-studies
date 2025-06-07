@@ -29,12 +29,6 @@ const Performance = sequelize.define(
       type: DataTypes.INTEGER,
       validate: { min: 0 },
     },
-    average_answer_time: {
-      type: DataTypes.INTEGER,
-    },
-    most_wrong_topic: {
-      type: DataTypes.STRING(100),
-    },
   },
   {
     timestamps: false,
