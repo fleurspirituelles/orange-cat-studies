@@ -1,36 +1,43 @@
-const mongoose = require("mongoose");
+import connection from "../config/database.js";
 
-const comicSchema = new mongoose.Schema({
-  code: {
-    type: String,
-    required: true,
+const Comic = {
+  getAll: async () => {
+    const [rows] = await connection.execute("SELECT * FROM comics");
+    return rows;
   },
-  url: {
-    type: String,
-    required: true,
-  },
-  day: {
-    type: Number,
-    required: true,
-  },
-  month: {
-    type: Number,
-    required: true,
-  },
-  year: {
-    type: Number,
-    required: true,
-  },
-  id_user: {
-    type: Number,
-    required: true,
-  },
-  id_album: {
-    type: Number,
-    required: true,
-  },
-});
 
-comicSchema.index({ code: 1, id_user: 1, id_album: 1 }, { unique: true });
+  getById: async (id_comic) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM comics WHERE id_comic = ?",
+      [id_comic]
+    );
+    return rows[0];
+  },
 
-module.exports = mongoose.model("Comic", comicSchema);
+  getByUser: async (id_user) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM comics WHERE id_user = ?",
+      [id_user]
+    );
+    return rows;
+  },
+
+  create: async (comic) => {
+    const { id_user, comic_date, image_url } = comic;
+    const [result] = await connection.execute(
+      "INSERT INTO comics (id_user, comic_date, image_url) VALUES (?, ?, ?)",
+      [id_user, comic_date, image_url]
+    );
+    return { id_comic: result.insertId, ...comic };
+  },
+
+  remove: async (id_comic) => {
+    const [result] = await connection.execute(
+      "DELETE FROM comics WHERE id_comic = ?",
+      [id_comic]
+    );
+    return result.affectedRows > 0;
+  },
+};
+
+export default Comic;

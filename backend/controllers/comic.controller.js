@@ -1,64 +1,49 @@
-const Comic = require("../models/comic.model");
+import Comic from "../models/comic.model.js";
 
-function extractCodeFromUrl(url) {
-  const match = url.match(/ga(\d{2})(\d{2})(\d{2})/);
-  if (!match) return null;
-  return `ga${match[1]}${match[2]}${match[3]}`;
-}
+export const getAll = async (req, res) => {
+  try {
+    const comics = await Comic.getAll();
+    res.status(200).json(comics);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving comics" });
+  }
+};
 
-function extractDateFromUrl(url) {
-  const match = url.match(/ga(\d{2})(\d{2})(\d{2})/);
-  if (!match) return null;
-  const yearPrefix = parseInt(match[1], 10) < 70 ? "20" : "19";
-  const year = parseInt(`${yearPrefix}${match[1]}`, 10);
-  const month = parseInt(match[2], 10);
-  const day = parseInt(match[3], 10);
-  return { year, month, day };
-}
+export const getById = async (req, res) => {
+  try {
+    const comic = await Comic.getById(req.params.id);
+    if (!comic) return res.status(404).json({ message: "Comic not found" });
+    res.status(200).json(comic);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving comic" });
+  }
+};
 
-async function getAll(req, res) {
-  const comics = await Comic.find();
-  res.status(200).json(comics);
-}
+export const getByUser = async (req, res) => {
+  try {
+    const comics = await Comic.getByUser(req.params.id_user);
+    res.status(200).json(comics);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving user's comics" });
+  }
+};
 
-async function getById(req, res) {
-  const comic = await Comic.findById(req.params.id);
-  if (!comic) return res.status(404).json({ message: "Comic not found." });
-  res.status(200).json(comic);
-}
+export const create = async (req, res) => {
+  try {
+    const { id_user, comic_date, image_url } = req.body;
+    const newComic = await Comic.create({ id_user, comic_date, image_url });
+    res.status(201).json(newComic);
+  } catch (error) {
+    res.status(500).json({ message: "Error creating comic" });
+  }
+};
 
-async function create(req, res) {
-  const { url, id_user, id_album } = req.body;
-  const code = extractCodeFromUrl(url);
-  const date = extractDateFromUrl(url);
-
-  if (!code || !date)
-    return res.status(400).json({ message: "Invalid comic URL." });
-
-  const existing = await Comic.findOne({ code, id_user });
-  if (existing)
-    return res
-      .status(409)
-      .json({ message: "Comic already claimed by this user." });
-
-  const newComic = new Comic({
-    code,
-    url,
-    day: date.day,
-    month: date.month,
-    year: date.year,
-    id_user,
-    id_album,
-  });
-
-  await newComic.save();
-  res.status(201).json(newComic);
-}
-
-async function remove(req, res) {
-  const deleted = await Comic.findByIdAndDelete(req.params.id);
-  if (!deleted) return res.status(404).json({ message: "Comic not found." });
-  res.status(200).json({ message: "Comic deleted successfully." });
-}
-
-module.exports = { getAll, getById, create, remove };
+export const remove = async (req, res) => {
+  try {
+    const success = await Comic.remove(req.params.id);
+    if (!success) return res.status(404).json({ message: "Comic not found" });
+    res.status(200).json({ message: "Comic deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting comic" });
+  }
+};
