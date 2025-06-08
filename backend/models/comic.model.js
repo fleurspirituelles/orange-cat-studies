@@ -11,24 +11,47 @@ const Comic = {
       "SELECT * FROM comics WHERE id_comic = ?",
       [id_comic]
     );
-    return rows[0];
+    return rows[0] || null;
   },
 
   getByUser: async (id_user) => {
     const [rows] = await connection.execute(
-      "SELECT * FROM comics WHERE id_user = ?",
+      "SELECT * FROM comics WHERE id_user = ? ORDER BY comic_date",
       [id_user]
     );
     return rows;
   },
 
+  getByDate: async (id_user, comic_date) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM comics WHERE id_user = ? AND comic_date = ?",
+      [id_user, comic_date]
+    );
+    return rows[0] || null;
+  },
+
+  existsForDate: async (id_user, comic_date) => {
+    const [rows] = await connection.execute(
+      "SELECT 1 FROM comics WHERE id_user = ? AND comic_date = ?",
+      [id_user, comic_date]
+    );
+    return rows.length > 0;
+  },
+
   create: async (comic) => {
     const { id_user, comic_date, image_url } = comic;
-    const [result] = await connection.execute(
-      "INSERT INTO comics (id_user, comic_date, image_url) VALUES (?, ?, ?)",
-      [id_user, comic_date, image_url]
-    );
-    return { id_comic: result.insertId, ...comic };
+    try {
+      const [result] = await connection.execute(
+        "INSERT INTO comics (id_user, comic_date, image_url) VALUES (?, ?, ?)",
+        [id_user, comic_date, image_url]
+      );
+      return { id_comic: result.insertId, id_user, comic_date, image_url };
+    } catch (err) {
+      if (err.code === "ER_DUP_ENTRY") {
+        return await Comic.getByDate(id_user, comic_date);
+      }
+      throw err;
+    }
   },
 
   remove: async (id_comic) => {
