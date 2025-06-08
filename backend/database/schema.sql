@@ -60,7 +60,6 @@ CREATE TABLE IF NOT EXISTS answers (
     id_user INT NOT NULL,
     id_question INT NOT NULL,
     selected_choice CHAR(1) NOT NULL CHECK (selected_choice IN ('A', 'B', 'C', 'D', 'E')),
-    answer_time INT,
     answer_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_user) REFERENCES users (id_user) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_question) REFERENCES questions (id_question) ON DELETE CASCADE ON UPDATE CASCADE
