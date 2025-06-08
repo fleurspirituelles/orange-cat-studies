@@ -1,4 +1,6 @@
 import Answer from "../models/answer.model.js";
+import Comic from "../models/comic.model.js";
+import connection from "../config/database.js";
 
 export async function getAll(req, res) {
   try {
@@ -20,11 +22,37 @@ export async function getById(req, res) {
 }
 
 export async function create(req, res) {
+  const { id_user, id_question, selected_choice } = req.body;
+  if (!id_user || !id_question || !selected_choice) {
+    return res.status(400).json({ message: "Missing required fields." });
+  }
   try {
-    const newAnswer = await Answer.create(req.body);
+    const newAnswer = await Answer.create({
+      id_user,
+      id_question,
+      selected_choice,
+    });
+
+    const [countRows] = await connection.execute(
+      "SELECT COUNT(*) AS cnt FROM answers WHERE id_user = ? AND DATE(answer_date) = CURDATE()",
+      [id_user]
+    );
+    const todayCount = countRows[0].cnt;
+
+    if (todayCount >= 10) {
+      const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+      const exists = await Comic.existsForDate(id_user, today);
+      if (!exists) {
+        const [yy, mm, dd] = today.split("-");
+        const shortYear = yy.slice(-2);
+        const imageUrl = `https://picayune.uclick.com/comics/ga/${yy}/ga${shortYear}${mm}${dd}.gif`;
+        await Comic.create({ id_user, comic_date: today, image_url: imageUrl });
+      }
+    }
+
     res.status(201).json(newAnswer);
-  } catch {
-    res.status(400).json({ error: "Failed to create answer." });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating answer.", error });
   }
 }
 
