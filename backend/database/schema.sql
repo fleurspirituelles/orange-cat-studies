@@ -55,11 +55,6 @@ CREATE TABLE IF NOT EXISTS choices (
     FOREIGN KEY (id_question) REFERENCES questions (id_question) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS topics (
-    id_topic INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
-);
-
 CREATE TABLE IF NOT EXISTS answers (
     id_answer INT AUTO_INCREMENT PRIMARY KEY,
     id_user INT NOT NULL,
@@ -67,15 +62,6 @@ CREATE TABLE IF NOT EXISTS answers (
     selected_choice CHAR(1) NOT NULL CHECK (selected_choice IN ('A', 'B', 'C', 'D', 'E')),
     answer_time INT,
     answer_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_user) REFERENCES users (id_user) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_question) REFERENCES questions (id_question) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS reviews (
-    id_review INT AUTO_INCREMENT PRIMARY KEY,
-    id_user INT NOT NULL,
-    id_question INT NOT NULL,
-    marked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_user) REFERENCES users (id_user) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_question) REFERENCES questions (id_question) ON DELETE CASCADE ON UPDATE CASCADE
 );

@@ -10,8 +10,6 @@ import choiceRoutes from "./routes/choice.routes.js";
 import comicRoutes from "./routes/comic.routes.js";
 import performanceRoutes from "./routes/performance.routes.js";
 import questionRoutes from "./routes/question.routes.js";
-import reviewRoutes from "./routes/review.routes.js";
-import topicRoutes from "./routes/topic.routes.js";
 
 const app = express();
 const PORT = 5000;
@@ -28,8 +26,6 @@ app.use("/choices", choiceRoutes);
 app.use("/comics", comicRoutes);
 app.use("/performance", performanceRoutes);
 app.use("/questions", questionRoutes);
-app.use("/reviews", reviewRoutes);
-app.use("/topics", topicRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}.`);
