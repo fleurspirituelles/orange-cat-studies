@@ -18,7 +18,6 @@ export default function Navbar() {
           Cadastre-se agora!
         </div>
       )}
-
       <header className="bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
@@ -33,11 +32,8 @@ export default function Navbar() {
               <a href="/questions" className="hover:text-orange-500">
                 Questões
               </a>
-              <a href="#" className="hover:text-orange-500">
+              <a href="/comics" className="hover:text-orange-500">
                 Álbuns
-              </a>
-              <a href="#" className="hover:text-orange-500">
-                Estatísticas
               </a>
             </nav>
           </div>

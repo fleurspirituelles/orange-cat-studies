@@ -24,10 +24,7 @@ export default function Footer() {
               <a href="/add-exam">Editais</a>
             </li>
             <li>
-              <a href="#">Álbuns</a>
-            </li>
-            <li>
-              <a href="#">Estatísticas</a>
+              <a href="/comics">Álbuns</a>
             </li>
           </ul>
         </div>
@@ -47,9 +44,9 @@ export default function Footer() {
         <div className="md:col-span-1 min-w-[140px]">
           <h3 className="font-semibold mb-2">Redes Sociais</h3>
           <div className="flex gap-3">
-            <img src="/figma-icon.svg" className="w-4 h-4" />
-            <img src="/github-icon.svg" className="w-4 h-4" />
-            <img src="/twitch-icon.svg" className="w-4 h-4" />
+            <img src="/figma-icon.svg" className="w-4 h-4" alt="" />
+            <img src="/github-icon.svg" className="w-4 h-4" alt="" />
+            <img src="/twitch-icon.svg" className="w-4 h-4" alt="" />
           </div>
         </div>
       </div>
