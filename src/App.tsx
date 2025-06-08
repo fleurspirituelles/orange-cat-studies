@@ -4,6 +4,7 @@ import AuthPage from "./pages/AuthPage";
 import AddExamPage from "./pages/AddExamPage";
 import AddQuestionPage from "./pages/AddQuestionPage";
 import QuestionsPage from "./pages/QuestionsPage";
+import ComicsPage from "./pages/ComicsPage";
 import ProtectedRoute from "./lib/ProtectedRoute";
 
 function App() {
@@ -32,6 +33,14 @@ function App() {
         element={
           <ProtectedRoute>
             <QuestionsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/comics"
+        element={
+          <ProtectedRoute>
+            <ComicsPage />
           </ProtectedRoute>
         }
       />
