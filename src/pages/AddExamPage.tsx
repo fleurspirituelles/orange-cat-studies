@@ -53,7 +53,7 @@ export default function AddExamPage() {
     }
 
     try {
-      await axios.post("http://localhost:5000/exams", {
+      const examResponse = await axios.post("http://localhost:5000/exams", {
         id_user: user.id_user,
         exam_name,
         board,
@@ -62,9 +62,28 @@ export default function AddExamPage() {
         position,
       });
 
-      alert("Edital cadastrado com sucesso!");
+      const id_exam = examResponse.data.id_exam;
+
+      const formData = new FormData();
+      formData.append("id_exam", id_exam);
+      formData.append("examPdf", examPdf);
+      formData.append("answerPdf", answerPdf);
+
+      const uploadResponse = await axios.post(
+        "http://localhost:5000/exams/upload-questions",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      alert(
+        `Edital cadastrado com sucesso! ${uploadResponse.data.total} questões foram salvas.`
+      );
     } catch (error: any) {
-      alert("Erro ao cadastrar edital: " + error.message);
+      alert("Erro ao cadastrar edital ou processar arquivos: " + error.message);
     }
   };
 
