@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import Navbar from "../components/Navbar";
@@ -13,6 +14,7 @@ export default function AddExamPage() {
     year: "",
     position: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,7 +34,7 @@ export default function AddExamPage() {
     }
 
     try {
-      await axios.post("http://localhost:5000/exams", {
+      const res = await axios.post("http://localhost:5000/exams", {
         id_user: user.id_user,
         exam_name,
         board,
@@ -40,7 +42,8 @@ export default function AddExamPage() {
         year,
         position,
       });
-      alert("Edital cadastrado com sucesso!");
+      const id_exam = res.data.id_exam;
+      navigate(`/add-question?id_exam=${id_exam}`);
     } catch (error: any) {
       alert("Erro ao cadastrar edital: " + error.message);
     }
