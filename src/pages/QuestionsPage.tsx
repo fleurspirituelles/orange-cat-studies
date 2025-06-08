@@ -39,7 +39,7 @@ export default function QuestionsPage() {
   }, [questions]);
 
   const handleSelect = (questionIndex: number, optionIndex: number): void => {
-    if (correctAnswers) return; // desabilita seleção após correção
+    if (correctAnswers) return;
     const updated = [...selectedOptions];
     updated[questionIndex] = optionIndex;
     setSelectedOptions(updated);
@@ -54,7 +54,6 @@ export default function QuestionsPage() {
   };
 
   const handleEntregar = (): void => {
-    // lógica de entrega...
     alert("Questões entregues!");
   };
 
