@@ -31,6 +31,15 @@ const Question = {
     return { id_question: result.insertId, ...question };
   },
 
+  update: async (id_question, question) => {
+    const { id_exam, statement, answer_key } = question;
+    const [result] = await connection.execute(
+      "UPDATE questions SET id_exam = ?, statement = ?, answer_key = ? WHERE id_question = ?",
+      [id_exam, statement, answer_key, id_question]
+    );
+    return result.affectedRows > 0;
+  },
+
   remove: async (id_question) => {
     const [result] = await connection.execute(
       "DELETE FROM questions WHERE id_question = ?",
