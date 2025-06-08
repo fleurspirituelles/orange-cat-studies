@@ -1,13 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import axios from "axios";
+
+interface Choice {
+  letter: string;
+  description: string;
+}
+
+interface Question {
+  id_question: number;
+  statement: string;
+  answer_key: string;
+  choices: Choice[];
+  exam_name: string;
+  board: string;
+  year: number;
+}
 
 export default function QuestionsPage() {
-  const [selectedOptions, setSelectedOptions] = useState<number[]>(
-    Array(10).fill(-1)
-  );
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
 
-  const handleSelect = (questionIndex: number, optionIndex: number) => {
+  useEffect(() => {
+    axios.get<Question[]>("http://localhost:5000/questions").then((res) => {
+      let qs = res.data;
+      qs.sort(() => Math.random() - 0.5);
+      if (qs.length > 10) qs = qs.slice(0, 10);
+      setQuestions(qs);
+    });
+  }, []);
+
+  useEffect(() => {
+    setSelectedOptions(Array(questions.length).fill(-1));
+  }, [questions]);
+
+  const handleSelect = (questionIndex: number, optionIndex: number): void => {
     const updated = [...selectedOptions];
     updated[questionIndex] = optionIndex;
     setSelectedOptions(updated);
@@ -23,32 +51,22 @@ export default function QuestionsPage() {
               Desafie-se diariamente e fortaleça sua preparação!
             </h1>
             <p className="text-sm text-gray-600 max-w-xl md:text-right">
-              Todos os dias, você terá 10 questões selecionadas automaticamente
-              dos editais cadastrados. Teste seus conhecimentos, acompanhe seu
-              progresso e veja quais temas precisam de mais atenção. Complete
-              todas as questões e desbloqueie uma tirinha exclusiva para
-              adicionar ao seu álbum de figurinhas!
+              Até 10 questões selecionadas automaticamente dos editais
+              cadastrados. Teste seus conhecimentos e desbloqueie uma tirinha
+              exclusiva!
             </p>
           </div>
-
           <div className="space-y-10">
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className="space-y-4">
+            {questions.map((q, i) => (
+              <div key={q.id_question} className="space-y-4">
                 <h2 className="text-sm font-semibold text-gray-900">
-                  Escrevente Técnico Judiciário – TJ/SP (Vunesp/2021)
+                  ({q.year}) {q.board} – {q.exam_name}
                 </h2>
-                <p className="text-sm text-gray-700">
-                  Na gaveta de camisetas de Jeferson há 5 camisetas pretas, 7
-                  camisetas vermelhas e 9 camisetas azuis. O menor número de
-                  camisetas que Jeferson precisará retirar da gaveta, de maneira
-                  aleatória e sem saber quais camisetas estão saindo, para ter
-                  certeza de ter retirado pelo menos uma camiseta preta e uma
-                  camiseta azul, é:
-                </p>
+                <p className="text-sm text-gray-700">{q.statement}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {["16.", "17.", "14.", "18.", "20."].map((alt, idx) => (
+                  {q.choices.map((choice, idx) => (
                     <button
-                      key={idx}
+                      key={choice.letter}
                       onClick={() => handleSelect(i, idx)}
                       className={`rounded-lg border px-4 py-4 text-sm font-medium transition-all duration-200 text-left ${
                         selectedOptions[i] === idx
@@ -57,9 +75,9 @@ export default function QuestionsPage() {
                       }`}
                     >
                       <span className="block font-bold mb-1">
-                        {String.fromCharCode(65 + idx)})
+                        {choice.letter})
                       </span>
-                      {alt}
+                      {choice.description}
                     </button>
                   ))}
                 </div>
