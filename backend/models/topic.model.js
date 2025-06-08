@@ -1,23 +1,42 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config/database");
+import connection from "../config/database.js";
 
-const Topic = sequelize.define(
-  "topics",
-  {
-    id_topic: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true,
-    },
+const Topic = {
+  getAll: async () => {
+    const [rows] = await connection.execute("SELECT * FROM topics");
+    return rows;
   },
-  {
-    timestamps: false,
-  }
-);
 
-module.exports = Topic;
+  getById: async (id_topic) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM topics WHERE id_topic = ?",
+      [id_topic]
+    );
+    return rows[0];
+  },
+
+  getByName: async (name) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM topics WHERE name = ?",
+      [name]
+    );
+    return rows[0];
+  },
+
+  create: async (name) => {
+    const [result] = await connection.execute(
+      "INSERT INTO topics (name) VALUES (?)",
+      [name]
+    );
+    return { id_topic: result.insertId, name };
+  },
+
+  remove: async (id_topic) => {
+    const [result] = await connection.execute(
+      "DELETE FROM topics WHERE id_topic = ?",
+      [id_topic]
+    );
+    return result.affectedRows > 0;
+  },
+};
+
+export default Topic;

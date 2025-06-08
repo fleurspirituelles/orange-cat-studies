@@ -1,33 +1,43 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config/database");
+import connection from "../config/database.js";
 
-const Choice = sequelize.define(
-  "choices",
-  {
-    id_choice: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    id_question: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    letter: {
-      type: DataTypes.CHAR(1),
-      allowNull: false,
-      validate: {
-        isIn: [["A", "B", "C", "D", "E"]],
-      },
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
+const Choice = {
+  getAll: async () => {
+    const [rows] = await connection.execute("SELECT * FROM choices");
+    return rows;
   },
-  {
-    timestamps: false,
-  }
-);
 
-module.exports = Choice;
+  getById: async (id_choice) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM choices WHERE id_choice = ?",
+      [id_choice]
+    );
+    return rows[0];
+  },
+
+  getByQuestion: async (id_question) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM choices WHERE id_question = ?",
+      [id_question]
+    );
+    return rows;
+  },
+
+  create: async (choice) => {
+    const { id_question, letter, description } = choice;
+    const [result] = await connection.execute(
+      "INSERT INTO choices (id_question, letter, description) VALUES (?, ?, ?)",
+      [id_question, letter, description]
+    );
+    return { id_choice: result.insertId, ...choice };
+  },
+
+  remove: async (id_choice) => {
+    const [result] = await connection.execute(
+      "DELETE FROM choices WHERE id_choice = ?",
+      [id_choice]
+    );
+    return result.affectedRows > 0;
+  },
+};
+
+export default Choice;

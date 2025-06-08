@@ -1,33 +1,43 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config/database");
+import connection from "../config/database.js";
 
-const Question = sequelize.define(
-  "questions",
-  {
-    id_question: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    id_exam: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    statement: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    answer_key: {
-      type: DataTypes.CHAR(1),
-      allowNull: false,
-      validate: {
-        isIn: [["A", "B", "C", "D", "E"]],
-      },
-    },
+const Question = {
+  getAll: async () => {
+    const [rows] = await connection.execute("SELECT * FROM questions");
+    return rows;
   },
-  {
-    timestamps: false,
-  }
-);
 
-module.exports = Question;
+  getById: async (id_question) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM questions WHERE id_question = ?",
+      [id_question]
+    );
+    return rows[0];
+  },
+
+  getByExam: async (id_exam) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM questions WHERE id_exam = ?",
+      [id_exam]
+    );
+    return rows;
+  },
+
+  create: async (question) => {
+    const { id_exam, statement, answer_key } = question;
+    const [result] = await connection.execute(
+      "INSERT INTO questions (id_exam, statement, answer_key) VALUES (?, ?, ?)",
+      [id_exam, statement, answer_key]
+    );
+    return { id_question: result.insertId, ...question };
+  },
+
+  remove: async (id_question) => {
+    const [result] = await connection.execute(
+      "DELETE FROM questions WHERE id_question = ?",
+      [id_question]
+    );
+    return result.affectedRows > 0;
+  },
+};
+
+export default Question;
