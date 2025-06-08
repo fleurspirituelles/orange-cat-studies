@@ -23,10 +23,10 @@ const Answer = {
   },
 
   create: async (answer) => {
-    const { id_user, id_question, selected_choice, answer_time } = answer;
+    const { id_user, id_question, selected_choice } = answer;
     const [result] = await connection.execute(
-      "INSERT INTO answers (id_user, id_question, selected_choice, answer_time, answer_date) VALUES (?, ?, ?, ?, NOW())",
-      [id_user, id_question, selected_choice, answer_time]
+      "INSERT INTO answers (id_user, id_question, selected_choice, answer_date) VALUES (?, ?, ?, ?, NOW())",
+      [id_user, id_question, selected_choice]
     );
     return { id_answer: result.insertId, ...answer };
   },
