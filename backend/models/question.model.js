@@ -2,8 +2,42 @@ import connection from "../config/database.js";
 
 const Question = {
   getAll: async () => {
-    const [rows] = await connection.execute("SELECT * FROM questions");
-    return rows;
+    const [rows] = await connection.execute(`
+      SELECT
+        q.id_question,
+        q.id_exam,
+        q.statement,
+        q.answer_key,
+        e.exam_name,
+        e.board,
+        e.year,
+        c.letter,
+        c.description
+      FROM questions q
+      JOIN choices c ON c.id_question = q.id_question
+      JOIN exams e ON q.id_exam = e.id_exam
+      ORDER BY q.id_question, c.letter
+    `);
+    const map = {};
+    for (const row of rows) {
+      if (!map[row.id_question]) {
+        map[row.id_question] = {
+          id_question: row.id_question,
+          id_exam: row.id_exam,
+          statement: row.statement,
+          answer_key: row.answer_key,
+          exam_name: row.exam_name,
+          board: row.board,
+          year: row.year,
+          choices: [],
+        };
+      }
+      map[row.id_question].choices.push({
+        letter: row.letter,
+        description: row.description,
+      });
+    }
+    return Object.values(map);
   },
 
   getById: async (id_question) => {
@@ -12,14 +46,6 @@ const Question = {
       [id_question]
     );
     return rows[0];
-  },
-
-  getByExam: async (id_exam) => {
-    const [rows] = await connection.execute(
-      "SELECT * FROM questions WHERE id_exam = ?",
-      [id_exam]
-    );
-    return rows;
   },
 
   create: async (question) => {
