@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import AuthPage from "./pages/AuthPage";
 import AddExamPage from "./pages/AddExamPage";
+import AddQuestionPage from "./pages/AddQuestionPage";
 import QuestionsPage from "./pages/QuestionsPage";
 import ProtectedRoute from "./lib/ProtectedRoute";
 
@@ -15,6 +16,14 @@ function App() {
         element={
           <ProtectedRoute>
             <AddExamPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/add-question"
+        element={
+          <ProtectedRoute>
+            <AddQuestionPage />
           </ProtectedRoute>
         }
       />
