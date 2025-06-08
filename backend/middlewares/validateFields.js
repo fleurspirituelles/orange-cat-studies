@@ -14,4 +14,4 @@ function validateFields(requiredFields) {
   };
 }
 
-module.exports = validateFields;
+export default validateFields;
