@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/Button";
@@ -23,6 +24,7 @@ export default function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
   const [correctAnswers, setCorrectAnswers] = useState<boolean[] | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get<Question[]>("http://localhost:5000/questions").then((res) => {
@@ -53,8 +55,20 @@ export default function QuestionsPage() {
     setCorrectAnswers(results);
   };
 
-  const handleEntregar = (): void => {
-    alert("Questões entregues!");
+  const handleEntregar = async (): Promise<void> => {
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    await Promise.all(
+      questions.map((q, i) => {
+        const sel = selectedOptions[i];
+        const letter = sel >= 0 ? q.choices[sel].letter : "";
+        return axios.post("http://localhost:5000/answers", {
+          id_user: user.id_user,
+          id_question: q.id_question,
+          selected_choice: letter,
+        });
+      })
+    );
+    navigate("/comics");
   };
 
   return (
@@ -75,7 +89,6 @@ export default function QuestionsPage() {
                   const correctLetter = q.answer_key;
                   const baseClass =
                     "rounded-lg border px-4 py-4 text-sm font-medium transition-all duration-200 text-left";
-
                   let variantClass = "";
                   if (correctAnswers) {
                     if (choice.letter === correctLetter) {
@@ -90,7 +103,6 @@ export default function QuestionsPage() {
                       ? "bg-orange-500 text-white border-orange-500"
                       : "bg-white text-gray-700 border-gray-200 hover:border-orange-500";
                   }
-
                   return (
                     <button
                       key={choice.letter}
@@ -107,7 +119,6 @@ export default function QuestionsPage() {
               </div>
             </div>
           ))}
-
           <div className="flex gap-4 justify-center">
             <Button onClick={handleCorrigir}>Corrigir</Button>
             <Button onClick={handleEntregar}>Entregar</Button>
