@@ -1,6 +1,6 @@
 import db from "../config/database.js";
 
-export const registerUser = async (req, res) => {
+async function registerUser(req, res) {
   const { name, email, password } = req.body;
 
   try {
@@ -26,4 +26,6 @@ export const registerUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error registering user", error });
   }
-};
+}
+
+export { registerUser };

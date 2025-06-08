@@ -1,17 +1,17 @@
-const Album = require("../models/album.model");
+import Album from "../models/album.model.js";
 
-async function getAll(req, res) {
+export async function getAll(req, res) {
   try {
-    const albums = await Album.findAll();
+    const albums = await Album.getAll();
     res.status(200).json(albums);
   } catch {
     res.status(500).json({ error: "Failed to retrieve albums." });
   }
 }
 
-async function getById(req, res) {
+export async function getById(req, res) {
   try {
-    const album = await Album.findByPk(req.params.id);
+    const album = await Album.getById(req.params.id);
     if (!album) return res.status(404).json({ error: "Album not found." });
     res.status(200).json(album);
   } catch {
@@ -19,35 +19,31 @@ async function getById(req, res) {
   }
 }
 
-async function create(req, res) {
+export async function create(req, res) {
   try {
-    const album = await Album.create(req.body);
-    res.status(201).json(album);
+    const newAlbum = await Album.create(req.body);
+    res.status(201).json(newAlbum);
   } catch {
     res.status(400).json({ error: "Failed to create album." });
   }
 }
 
-async function update(req, res) {
+export async function update(req, res) {
   try {
-    const album = await Album.findByPk(req.params.id);
-    if (!album) return res.status(404).json({ error: "Album not found." });
-    await album.update(req.body);
-    res.status(200).json(album);
+    const updated = await Album.update(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ error: "Album not found." });
+    res.status(200).json({ message: "Album updated successfully." });
   } catch {
     res.status(400).json({ error: "Failed to update album." });
   }
 }
 
-async function remove(req, res) {
+export async function remove(req, res) {
   try {
-    const album = await Album.findByPk(req.params.id);
-    if (!album) return res.status(404).json({ error: "Album not found." });
-    await album.destroy();
+    const deleted = await Album.remove(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Album not found." });
     res.status(204).end();
   } catch {
     res.status(500).json({ error: "Failed to delete album." });
   }
 }
-
-module.exports = { getAll, getById, create, update, remove };

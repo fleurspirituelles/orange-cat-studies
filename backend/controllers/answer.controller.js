@@ -1,17 +1,17 @@
-const Answer = require("../models/answer.model");
+import Answer from "../models/answer.model.js";
 
-async function getAll(req, res) {
+export async function getAll(req, res) {
   try {
-    const answers = await Answer.findAll();
+    const answers = await Answer.getAll();
     res.status(200).json(answers);
   } catch {
     res.status(500).json({ error: "Failed to retrieve answers." });
   }
 }
 
-async function getById(req, res) {
+export async function getById(req, res) {
   try {
-    const answer = await Answer.findByPk(req.params.id);
+    const answer = await Answer.getById(req.params.id);
     if (!answer) return res.status(404).json({ error: "Answer not found." });
     res.status(200).json(answer);
   } catch {
@@ -19,35 +19,31 @@ async function getById(req, res) {
   }
 }
 
-async function create(req, res) {
+export async function create(req, res) {
   try {
-    const answer = await Answer.create(req.body);
-    res.status(201).json(answer);
+    const newAnswer = await Answer.create(req.body);
+    res.status(201).json(newAnswer);
   } catch {
     res.status(400).json({ error: "Failed to create answer." });
   }
 }
 
-async function update(req, res) {
+export async function update(req, res) {
   try {
-    const answer = await Answer.findByPk(req.params.id);
-    if (!answer) return res.status(404).json({ error: "Answer not found." });
-    await answer.update(req.body);
-    res.status(200).json(answer);
+    const updated = await Answer.update(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ error: "Answer not found." });
+    res.status(200).json({ message: "Answer updated successfully." });
   } catch {
     res.status(400).json({ error: "Failed to update answer." });
   }
 }
 
-async function remove(req, res) {
+export async function remove(req, res) {
   try {
-    const answer = await Answer.findByPk(req.params.id);
-    if (!answer) return res.status(404).json({ error: "Answer not found." });
-    await answer.destroy();
+    const deleted = await Answer.remove(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Answer not found." });
     res.status(204).end();
   } catch {
     res.status(500).json({ error: "Failed to delete answer." });
   }
 }
-
-module.exports = { getAll, getById, create, update, remove };
