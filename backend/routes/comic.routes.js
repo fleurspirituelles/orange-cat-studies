@@ -1,18 +1,12 @@
 import express from "express";
-import {
-  getAll,
-  getById,
-  getByUser,
-  create,
-  remove,
-} from "../controllers/comic.controller.js";
+import * as controller from "../controllers/comic.controller.js";
 
 const router = express.Router();
 
-router.get("/", getAll);
-router.get("/:id", getById);
-router.get("/user/:id_user", getByUser);
-router.post("/", create);
-router.delete("/:id", remove);
+router.get("/", controller.getAll);
+router.get("/:id", controller.getById);
+router.get("/user/:id_user", controller.getByUser);
+router.post("/", controller.create);
+router.delete("/:id", controller.remove);
 
 export default router;

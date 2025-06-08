@@ -1,10 +1,10 @@
 import express from "express";
-import { create, getAll, getById } from "../controllers/exam.controller.js";
+import * as controller from "../controllers/exam.controller.js";
 
 const router = express.Router();
 
-router.post("/", create);
-router.get("/", getAll);
-router.get("/:id", getById);
+router.post("/", controller.create);
+router.get("/", controller.getAll);
+router.get("/:id", controller.getById);
 
 export default router;

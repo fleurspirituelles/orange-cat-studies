@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import * as controller from "../controllers/review.controller.js";
+import validateFields from "../middlewares/validateFields.js";
+
 const router = express.Router();
-const controller = require("../controllers/review.controller");
-const validateFields = require("../middlewares/validateFields");
 
 router.get("/", controller.getAll);
 router.get("/:id", controller.getById);
@@ -9,4 +10,4 @@ router.post("/", validateFields(["id_user", "id_question"]), controller.create);
 router.put("/:id", controller.update);
 router.delete("/:id", controller.remove);
 
-module.exports = router;
+export default router;

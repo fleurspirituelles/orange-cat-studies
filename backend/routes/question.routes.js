@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import * as controller from "../controllers/question.controller.js";
+import validateFields from "../middlewares/validateFields.js";
+
 const router = express.Router();
-const controller = require("../controllers/question.controller");
-const validateFields = require("../middlewares/validateFields");
 
 router.get("/", controller.getAll);
 router.get("/:id", controller.getById);
@@ -13,4 +14,4 @@ router.post(
 router.put("/:id", controller.update);
 router.delete("/:id", controller.remove);
 
-module.exports = router;
+export default router;
