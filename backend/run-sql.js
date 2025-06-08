@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const mysql = require("mysql2");
 
-const schemaPath = path.join(__dirname, "database", "mysql", "schema.sql");
+const schemaPath = path.join(__dirname, "database", "schema.sql");
 const schema = fs.readFileSync(schemaPath, "utf-8");
 
 const connection = mysql.createConnection({
