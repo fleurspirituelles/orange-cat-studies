@@ -1,4 +1,4 @@
-const mysql = require("mysql2/promise");
+import mysql from "mysql2/promise";
 
 const connection = mysql.createPool({
   host: "localhost",
@@ -7,4 +7,4 @@ const connection = mysql.createPool({
   database: "purrfect_studies",
 });
 
-module.exports = connection;
+export default connection;
