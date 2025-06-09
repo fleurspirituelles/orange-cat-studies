@@ -23,7 +23,7 @@ function todayIsoLocal() {
   return `${yyyy}-${MM}-${dd}`;
 }
 
-export async function getAll(res) {
+export async function getAll(req, res) {
   try {
     const answers = await Answer.getAll();
     res.status(200).json(answers);
@@ -55,69 +55,67 @@ export async function create(req, res) {
       selected_choice,
     });
 
+    const today = todayIsoLocal();
+    const [yyyy, MM] = today.split("-");
+    const startDate = `${yyyy}-${MM}-01`;
+    const endDate = `${yyyy}-${MM}-${new Date(yyyy, +MM, 0).getDate()}`;
+    const [[{ cnt: monthlyCount }]] = await connection.execute(
+      "SELECT COUNT(*) AS cnt FROM answers WHERE id_user = ? AND DATE(answer_date) BETWEEN ? AND ?",
+      [id_user, startDate, today]
+    );
+
     const [[{ cnt: todayCount }]] = await connection.execute(
       "SELECT COUNT(*) AS cnt FROM answers WHERE id_user = ? AND DATE(answer_date) = CURDATE()",
       [id_user]
     );
+    if (todayCount >= 10 && !(await Comic.existsForDate(id_user, today))) {
+      const { year, month, day } = randomComicDate();
+      const yy = String(year).slice(-2);
+      const filename = `ga${yy}${month}${day}.gif`;
+      const imageUrl = `https://picayune.uclick.com/comics/ga/${year}/${filename}`;
+      await Comic.create({
+        id_user,
+        comic_date: today,
+        image_url: imageUrl,
+        answered_count: todayCount,
+      });
+    }
 
-    if (todayCount >= 10) {
-      const today = todayIsoLocal();
+    const [[{ cnt: correctCount }]] = await connection.execute(
+      `SELECT COUNT(*) AS cnt
+       FROM answers a
+       JOIN questions q ON a.id_question = q.id_question
+       WHERE a.id_user = ?
+         AND DATE(a.answer_date) BETWEEN ? AND ?
+         AND a.selected_choice = q.answer_key`,
+      [id_user, startDate, today]
+    );
+    let perf = await Performance.getByPeriod(id_user, startDate, endDate);
+    if (perf) {
+      await Performance.update(perf.id_performance, {
+        question_count: monthlyCount,
+        correct_count: correctCount,
+      });
+    } else {
+      await Performance.create({
+        id_user,
+        start_date: startDate,
+        end_date: endDate,
+        question_count: monthlyCount,
+        correct_count: correctCount,
+      });
+    }
 
-      if (!(await Comic.existsForDate(id_user, today))) {
-        const { year, month, day } = randomComicDate();
-        const yy = String(year).slice(-2);
-        const filename = `ga${yy}${month}${day}.gif`;
-        const imageUrl = `https://picayune.uclick.com/comics/ga/${year}/${filename}`;
-
-        await Comic.create({
-          id_user,
-          comic_date: today,
-          image_url: imageUrl,
-          answered_count: todayCount,
-        });
-      }
-
-      const [yyyy, MM] = today.split("-");
-      const startDate = `${yyyy}-${MM}-01`;
-      const endDate = `${yyyy}-${MM}-${new Date(yyyy, +MM, 0).getDate()}`;
-
-      const [[{ cnt: correctCount }]] = await connection.execute(
-        `SELECT COUNT(*) AS cnt
-         FROM answers a
-         JOIN questions q ON a.id_question = q.id_question
-         WHERE a.id_user = ?
-           AND DATE(a.answer_date) BETWEEN ? AND ?
-           AND a.selected_choice = q.answer_key`,
-        [id_user, startDate, today]
-      );
-
-      let perf = await Performance.getByPeriod(id_user, startDate, endDate);
-      if (perf) {
-        await Performance.update(perf.id_performance, {
-          question_count: todayCount,
-          correct_count: correctCount,
-        });
-      } else {
-        await Performance.create({
-          id_user,
-          start_date: startDate,
-          end_date: endDate,
-          question_count: todayCount,
-          correct_count: correctCount,
-        });
-      }
-
-      const monthNum = +MM,
-        yearNum = +yyyy;
-      if (!(await Album.getByMonth(id_user, monthNum, yearNum))) {
-        const totalDays = new Date(yyyy, monthNum, 0).getDate();
-        await Album.create({
-          id_user,
-          month: monthNum,
-          year: yearNum,
-          total_days: totalDays,
-        });
-      }
+    const monthNum = +MM,
+      yearNum = +yyyy;
+    if (!(await Album.getByMonth(id_user, monthNum, yearNum))) {
+      const totalDays = new Date(yyyy, monthNum, 0).getDate();
+      await Album.create({
+        id_user,
+        month: monthNum,
+        year: yearNum,
+        total_days: totalDays,
+      });
     }
 
     res.status(201).json(newAnswer);
