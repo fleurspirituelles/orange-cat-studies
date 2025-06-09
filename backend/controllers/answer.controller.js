@@ -13,6 +13,14 @@ function randomComicDate() {
   return { year, month, day };
 }
 
+function todayIsoLocal() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export async function getAll(req, res) {
   try {
     const answers = await Answer.getAll();
@@ -52,18 +60,14 @@ export async function create(req, res) {
     const todayCount = countRows[0].cnt;
 
     if (todayCount >= 10) {
-      const todayIso = new Date().toISOString().slice(0, 10);
-      const already = await Comic.existsForDate(id_user, todayIso);
+      const today = todayIsoLocal();
+      const already = await Comic.existsForDate(id_user, today);
       if (!already) {
         const { year, month, day } = randomComicDate();
         const yy = String(year).slice(-2);
         const filename = `ga${yy}${month}${day}.gif`;
         const imageUrl = `https://picayune.uclick.com/comics/ga/${year}/${filename}`;
-        await Comic.create({
-          id_user,
-          comic_date: todayIso,
-          image_url: imageUrl,
-        });
+        await Comic.create({ id_user, comic_date: today, image_url: imageUrl });
       }
     }
 
@@ -90,5 +94,18 @@ export async function remove(req, res) {
     res.status(204).end();
   } catch {
     res.status(500).json({ error: "Failed to delete answer." });
+  }
+}
+
+export async function countByUserDate(req, res) {
+  const { id_user, date } = req.params;
+  try {
+    const [[{ cnt }]] = await connection.execute(
+      "SELECT COUNT(*) AS cnt FROM answers WHERE id_user = ? AND DATE(answer_date) = ?",
+      [id_user, date]
+    );
+    res.status(200).json({ count: cnt });
+  } catch {
+    res.status(500).json({ error: "Failed to count answers." });
   }
 }
