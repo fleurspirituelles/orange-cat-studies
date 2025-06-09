@@ -65,7 +65,7 @@ export default function AddQuestionPage() {
         description: E,
       }),
     ]);
-    alert("Questão cadastrada com sucesso");
+    alert("Questão cadastrada com sucesso!");
     setForm({
       statement: "",
       A: "",
