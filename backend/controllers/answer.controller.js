@@ -23,7 +23,7 @@ function todayIsoLocal() {
   return `${yyyy}-${MM}-${dd}`;
 }
 
-export async function getAll(req, res) {
+export async function getAll(res) {
   try {
     const answers = await Answer.getAll();
     res.status(200).json(answers);
@@ -47,6 +47,7 @@ export async function create(req, res) {
   if (!id_user || !id_question || !selected_choice) {
     return res.status(400).json({ message: "Missing required fields." });
   }
+
   try {
     const newAnswer = await Answer.create({
       id_user,
@@ -61,19 +62,25 @@ export async function create(req, res) {
 
     if (todayCount >= 10) {
       const today = todayIsoLocal();
+
       if (!(await Comic.existsForDate(id_user, today))) {
         const { year, month, day } = randomComicDate();
         const yy = String(year).slice(-2);
         const filename = `ga${yy}${month}${day}.gif`;
         const imageUrl = `https://picayune.uclick.com/comics/ga/${year}/${filename}`;
-        await Comic.create({ id_user, comic_date: today, image_url: imageUrl });
+
+        await Comic.create({
+          id_user,
+          comic_date: today,
+          image_url: imageUrl,
+          answered_count: todayCount,
+        });
       }
 
       const [yyyy, MM] = today.split("-");
       const startDate = `${yyyy}-${MM}-01`;
       const endDate = `${yyyy}-${MM}-${new Date(yyyy, +MM, 0).getDate()}`;
 
-      const totalAnswered = todayCount;
       const [[{ cnt: correctCount }]] = await connection.execute(
         `SELECT COUNT(*) AS cnt
          FROM answers a
@@ -87,7 +94,7 @@ export async function create(req, res) {
       let perf = await Performance.getByPeriod(id_user, startDate, endDate);
       if (perf) {
         await Performance.update(perf.id_performance, {
-          question_count: totalAnswered,
+          question_count: todayCount,
           correct_count: correctCount,
         });
       } else {
@@ -95,7 +102,7 @@ export async function create(req, res) {
           id_user,
           start_date: startDate,
           end_date: endDate,
-          question_count: totalAnswered,
+          question_count: todayCount,
           correct_count: correctCount,
         });
       }

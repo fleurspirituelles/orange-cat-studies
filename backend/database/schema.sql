@@ -80,6 +80,7 @@ CREATE TABLE comics (
     id_user INT NOT NULL,
     comic_date DATE NOT NULL,
     image_url VARCHAR(255) NOT NULL,
+    answered_count INT NOT NULL DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE ON UPDATE CASCADE,
     UNIQUE KEY uq_comics_user_date (id_user, comic_date)

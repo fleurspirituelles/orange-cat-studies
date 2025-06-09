@@ -39,13 +39,13 @@ const Comic = {
   },
 
   create: async (comic) => {
-    const { id_user, comic_date, image_url } = comic;
+    const { id_user, comic_date, image_url, answered_count } = comic;
     try {
       const [result] = await connection.execute(
-        "INSERT INTO comics (id_user, comic_date, image_url) VALUES (?, ?, ?)",
-        [id_user, comic_date, image_url]
+        "INSERT INTO comics (id_user, comic_date, image_url, answered_count) VALUES (?, ?, ?, ?)",
+        [id_user, comic_date, image_url, answered_count]
       );
-      return { id_comic: result.insertId, id_user, comic_date, image_url };
+      return { id_comic: result.insertId, ...comic };
     } catch (err) {
       if (err.code === "ER_DUP_ENTRY") {
         return await Comic.getByDate(id_user, comic_date);
