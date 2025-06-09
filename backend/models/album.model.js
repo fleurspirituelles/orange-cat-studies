@@ -11,7 +11,7 @@ const Album = {
       "SELECT * FROM albums WHERE id_album = ?",
       [id_album]
     );
-    return rows[0];
+    return rows[0] || null;
   },
 
   getByUser: async (id_user) => {
@@ -20,6 +20,14 @@ const Album = {
       [id_user]
     );
     return rows;
+  },
+
+  getByMonth: async (id_user, month, year) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM albums WHERE id_user = ? AND month = ? AND year = ?",
+      [id_user, month, year]
+    );
+    return rows[0] || null;
   },
 
   create: async (album) => {

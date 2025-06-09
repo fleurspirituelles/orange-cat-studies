@@ -4,6 +4,7 @@ import validateFields from "../middlewares/validateFields.js";
 
 const router = express.Router();
 
+router.get("/count/:id_user/:date", controller.countByUserDate);
 router.get("/", controller.getAll);
 router.get("/:id", controller.getById);
 router.post(

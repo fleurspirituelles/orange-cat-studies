@@ -1,24 +1,26 @@
 import Answer from "../models/answer.model.js";
 import Comic from "../models/comic.model.js";
+import Performance from "../models/performance.model.js";
+import Album from "../models/album.model.js";
 import connection from "../config/database.js";
 
 function randomComicDate() {
   const start = new Date(1980, 0, 1).getTime();
   const end = new Date(2024, 11, 31).getTime();
-  const ts = start + Math.random() * (end - start);
-  const d = new Date(ts);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return { year, month, day };
+  const d = new Date(start + Math.random() * (end - start));
+  return {
+    year: d.getFullYear(),
+    month: String(d.getMonth() + 1).padStart(2, "0"),
+    day: String(d.getDate()).padStart(2, "0"),
+  };
 }
 
 function todayIsoLocal() {
   const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  const yyyy = d.getFullYear();
+  const MM = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${MM}-${dd}`;
 }
 
 export async function getAll(req, res) {
@@ -45,7 +47,6 @@ export async function create(req, res) {
   if (!id_user || !id_question || !selected_choice) {
     return res.status(400).json({ message: "Missing required fields." });
   }
-
   try {
     const newAnswer = await Answer.create({
       id_user,
@@ -53,21 +54,62 @@ export async function create(req, res) {
       selected_choice,
     });
 
-    const [countRows] = await connection.execute(
+    const [[{ cnt: todayCount }]] = await connection.execute(
       "SELECT COUNT(*) AS cnt FROM answers WHERE id_user = ? AND DATE(answer_date) = CURDATE()",
       [id_user]
     );
-    const todayCount = countRows[0].cnt;
 
     if (todayCount >= 10) {
       const today = todayIsoLocal();
-      const already = await Comic.existsForDate(id_user, today);
-      if (!already) {
+      if (!(await Comic.existsForDate(id_user, today))) {
         const { year, month, day } = randomComicDate();
         const yy = String(year).slice(-2);
         const filename = `ga${yy}${month}${day}.gif`;
         const imageUrl = `https://picayune.uclick.com/comics/ga/${year}/${filename}`;
         await Comic.create({ id_user, comic_date: today, image_url: imageUrl });
+      }
+
+      const [yyyy, MM] = today.split("-");
+      const startDate = `${yyyy}-${MM}-01`;
+      const endDate = `${yyyy}-${MM}-${new Date(yyyy, +MM, 0).getDate()}`;
+
+      const totalAnswered = todayCount;
+      const [[{ cnt: correctCount }]] = await connection.execute(
+        `SELECT COUNT(*) AS cnt
+         FROM answers a
+         JOIN questions q ON a.id_question = q.id_question
+         WHERE a.id_user = ?
+           AND DATE(a.answer_date) BETWEEN ? AND ?
+           AND a.selected_choice = q.answer_key`,
+        [id_user, startDate, today]
+      );
+
+      let perf = await Performance.getByPeriod(id_user, startDate, endDate);
+      if (perf) {
+        await Performance.update(perf.id_performance, {
+          question_count: totalAnswered,
+          correct_count: correctCount,
+        });
+      } else {
+        await Performance.create({
+          id_user,
+          start_date: startDate,
+          end_date: endDate,
+          question_count: totalAnswered,
+          correct_count: correctCount,
+        });
+      }
+
+      const monthNum = +MM,
+        yearNum = +yyyy;
+      if (!(await Album.getByMonth(id_user, monthNum, yearNum))) {
+        const totalDays = new Date(yyyy, monthNum, 0).getDate();
+        await Album.create({
+          id_user,
+          month: monthNum,
+          year: yearNum,
+          total_days: totalDays,
+        });
       }
     }
 
