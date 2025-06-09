@@ -20,7 +20,7 @@ export default function ComicsPage() {
     axios
       .get<Comic[]>(`http://localhost:5000/comics/user/${user.id_user}`)
       .then((res) => setComics(res.data))
-      .catch((err) => console.error(err));
+      .catch(console.error);
   }, []);
 
   return (
@@ -35,7 +35,11 @@ export default function ComicsPage() {
                 <img
                   src={comic.image_url}
                   alt={`Tirinha de ${date}`}
-                  className="w-full rounded-lg shadow"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "/images/placeholder-comic.png";
+                  }}
+                  className="w-full rounded-lg shadow object-contain"
                 />
                 <p className="text-sm text-gray-600 text-center">{date}</p>
               </div>

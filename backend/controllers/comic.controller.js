@@ -1,20 +1,5 @@
 import Comic from "../models/comic.model.js";
-
-function extractCodeFromUrl(url) {
-  const match = url.match(/ga(\d{2})(\d{2})(\d{2})/);
-  if (!match) return null;
-  return `ga${match[1]}${match[2]}${match[3]}`;
-}
-
-function extractDateFromUrl(url) {
-  const match = url.match(/ga(\d{2})(\d{2})(\d{2})/);
-  if (!match) return null;
-  const yearPrefix = parseInt(match[1], 10) < 70 ? "20" : "19";
-  const year = parseInt(`${yearPrefix}${match[1]}`, 10);
-  const month = parseInt(match[2], 10);
-  const day = parseInt(match[3], 10);
-  return { year, month, day };
-}
+import axios from "axios";
 
 export async function getAll(req, res) {
   const comics = await Comic.getAll();
@@ -40,27 +25,24 @@ export async function getByDate(req, res) {
 }
 
 export async function create(req, res) {
-  const { url, id_user } = req.body;
-  const code = extractCodeFromUrl(url);
-  const date = extractDateFromUrl(url);
-  if (!code || !date) {
-    return res.status(400).json({ message: "Invalid comic URL." });
-  }
-  const all = await Comic.getByUser(id_user);
-  if (all.find((c) => c.code === code)) {
-    return res
-      .status(409)
-      .json({ message: "Comic already claimed by this user." });
-  }
-  const newComic = {
-    id_user,
-    comic_date: `${date.year}-${String(date.month).padStart(2, "0")}-${String(
-      date.day
-    ).padStart(2, "0")}`,
-    image_url: url,
-  };
-  const created = await Comic.create(newComic);
+  const { id_user, comic_date, image_url } = req.body;
+  const created = await Comic.create({ id_user, comic_date, image_url });
   res.status(201).json(created);
+}
+
+export async function fetchImage(req, res) {
+  const { comic_date } = req.params;
+  const [year, month, day] = comic_date.split("-");
+  const yy = year.slice(-2);
+  const filename = `ga${yy}${month}${day}.gif`;
+  const remoteUrl = `http://pt.jikos.cz/garfield/${year}/${filename}`;
+  try {
+    const response = await axios.get(remoteUrl, { responseType: "stream" });
+    res.setHeader("Content-Type", "image/gif");
+    response.data.pipe(res);
+  } catch {
+    res.sendStatus(404);
+  }
 }
 
 export async function remove(req, res) {

@@ -2,6 +2,17 @@ import Answer from "../models/answer.model.js";
 import Comic from "../models/comic.model.js";
 import connection from "../config/database.js";
 
+function randomComicDate() {
+  const start = new Date(1980, 0, 1).getTime();
+  const end = new Date(2024, 11, 31).getTime();
+  const ts = start + Math.random() * (end - start);
+  const d = new Date(ts);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return { year, month, day };
+}
+
 export async function getAll(req, res) {
   try {
     const answers = await Answer.getAll();
@@ -26,6 +37,7 @@ export async function create(req, res) {
   if (!id_user || !id_question || !selected_choice) {
     return res.status(400).json({ message: "Missing required fields." });
   }
+
   try {
     const newAnswer = await Answer.create({
       id_user,
@@ -40,13 +52,18 @@ export async function create(req, res) {
     const todayCount = countRows[0].cnt;
 
     if (todayCount >= 10) {
-      const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
-      const exists = await Comic.existsForDate(id_user, today);
-      if (!exists) {
-        const [yy, mm, dd] = today.split("-");
-        const shortYear = yy.slice(-2);
-        const imageUrl = `https://picayune.uclick.com/comics/ga/${yy}/ga${shortYear}${mm}${dd}.gif`;
-        await Comic.create({ id_user, comic_date: today, image_url: imageUrl });
+      const todayIso = new Date().toISOString().slice(0, 10);
+      const already = await Comic.existsForDate(id_user, todayIso);
+      if (!already) {
+        const { year, month, day } = randomComicDate();
+        const yy = String(year).slice(-2);
+        const filename = `ga${yy}${month}${day}.gif`;
+        const imageUrl = `https://picayune.uclick.com/comics/ga/${year}/${filename}`;
+        await Comic.create({
+          id_user,
+          comic_date: todayIso,
+          image_url: imageUrl,
+        });
       }
     }
 
