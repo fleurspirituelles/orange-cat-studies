@@ -23,28 +23,86 @@ export default function ComicsPage() {
       .catch(console.error);
   }, []);
 
+  const groups = comics.reduce<Record<string, Comic[]>>((acc, c) => {
+    const ym = c.comic_date.slice(0, 7);
+    (acc[ym] ||= []).push(c);
+    return acc;
+  }, {});
+
+  const monthNames = [
+    "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro",
+  ];
+
   return (
     <>
       <Navbar />
-      <main className="bg-[#f8f8f8] min-h-screen px-4 py-12">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {comics.map((comic) => {
-            const date = new Date(comic.comic_date).toLocaleDateString("pt-BR");
-            return (
-              <div key={comic.id_comic} className="space-y-2">
-                <img
-                  src={comic.image_url}
-                  alt={`Tirinha de ${date}`}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = "/images/placeholder-comic.png";
-                  }}
-                  className="w-full rounded-lg shadow object-contain"
-                />
-                <p className="text-sm text-gray-600 text-center">{date}</p>
-              </div>
-            );
-          })}
+      <main className="bg-[#f8f8f8] min-h-screen px-6 py-12">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-bold mb-2">Álbuns de Tirinhas</h1>
+          <p className="text-gray-700 mb-8">
+            Colecione tirinhas do Garfield como recompensas diárias ao concluir
+            seus desafios! Acompanhe seu progresso mês a mês, desbloqueie novas
+            tirinhas e complete seu álbum de figurinhas digital.
+          </p>
+          <div className="space-y-8">
+            {Object.entries(groups).map(([ym, list]) => {
+              const [year, month] = ym.split("-");
+              const daysInMonth = new Date(+year, +month, 0).getDate();
+              const start = `01/${month}`;
+              const end = `${daysInMonth}/${month}`;
+              const monthIndex = +month - 1;
+              const monthName = monthNames[monthIndex] || month;
+
+              return (
+                <div key={ym} className="bg-white border rounded-lg p-6 shadow">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold">{`${start} – ${end}`}</h2>
+                      <p className="text-sm text-gray-600">
+                        Veja as tirinhas que você desbloqueou em {monthName}.
+                        Continue firme e volte todos os dias para completar o
+                        álbum!
+                      </p>
+                    </div>
+                    <button className="px-4 py-2 bg-orange-500 text-white rounded">
+                      Ver tirinhas
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    {list.slice(-2).map((comic) => {
+                      const date = new Date(
+                        comic.comic_date
+                      ).toLocaleDateString("pt-BR");
+                      return (
+                        <img
+                          key={comic.id_comic}
+                          src={comic.image_url}
+                          alt={`Tirinha de ${date}`}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src =
+                              "/images/placeholder-comic.png";
+                          }}
+                          className="w-full h-48 object-cover rounded-lg shadow-sm"
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </main>
       <Footer />
