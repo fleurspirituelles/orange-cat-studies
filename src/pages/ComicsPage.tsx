@@ -11,10 +11,23 @@ interface Comic {
   image_url: string;
 }
 
-export default function ComicsPage() {
-  const [comics, setComics] = useState<Comic[]>([]);
-  const [groups, setGroups] = useState<Record<string, Comic[]>>({});
+interface Album {
+  total_days: number;
+}
 
+interface Performance {
+  question_count: number;
+  correct_count: number;
+}
+
+export default function ComicsPage() {
+  const [groups, setGroups] = useState<Record<string, Comic[]>>({});
+  const [stats, setStats] = useState<
+    Record<
+      string,
+      { unlocked: number; totalDays: number; correct: number; possible: number }
+    >
+  >({});
   const [modalOpen, setModalOpen] = useState(false);
   const [modalComics, setModalComics] = useState<Comic[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -24,34 +37,65 @@ export default function ComicsPage() {
     const stored = localStorage.getItem("user");
     if (!stored) return;
     const user = JSON.parse(stored);
+
     axios
       .get<Comic[]>(`http://localhost:5000/comics/user/${user.id_user}`)
       .then((res) => {
-        setComics(res.data);
         const g: Record<string, Comic[]> = {};
         res.data.forEach((c) => {
           const ym = c.comic_date.slice(0, 7);
           (g[ym] ||= []).push(c);
         });
         setGroups(g);
+
+        Object.entries(g).forEach(([ym, list]) => {
+          const [year, month] = ym.split("-");
+          const daysInMonth = new Date(+year, +month, 0).getDate();
+          const start = `${year}-${month}-01`;
+          const end = `${year}-${month}-${String(daysInMonth).padStart(
+            2,
+            "0"
+          )}`;
+
+          axios
+            .get<Album>(
+              `http://localhost:5000/albums/month/${user.id_user}/${month}/${year}`
+            )
+            .then((r) => {
+              const totalDays = r.data.total_days;
+              const possible = totalDays * 10;
+              setStats((old) => ({
+                ...old,
+                [ym]: {
+                  unlocked: list.length,
+                  totalDays,
+                  correct: 0,
+                  possible,
+                },
+              }));
+            })
+            .catch(() => {});
+
+          axios
+            .get<Performance>(
+              `http://localhost:5000/performance/period/${user.id_user}/${start}/${end}`
+            )
+            .then((r) => {
+              setStats((old) => ({
+                ...old,
+                [ym]: {
+                  unlocked: old[ym]?.unlocked ?? list.length,
+                  totalDays: old[ym]?.totalDays ?? daysInMonth,
+                  correct: r.data.correct_count,
+                  possible: old[ym]?.possible ?? daysInMonth * 10,
+                },
+              }));
+            })
+            .catch(() => {});
+        });
       })
       .catch(console.error);
   }, []);
-
-  const monthNames = [
-    "janeiro",
-    "fevereiro",
-    "março",
-    "abril",
-    "maio",
-    "junho",
-    "julho",
-    "agosto",
-    "setembro",
-    "outubro",
-    "novembro",
-    "dezembro",
-  ];
 
   function openCarousel(list: Comic[]) {
     setModalComics(list);
@@ -70,7 +114,7 @@ export default function ComicsPage() {
           .then((r) => r.data.count)
           .catch(() => 0)
       )
-    ).then((arr) => setCounts(arr));
+    ).then(setCounts);
   }
 
   function closeCarousel() {
@@ -80,7 +124,6 @@ export default function ComicsPage() {
   function prev() {
     setCurrentIdx((i) => Math.max(0, i - 1));
   }
-
   function next() {
     setCurrentIdx((i) => Math.min(modalComics.length - 1, i + 1));
   }
@@ -90,19 +133,27 @@ export default function ComicsPage() {
       <Navbar />
       <main className="bg-[#f8f8f8] min-h-screen px-6 py-12">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Álbuns de Tirinhas</h1>
-          <p className="text-gray-700 mb-8">
-            Colecione tirinhas do Garfield como recompensas diárias ao concluir
-            seus desafios! Acompanhe seu progresso mês a mês, desbloqueie novas
-            tirinhas e complete seu álbum de figurinhas digital.
-          </p>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-4xl font-bold">Álbuns de Tirinhas</h1>
+            <p className="text-gray-600">
+              Colecione tirinhas do Garfield como recompensas diárias ao
+              concluir seus desafios!
+            </p>
+          </div>
+
           <div className="space-y-8">
             {Object.entries(groups).map(([ym, list]) => {
               const [year, month] = ym.split("-");
               const daysInMonth = new Date(+year, +month, 0).getDate();
               const start = `01/${month}`;
               const end = `${daysInMonth}/${month}`;
-              const mName = monthNames[+month - 1];
+              const s = stats[ym] || {
+                unlocked: 0,
+                totalDays: daysInMonth,
+                correct: 0,
+                possible: daysInMonth * 10,
+              };
+
               return (
                 <div key={ym} className="bg-white border rounded-lg p-6 shadow">
                   <div className="flex justify-between items-start mb-4">
@@ -111,9 +162,7 @@ export default function ComicsPage() {
                         {start} – {end}
                       </h2>
                       <p className="text-sm text-gray-600">
-                        Veja as tirinhas que você desbloqueou em {mName}.
-                        Continue firme e volte todos os dias para completar o
-                        álbum!
+                        Veja as tirinhas que você desbloqueou desse mês.
                       </p>
                     </div>
                     <button
@@ -143,11 +192,36 @@ export default function ComicsPage() {
                       );
                     })}
                   </div>
+                  <div className="grid grid-cols-3 text-center pt-4 border-t">
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {s.unlocked} / {s.totalDays}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Tirinhas desbloqueadas
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {s.unlocked} / {s.totalDays}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Total de tirinhas no mês
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {s.correct} / {s.possible}
+                      </p>
+                      <p className="text-sm text-gray-600">Questões corretas</p>
+                    </div>
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
+
         {modalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg max-w-md w-full p-4 relative">
