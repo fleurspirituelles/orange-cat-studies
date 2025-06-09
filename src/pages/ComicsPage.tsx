@@ -148,7 +148,7 @@ export default function ComicsPage() {
                         {start} – {end}
                       </h2>
                       <p className="text-sm text-gray-600">
-                        Veja as tirinhas que você desbloqueou desse mês.
+                        Veja as tirinhas que você desbloqueou esse mês.
                       </p>
                     </div>
                     <button
