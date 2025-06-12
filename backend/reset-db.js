@@ -1,19 +1,33 @@
 import fs from "fs";
 import path from "path";
+import mysql from "mysql2";
 import { fileURLToPath } from "url";
-import connection from "../config/database.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const schemaPath = path.join(__dirname, "database", "mysql", "schema.sql");
-const schema = fs.readFileSync(schemaPath, "utf8");
+const schemaPath = path.join(__dirname, "database", "schema.sql");
+const schema = fs.readFileSync(schemaPath, "utf-8");
 
-connection.query(schema, (err) => {
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "root",
+  database: "purrfect_studies",
+  multipleStatements: true,
+});
+
+connection.connect((err) => {
   if (err) {
-    console.error("Erro ao executar o schema.sql:", err.message);
-  } else {
-    console.log("Banco de dados resetado com sucesso.");
+    console.error("Erro ao conectar ao MySQL:", err.message);
+    process.exit(1);
   }
-  connection.end();
+  connection.query(schema, (err) => {
+    if (err) {
+      console.error("Erro ao executar schema.sql:", err.message);
+      process.exit(1);
+    }
+    console.log("Banco e tabelas criados com sucesso.");
+    connection.end();
+  });
 });
