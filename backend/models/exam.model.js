@@ -1,21 +1,30 @@
-import db from "../config/database.js";
+import connection from "../config/database.js";
 
-const ExamModel = {
+const Exam = {
   getAll: async () => {
-    const [rows] = await db.query("SELECT * FROM exams");
+    const [rows] = await connection.execute("SELECT * FROM exams");
     return rows;
   },
 
-  getById: async (id) => {
-    const [rows] = await db.query("SELECT * FROM exams WHERE id_exam = ?", [
-      id,
-    ]);
+  getById: async (id_exam) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM exams WHERE id_exam = ?",
+      [id_exam]
+    );
     return rows[0];
   },
 
+  getByUser: async (id_user) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM exams WHERE id_user = ? ORDER BY created_at DESC",
+      [id_user]
+    );
+    return rows;
+  },
+
   create: async ({ id_user, exam_name, board, level, year, position }) => {
-    const [result] = await db.query(
-      "INSERT INTO exams (id_user, exam_name, board, level, year, position) VALUES (?, ?, ?, ?, ?, ?)",
+    const [result] = await connection.execute(
+      "INSERT INTO exams (id_user, exam_name, board, level, year, position, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())",
       [id_user, exam_name, board, level, year, position]
     );
     return {
@@ -29,21 +38,13 @@ const ExamModel = {
     };
   },
 
-  update: async (id, { id_user, exam_name, board, level, year, position }) => {
-    const [result] = await db.query(
-      "UPDATE exams SET id_user = ?, exam_name = ?, board = ?, level = ?, year = ?, position = ? WHERE id_exam = ?",
-      [id_user, exam_name, board, level, year, position, id]
+  remove: async (id_exam) => {
+    const [result] = await connection.execute(
+      "DELETE FROM exams WHERE id_exam = ?",
+      [id_exam]
     );
-    if (result.affectedRows === 0) return null;
-    return { id_exam: id, id_user, exam_name, board, level, year, position };
-  },
-
-  remove: async (id) => {
-    const [result] = await db.query("DELETE FROM exams WHERE id_exam = ?", [
-      id,
-    ]);
     return result.affectedRows > 0;
   },
 };
 
-export default ExamModel;
+export default Exam;

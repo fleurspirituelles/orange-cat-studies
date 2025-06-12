@@ -2,8 +2,10 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import AuthPage from "./pages/AuthPage";
 import AddExamPage from "./pages/AddExamPage";
-import ManualExamForm from "./pages/ManualExamForm";
+import AddQuestionPage from "./pages/AddQuestionPage";
+import ReviewQuestionsPage from "./pages/ReviewQuestionsPage";
 import QuestionsPage from "./pages/QuestionsPage";
+import ComicsPage from "./pages/ComicsPage";
 import ProtectedRoute from "./lib/ProtectedRoute";
 
 function App() {
@@ -20,10 +22,18 @@ function App() {
         }
       />
       <Route
-        path="/add-exam/manual"
+        path="/review-questions"
         element={
           <ProtectedRoute>
-            <ManualExamForm />
+            <ReviewQuestionsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/add-question"
+        element={
+          <ProtectedRoute>
+            <AddQuestionPage />
           </ProtectedRoute>
         }
       />
@@ -32,6 +42,14 @@ function App() {
         element={
           <ProtectedRoute>
             <QuestionsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/comics"
+        element={
+          <ProtectedRoute>
+            <ComicsPage />
           </ProtectedRoute>
         }
       />

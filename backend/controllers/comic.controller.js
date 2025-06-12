@@ -1,64 +1,52 @@
-const Comic = require("../models/comic.model");
+import Comic from "../models/comic.model.js";
+import axios from "axios";
 
-function extractCodeFromUrl(url) {
-  const match = url.match(/ga(\d{2})(\d{2})(\d{2})/);
-  if (!match) return null;
-  return `ga${match[1]}${match[2]}${match[3]}`;
-}
-
-function extractDateFromUrl(url) {
-  const match = url.match(/ga(\d{2})(\d{2})(\d{2})/);
-  if (!match) return null;
-  const yearPrefix = parseInt(match[1], 10) < 70 ? "20" : "19";
-  const year = parseInt(`${yearPrefix}${match[1]}`, 10);
-  const month = parseInt(match[2], 10);
-  const day = parseInt(match[3], 10);
-  return { year, month, day };
-}
-
-async function getAll(req, res) {
-  const comics = await Comic.find();
+export async function getAll(req, res) {
+  const comics = await Comic.getAll();
   res.status(200).json(comics);
 }
 
-async function getById(req, res) {
-  const comic = await Comic.findById(req.params.id);
+export async function getById(req, res) {
+  const comic = await Comic.getById(req.params.id);
   if (!comic) return res.status(404).json({ message: "Comic not found." });
   res.status(200).json(comic);
 }
 
-async function create(req, res) {
-  const { url, id_user, id_album } = req.body;
-  const code = extractCodeFromUrl(url);
-  const date = extractDateFromUrl(url);
-
-  if (!code || !date)
-    return res.status(400).json({ message: "Invalid comic URL." });
-
-  const existing = await Comic.findOne({ code, id_user });
-  if (existing)
-    return res
-      .status(409)
-      .json({ message: "Comic already claimed by this user." });
-
-  const newComic = new Comic({
-    code,
-    url,
-    day: date.day,
-    month: date.month,
-    year: date.year,
-    id_user,
-    id_album,
-  });
-
-  await newComic.save();
-  res.status(201).json(newComic);
+export async function getByUser(req, res) {
+  const comics = await Comic.getByUser(req.params.id_user);
+  res.status(200).json(comics);
 }
 
-async function remove(req, res) {
-  const deleted = await Comic.findByIdAndDelete(req.params.id);
-  if (!deleted) return res.status(404).json({ message: "Comic not found." });
+export async function getByDate(req, res) {
+  const comic = await Comic.getByDate(req.params.comic_date);
+  if (!comic)
+    return res.status(404).json({ message: "Comic not found for this date." });
+  res.status(200).json(comic);
+}
+
+export async function create(req, res) {
+  const { id_user, comic_date, image_url } = req.body;
+  const created = await Comic.create({ id_user, comic_date, image_url });
+  res.status(201).json(created);
+}
+
+export async function fetchImage(req, res) {
+  const { comic_date } = req.params;
+  const [year, month, day] = comic_date.split("-");
+  const yy = year.slice(-2);
+  const filename = `ga${yy}${month}${day}.gif`;
+  const remoteUrl = `http://pt.jikos.cz/garfield/${year}/${filename}`;
+  try {
+    const response = await axios.get(remoteUrl, { responseType: "stream" });
+    res.setHeader("Content-Type", "image/gif");
+    response.data.pipe(res);
+  } catch {
+    res.sendStatus(404);
+  }
+}
+
+export async function remove(req, res) {
+  const success = await Comic.remove(req.params.id);
+  if (!success) return res.status(404).json({ message: "Comic not found." });
   res.status(200).json({ message: "Comic deleted successfully." });
 }
-
-module.exports = { getAll, getById, create, remove };

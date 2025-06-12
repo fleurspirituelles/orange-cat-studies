@@ -1,42 +1,59 @@
-import ChoiceModel from "../models/choice.model.js";
+import Choice from "../models/choice.model.js";
 
-const ChoiceController = {
-  getAll: async (_req, res) => {
-    const choices = await ChoiceModel.getAll();
-    res.status(200).json(choices);
-  },
+export async function getAll(_req, res) {
+  try {
+    const choices = await Choice.getAll();
+    return res.status(200).json(choices);
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to fetch choices." });
+  }
+}
 
-  getById: async (req, res) => {
-    const choice = await ChoiceModel.getById(req.params.id);
-    if (!choice) return res.sendStatus(404);
-    res.status(200).json(choice);
-  },
-
-  create: async (req, res) => {
-    const { id_question, description, letter } = req.body;
-    if (!id_question || !description || !letter) {
-      return res.status(400).json({ message: "Missing required fields" });
+export async function getById(req, res) {
+  try {
+    const choice = await Choice.getById(req.params.id);
+    if (!choice) {
+      return res.status(404).json({ error: "Choice not found." });
     }
+    return res.status(200).json(choice);
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to fetch choice." });
+  }
+}
 
-    const choice = await ChoiceModel.create({
-      id_question,
-      description,
-      letter,
-    });
-    res.status(201).json(choice);
-  },
+export async function create(req, res) {
+  const { id_question, description, letter } = req.body;
+  if (!id_question || !description || !letter) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+  try {
+    const newChoice = await Choice.create({ id_question, description, letter });
+    return res.status(201).json(newChoice);
+  } catch (error) {
+    return res.status(400).json({ error: "Failed to create choice." });
+  }
+}
 
-  update: async (req, res) => {
-    const choice = await ChoiceModel.update(req.params.id, req.body);
-    if (!choice) return res.sendStatus(404);
-    res.status(200).json(choice);
-  },
+export async function update(req, res) {
+  try {
+    const updated = await Choice.update(req.params.id, req.body);
+    if (!updated) {
+      return res.status(404).json({ error: "Choice not found." });
+    }
+    return res.status(200).json({ message: "Choice updated successfully." });
+  } catch (error) {
+    return res.status(400).json({ error: "Failed to update choice." });
+  }
+}
 
-  remove: async (req, res) => {
-    const deleted = await ChoiceModel.remove(req.params.id);
-    if (!deleted) return res.sendStatus(404);
-    res.status(200).json({ message: "Choice deleted" });
-  },
-};
-
-export default ChoiceController;
+export async function remove(req, res) {
+  try {
+    const deleted = await Choice.remove(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ error: "Choice not found." });
+    }
+    return res.status(204).end();
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to delete choice." });
+  }
+}

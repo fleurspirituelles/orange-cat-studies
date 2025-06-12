@@ -1,44 +1,61 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config/database");
+import connection from "../config/database.js";
 
-const Performance = sequelize.define(
-  "performance",
-  {
-    id_performance: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    id_user: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    start_date: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
-    },
-    end_date: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
-    },
-    question_count: {
-      type: DataTypes.INTEGER,
-      validate: { min: 0 },
-    },
-    correct_count: {
-      type: DataTypes.INTEGER,
-      validate: { min: 0 },
-    },
-    average_answer_time: {
-      type: DataTypes.INTEGER,
-    },
-    most_wrong_topic: {
-      type: DataTypes.STRING(100),
-    },
+const Performance = {
+  getAll: async () => {
+    const [rows] = await connection.execute("SELECT * FROM performance");
+    return rows;
   },
-  {
-    timestamps: false,
-  }
-);
 
-module.exports = Performance;
+  getById: async (id_performance) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM performance WHERE id_performance = ?",
+      [id_performance]
+    );
+    return rows[0] || null;
+  },
+
+  getByUser: async (id_user) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM performance WHERE id_user = ?",
+      [id_user]
+    );
+    return rows;
+  },
+
+  getByPeriod: async (id_user, start_date, end_date) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM performance WHERE id_user = ? AND start_date = ? AND end_date = ?",
+      [id_user, start_date, end_date]
+    );
+    return rows[0] || null;
+  },
+
+  create: async (data) => {
+    const { id_user, start_date, end_date, question_count, correct_count } =
+      data;
+    const [result] = await connection.execute(
+      "INSERT INTO performance (id_user, start_date, end_date, question_count, correct_count) VALUES (?, ?, ?, ?, ?)",
+      [id_user, start_date, end_date, question_count, correct_count]
+    );
+    return { id_performance: result.insertId, ...data };
+  },
+
+  update: async (id_performance, data) => {
+    const { question_count, correct_count } = data;
+    const [result] = await connection.execute(
+      "UPDATE performance SET question_count = ?, correct_count = ? WHERE id_performance = ?",
+      [question_count, correct_count, id_performance]
+    );
+    return result.affectedRows > 0;
+  },
+
+  remove: async (id_performance) => {
+    const [result] = await connection.execute(
+      "DELETE FROM performance WHERE id_performance = ?",
+      [id_performance]
+    );
+    return result.affectedRows > 0;
+  },
+};
+
+export default Performance;

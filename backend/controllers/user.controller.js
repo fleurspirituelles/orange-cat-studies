@@ -1,36 +1,79 @@
-import UserModel from "../models/user.model.js";
+import User from "../models/user.model.js";
 
-const UserController = {
-  getAll: async (req, res) => {
-    const users = await UserModel.getAll();
-    res.status(200).json(users);
-  },
+export async function getAll(_req, res) {
+  try {
+    const users = await User.getAll();
+    return res.status(200).json(users);
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving users", error });
+  }
+}
 
-  create: async (req, res) => {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "Missing required fields" });
+export async function getById(req, res) {
+  try {
+    const user = await User.getById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving user", error });
+  }
+}
 
-    const user = await UserModel.create({ name, email, password });
-    res.status(201).json(user);
-  },
+export async function getByEmail(req, res) {
+  const email = req.params.email;
+  try {
+    const existing = await User.getByEmail(email);
+    if (existing) {
+      return res.status(200).json(existing);
+    }
+    const name = email.split("@")[0];
+    const newUser = await User.create({ name, email, password: null });
+    return res.status(201).json(newUser);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error handling user email", error });
+  }
+}
 
-  update: async (req, res) => {
-    const id = req.params.id;
-    const { name, email, password } = req.body;
+export async function create(req, res) {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "Missing required fields." });
+  }
+  try {
+    const newUser = await User.create({ name, email, password });
+    return res.status(201).json(newUser);
+  } catch (error) {
+    return res.status(500).json({ message: "Error creating user", error });
+  }
+}
 
-    const updated = await UserModel.update(id, { name, email, password });
-    if (!updated) return res.sendStatus(404);
-    res.status(200).json(updated);
-  },
+export async function update(req, res) {
+  const { id } = req.params;
+  const { name, email, password } = req.body;
+  try {
+    const updated = await User.update(id, { name, email, password });
+    if (!updated) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({ message: "User updated successfully." });
+  } catch (error) {
+    return res.status(500).json({ message: "Error updating user", error });
+  }
+}
 
-  remove: async (req, res) => {
-    const id = req.params.id;
-    const deleted = await UserModel.remove(id);
-    if (!deleted) return res.sendStatus(404);
-    res.status(200).json({ message: "User deleted" });
-  },
-};
-
-export default UserController;
+export async function remove(req, res) {
+  const { id } = req.params;
+  try {
+    const deleted = await User.remove(id);
+    if (!deleted) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(204).end();
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting user", error });
+  }
+}

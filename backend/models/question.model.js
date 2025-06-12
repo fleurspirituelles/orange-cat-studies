@@ -1,43 +1,78 @@
-import db from "../config/database.js";
+import connection from "../config/database.js";
 
-const QuestionModel = {
+const Question = {
   getAll: async () => {
-    const [rows] = await db.query("SELECT * FROM questions");
-    return rows;
+    const [rows] = await connection.execute(`
+      SELECT
+        q.id_question,
+        q.id_exam,
+        q.statement,
+        q.answer_key,
+        e.exam_name,
+        e.board,
+        e.year,
+        c.letter,
+        c.description
+      FROM questions q
+      JOIN choices c ON c.id_question = q.id_question
+      JOIN exams e ON q.id_exam = e.id_exam
+      ORDER BY q.id_question, c.letter
+    `);
+    const map = {};
+    for (const row of rows) {
+      if (!map[row.id_question]) {
+        map[row.id_question] = {
+          id_question: row.id_question,
+          id_exam: row.id_exam,
+          statement: row.statement,
+          answer_key: row.answer_key,
+          exam_name: row.exam_name,
+          board: row.board,
+          year: row.year,
+          choices: [],
+        };
+      }
+      map[row.id_question].choices.push({
+        letter: row.letter,
+        description: row.description,
+      });
+    }
+    return Object.values(map);
   },
 
-  getById: async (id) => {
-    const [rows] = await db.query(
+  getById: async (id_question) => {
+    const [rows] = await connection.execute(
       "SELECT * FROM questions WHERE id_question = ?",
-      [id]
+      [id_question]
     );
     return rows[0];
   },
 
-  create: async ({ id_exam, statement, answer_key }) => {
-    const [result] = await db.query(
+  create: async (question) => {
+    const { id_exam, statement, answer_key } = question;
+    const [result] = await connection.execute(
       "INSERT INTO questions (id_exam, statement, answer_key) VALUES (?, ?, ?)",
       [id_exam, statement, answer_key]
     );
-    return { id_question: result.insertId, id_exam, statement, answer_key };
+    return { id_question: result.insertId, ...question };
   },
 
-  update: async (id, { id_exam, statement, answer_key }) => {
-    const [result] = await db.query(
+  update: async (id_question, question) => {
+    const { id_exam, statement, answer_key } = question;
+    const [result] = await connection.execute(
       "UPDATE questions SET id_exam = ?, statement = ?, answer_key = ? WHERE id_question = ?",
-      [id_exam, statement, answer_key, id]
+      [id_exam, statement, answer_key, id_question]
     );
-    if (result.affectedRows === 0) return null;
-    return { id_question: id, id_exam, statement, answer_key };
+    return result.affectedRows > 0;
   },
 
-  remove: async (id) => {
-    const [result] = await db.query(
+  remove: async (id_question) => {
+    const [result] = await connection.execute(
       "DELETE FROM questions WHERE id_question = ?",
-      [id]
+      [id_question]
     );
     return result.affectedRows > 0;
   },
 };
 
-export default QuestionModel;
+export default Question;

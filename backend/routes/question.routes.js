@@ -1,12 +1,21 @@
 import express from "express";
-import QuestionController from "../controllers/question.controller.js";
+import * as controller from "../controllers/question.controller.js";
+import validateFields from "../middlewares/validateFields.js";
 
 const router = express.Router();
 
-router.get("/", QuestionController.getAll);
-router.get("/:id", QuestionController.getById);
-router.post("/", QuestionController.create);
-router.put("/:id", QuestionController.update);
-router.delete("/:id", QuestionController.remove);
+router.get("/", controller.getAll);
+router.get("/:id", controller.getById);
+router.post(
+  "/",
+  validateFields(["id_exam", "statement", "answer_key"]),
+  controller.create
+);
+router.put(
+  "/:id",
+  validateFields(["id_exam", "statement", "answer_key"]),
+  controller.update
+);
+router.delete("/:id", controller.remove);
 
 export default router;

@@ -1,41 +1,51 @@
-import db from "../config/database.js";
+import connection from "../config/database.js";
 
-const ChoiceModel = {
+const Choice = {
   getAll: async () => {
-    const [rows] = await db.query("SELECT * FROM choices");
+    const [rows] = await connection.execute("SELECT * FROM choices");
     return rows;
   },
 
-  getById: async (id) => {
-    const [rows] = await db.query("SELECT * FROM choices WHERE id_choice = ?", [
-      id,
-    ]);
+  getById: async (id_choice) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM choices WHERE id_choice = ?",
+      [id_choice]
+    );
     return rows[0];
   },
 
-  create: async ({ id_question, description, letter }) => {
-    const [result] = await db.query(
-      "INSERT INTO choices (id_question, description, letter) VALUES (?, ?, ?)",
-      [id_question, description, letter]
+  getByQuestion: async (id_question) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM choices WHERE id_question = ?",
+      [id_question]
     );
-    return { id_choice: result.insertId, id_question, description, letter };
+    return rows;
   },
 
-  update: async (id, { id_question, description, letter }) => {
-    const [result] = await db.query(
-      "UPDATE choices SET id_question = ?, description = ?, letter = ? WHERE id_choice = ?",
-      [id_question, description, letter, id]
+  create: async ({ id_question, letter, description }) => {
+    const [result] = await connection.execute(
+      "INSERT INTO choices (id_question, letter, description) VALUES (?, ?, ?)",
+      [id_question, letter, description]
+    );
+    return { id_choice: result.insertId, id_question, letter, description };
+  },
+
+  update: async (id_choice, { id_question, letter, description }) => {
+    const [result] = await connection.execute(
+      "UPDATE choices SET id_question = ?, letter = ?, description = ? WHERE id_choice = ?",
+      [id_question, letter, description, id_choice]
     );
     if (result.affectedRows === 0) return null;
-    return { id_choice: id, id_question, description, letter };
+    return { id_choice, id_question, letter, description };
   },
 
-  remove: async (id) => {
-    const [result] = await db.query("DELETE FROM choices WHERE id_choice = ?", [
-      id,
-    ]);
+  remove: async (id_choice) => {
+    const [result] = await connection.execute(
+      "DELETE FROM choices WHERE id_choice = ?",
+      [id_choice]
+    );
     return result.affectedRows > 0;
   },
 };
 
-export default ChoiceModel;
+export default Choice;

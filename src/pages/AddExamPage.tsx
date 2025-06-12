@@ -1,234 +1,112 @@
 import { useState } from "react";
-import { Upload, FileEdit, Check } from "lucide-react";
-import { Button } from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import * as pdfjsLib from "pdfjs-dist";
-import pdfWorker from "pdfjs-dist/build/pdf.worker.entry";
-import axios from "axios";
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
+import ExamForm, { ExamFormData } from "../components/ExamForm";
+import { TextArea } from "../components/ui/TextArea";
+import { Button } from "../components/ui/Button";
 
 export default function AddExamPage() {
-  const navigate = useNavigate();
-
-  const [info, setInfo] = useState({
+  const [form, setForm] = useState<ExamFormData>({
+    exam_name: "",
     board: "",
+    level: "",
     year: "",
     position: "",
-    examName: "",
-    level: "",
   });
-
-  const [status, setStatus] = useState("Selecione um PDF válido para iniciar.");
+  const [examText, setExamText] = useState("");
+  const [answerText, setAnswerText] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleManualAdd = () => {
-    navigate("/add-exam/manual");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handlePdfUpload = () => {
-    document.getElementById("pdfInput")?.click();
-  };
-
-  const detectInfo = async (text: string) => {
-    const lower = text.toLowerCase();
-
-    const board =
-      /vunesp|fcc|fundação carlos chagas|caipimes|zambini|ibam|makinari|instituto mais|objetiva|consulplan|rbo|fapec|avançasp|ibfc/
-        .exec(lower)?.[0]
-        ?.toUpperCase() || "Banca não identificada";
-
-    const year = /20\d{2}/.exec(text)?.[0] || "";
-
-    const positionMatch = /cargo[s]? de ([A-ZÀ-Úa-zà-ú\s]+)/i.exec(text);
-    const position = positionMatch?.[1]?.trim() || "";
-
-    const nameMatch =
-      /(TRIBUNAL DE JUSTIÇA DO ESTADO DE .+?|MINISTÉRIO PÚBLICO DO ESTADO DE .+?|PREFEITURA MUNICIPAL DE .+?|GOVERNO DO ESTADO DE .+?|CÂMARA MUNICIPAL DE .+?)(\n|$|EDITAL)/i.exec(
-        text
-      );
-    const examName = nameMatch?.[1]?.trim() || "Concurso não identificado";
-
-    let level = "Não identificado";
-    if (/estado|estadual/i.test(text)) level = "Estadual";
-    else if (/município|municipal|prefeitura|câmara municipal/i.test(text))
-      level = "Municipal";
-    else if (/união|ministério|federal/i.test(text)) level = "Federal";
-
-    const updatedInfo = { board, year, position, examName, level };
-    setInfo(updatedInfo);
-    setStatus("Extração concluída.");
-
-    if (
-      updatedInfo.board === "Banca não identificada" ||
-      updatedInfo.level === "Não identificado" ||
-      updatedInfo.examName === "Concurso não identificado"
-    ) {
-      alert(
-        "Não foi possível identificar todas as informações do edital. Redirecionando para o preenchimento manual."
-      );
-      navigate("/add-exam/manual");
+  const handleSubmit = async () => {
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!user?.id_user) {
+      alert("Usuário não identificado.");
       return;
     }
-
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    if (!user || !user.id_user) return alert("Usuário não encontrado.");
-
+    const { exam_name, board, level, year, position } = form;
+    if (!exam_name || !board || !level || !year || !position) {
+      alert("Preencha todos os campos.");
+      return;
+    }
+    if (!examText.trim() || !answerText.trim()) {
+      alert("Cole o texto da prova e do gabarito.");
+      return;
+    }
+    setLoading(true);
     try {
-      await axios.post("http://localhost:5000/exams", {
+      const previewRes = await axios.post(
+        "http://localhost:5000/exams/preview-questions",
+        { examText, answerText },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      const questions = previewRes.data;
+
+      const createRes = await axios.post("http://localhost:5000/exams", {
         id_user: user.id_user,
-        exam_name: updatedInfo.examName,
-        board: updatedInfo.board,
-        level: updatedInfo.level,
-        year: updatedInfo.year,
-        position: updatedInfo.position,
+        exam_name,
+        board,
+        level,
+        year,
+        position,
       });
-      alert("Edital salvo com sucesso!");
-    } catch (error) {
-      alert("Erro ao salvar o edital.");
+      const id_exam = createRes.data.id_exam;
+
+      navigate("/review-questions", { state: { id_exam, questions } });
+    } catch (err: any) {
+      const msg = err.response?.data?.error || err.message;
+      alert("Erro: " + msg);
+    } finally {
+      setLoading(false);
     }
   };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setStatus("Analisando o conteúdo do arquivo...");
-    setLoading(true);
-
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const typedarray = new Uint8Array(reader.result as ArrayBuffer);
-      const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
-
-      let fullText = "";
-
-      for (let i = 1; i <= Math.min(pdf.numPages, 5); i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        const text = content.items.map((item: any) => item.str).join(" ");
-        fullText += text + " ";
-      }
-
-      await detectInfo(fullText);
-      setLoading(false);
-    };
-
-    reader.readAsArrayBuffer(file);
-  };
-
-  const FeatureItem = ({ text }: { text: string }) => (
-    <div className="flex items-center gap-2 rounded-md px-3 py-2 bg-white border border-gray-200 text-sm text-gray-700">
-      <Check className="text-orange-500 w-4 h-4" />
-      <span>{text}</span>
-    </div>
-  );
 
   return (
     <>
       <Navbar />
-      <main className="bg-[#f8f8f8] min-h-screen px-4 sm:px-6 lg:px-8 py-20">
-        <div className="max-w-4xl mx-auto text-center mb-20">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Adicione um novo edital!
-          </h1>
-          <p className="text-gray-700 text-base max-w-2xl mx-auto leading-relaxed">
-            Escolha abaixo como deseja adicionar seu edital. Você pode carregar
-            um arquivo PDF com a prova e o gabarito, e o sistema fará a extração
-            automática das questões, ou, se preferir, inserir os dados
-            manualmente preenchendo as informações como banca organizadora,
-            nível do concurso, cargo e outras.
-          </p>
-        </div>
-
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-14 items-start">
-          <div className="bg-white rounded-xl border border-gray-200 flex flex-col justify-between min-h-[520px] shadow-sm">
+      <main className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl bg-white p-8 rounded-xl shadow">
+          <h2 className="mb-4 text-center text-2xl font-bold text-gray-900">
+            Cadastro de Provas
+          </h2>
+          <ExamForm form={form} onChange={handleChange} />
+          <div className="mt-6 space-y-5">
             <div>
-              <div className="bg-orange-50 rounded-t-xl px-6 py-3 border-b border-gray-200 text-sm font-semibold text-gray-800">
-                Upload de PDF
-              </div>
-              <div className="p-6">
-                <p className="text-sm text-gray-600 mb-6">
-                  Envie o edital em PDF e deixe que o sistema cuide da extração
-                  das questões para você.
-                </p>
-                <div className="space-y-3 mb-8">
-                  <FeatureItem text="Extração automática de questões e gabaritos." />
-                  <FeatureItem text="Identificação de banca, ano e disciplina." />
-                  <FeatureItem text="Associação das questões a temas específicos." />
-                  <FeatureItem text="Verificação automática de inconsistências." />
-                  <FeatureItem text="Visualização do conteúdo antes da finalização." />
-                </div>
-                <Button
-                  className="w-full flex items-center justify-center gap-2"
-                  onClick={handlePdfUpload}
-                >
-                  <Upload className="h-4 w-4" />
-                  Selecionar PDF
-                </Button>
-                <input
-                  type="file"
-                  accept=".pdf"
-                  id="pdfInput"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-                <p className="text-xs text-center text-gray-500 mt-3">
-                  {loading ? "Extraindo informações..." : status}
-                </p>
-                {(info.examName ||
-                  info.board ||
-                  info.year ||
-                  info.position) && (
-                  <div className="mt-4 text-sm text-gray-800 space-y-1">
-                    <p>
-                      <strong>Nome do concurso:</strong> {info.examName}
-                    </p>
-                    <p>
-                      <strong>Nível:</strong> {info.level}
-                    </p>
-                    <p>
-                      <strong>Banca:</strong> {info.board}
-                    </p>
-                    <p>
-                      <strong>Ano:</strong> {info.year}
-                    </p>
-                    <p>
-                      <strong>Cargo:</strong> {info.position}
-                    </p>
-                  </div>
-                )}
-              </div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Texto completo da prova
+              </label>
+              <TextArea
+                rows={8}
+                value={examText}
+                onChange={(e) => setExamText(e.target.value)}
+                placeholder="Cole aqui o texto completo da prova"
+              />
             </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 flex flex-col justify-between min-h-[520px] shadow-sm">
             <div>
-              <div className="bg-orange-50 rounded-t-xl px-6 py-3 border-b border-gray-200 text-sm font-semibold text-gray-800">
-                Adicionar manualmente
-              </div>
-              <div className="p-6">
-                <p className="text-sm text-gray-600 mb-6">
-                  Preencha as informações do edital com total controle sobre
-                  cada etapa e adicione o conteúdo manualmente.
-                </p>
-                <div className="space-y-3 mb-8">
-                  <FeatureItem text="Inserção manual de banca, nível e disciplinas." />
-                  <FeatureItem text="Cadastro de questões individualmente." />
-                  <FeatureItem text="Associação direta aos temas do sistema." />
-                  <FeatureItem text="Indicação de questões para o desafio diário." />
-                  <FeatureItem text="Visualização das informações inseridas." />
-                </div>
-                <Button
-                  className="w-full flex items-center justify-center gap-2"
-                  onClick={handleManualAdd}
-                >
-                  <FileEdit className="h-4 w-4" />
-                  Começar preenchimento
-                </Button>
-              </div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Texto do gabarito
+              </label>
+              <TextArea
+                rows={4}
+                value={answerText}
+                onChange={(e) => setAnswerText(e.target.value)}
+                placeholder="Cole aqui o texto do gabarito"
+              />
+            </div>
+            <div>
+              <Button
+                onClick={handleSubmit}
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? "Processando..." : "Avançar para Revisão"}
+              </Button>
             </div>
           </div>
         </div>

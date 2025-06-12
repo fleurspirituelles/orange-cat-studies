@@ -1,11 +1,10 @@
 import express from "express";
-import UserController from "../controllers/user.controller.js";
+import * as controller from "../controllers/user.controller.js";
 
 const router = express.Router();
 
-router.get("/", UserController.getAll);
-router.post("/", UserController.create);
-router.put("/:id", UserController.update);
-router.delete("/:id", UserController.remove);
+router.get("/", controller.getAll);
+router.get("/:id", controller.getById);
+router.get("/email/:email", controller.getByEmail);
 
 export default router;

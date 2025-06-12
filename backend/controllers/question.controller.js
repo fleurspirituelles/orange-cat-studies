@@ -1,42 +1,67 @@
-import QuestionModel from "../models/question.model.js";
+import Question from "../models/question.model.js";
 
-const QuestionController = {
-  getAll: async (_req, res) => {
-    const questions = await QuestionModel.getAll();
-    res.status(200).json(questions);
-  },
+export async function getAll(_req, res) {
+  try {
+    const questions = await Question.getAll();
+    return res.status(200).json(questions);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error retrieving questions.", error });
+  }
+}
 
-  getById: async (req, res) => {
-    const question = await QuestionModel.getById(req.params.id);
-    if (!question) return res.sendStatus(404);
-    res.status(200).json(question);
-  },
-
-  create: async (req, res) => {
-    const { id_exam, statement, answer_key } = req.body;
-    if (!id_exam || !statement || !answer_key) {
-      return res.status(400).json({ message: "Missing required fields" });
+export async function getById(req, res) {
+  try {
+    const question = await Question.getById(req.params.id);
+    if (!question) {
+      return res.status(404).json({ message: "Question not found." });
     }
+    return res.status(200).json(question);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error retrieving question.", error });
+  }
+}
 
-    const question = await QuestionModel.create({
+export async function create(req, res) {
+  const { id_exam, statement, answer_key } = req.body;
+  if (!id_exam || !statement || !answer_key) {
+    return res.status(400).json({ message: "Missing required fields." });
+  }
+  try {
+    const newQuestion = await Question.create({
       id_exam,
       statement,
       answer_key,
     });
-    res.status(201).json(question);
-  },
+    return res.status(201).json(newQuestion);
+  } catch (error) {
+    return res.status(500).json({ message: "Error creating question.", error });
+  }
+}
 
-  update: async (req, res) => {
-    const question = await QuestionModel.update(req.params.id, req.body);
-    if (!question) return res.sendStatus(404);
-    res.status(200).json(question);
-  },
+export async function update(req, res) {
+  try {
+    const updated = await Question.update(req.params.id, req.body);
+    if (!updated) {
+      return res.status(404).json({ message: "Question not found." });
+    }
+    return res.status(200).json({ message: "Question updated successfully." });
+  } catch (error) {
+    return res.status(500).json({ message: "Error updating question.", error });
+  }
+}
 
-  remove: async (req, res) => {
-    const deleted = await QuestionModel.remove(req.params.id);
-    if (!deleted) return res.sendStatus(404);
-    res.status(200).json({ message: "Question deleted" });
-  },
-};
-
-export default QuestionController;
+export async function remove(req, res) {
+  try {
+    const deleted = await Question.remove(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Question not found." });
+    }
+    return res.status(204).end();
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting question.", error });
+  }
+}

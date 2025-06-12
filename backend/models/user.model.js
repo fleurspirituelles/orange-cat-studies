@@ -1,41 +1,43 @@
-import db from "../config/database.js";
+import connection from "../config/database.js";
 
-const UserModel = {
+const User = {
   getAll: async () => {
-    const [rows] = await db.query("SELECT * FROM users");
+    const [rows] = await connection.execute("SELECT * FROM users");
     return rows;
   },
 
-  getById: async (id) => {
-    const [rows] = await db.query("SELECT * FROM users WHERE id_user = ?", [
-      id,
-    ]);
+  getById: async (id_user) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM users WHERE id_user = ?",
+      [id_user]
+    );
     return rows[0];
   },
 
-  create: async ({ name, email, password }) => {
-    const [result] = await db.query(
-      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+  getByEmail: async (email) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
+    return rows[0];
+  },
+
+  create: async (user) => {
+    const { name, email, password } = user;
+    const [result] = await connection.execute(
+      "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, NOW())",
       [name, email, password]
     );
-    return { id_user: result.insertId, name, email };
+    return { id_user: result.insertId, ...user };
   },
 
-  update: async (id, { name, email, password }) => {
-    const [result] = await db.query(
-      "UPDATE users SET name = ?, email = ?, password = ? WHERE id_user = ?",
-      [name, email, password, id]
+  remove: async (id_user) => {
+    const [result] = await connection.execute(
+      "DELETE FROM users WHERE id_user = ?",
+      [id_user]
     );
-    if (result.affectedRows === 0) return null;
-    return { id_user: id, name, email };
-  },
-
-  remove: async (id) => {
-    const [result] = await db.query("DELETE FROM users WHERE id_user = ?", [
-      id,
-    ]);
     return result.affectedRows > 0;
   },
 };
 
-export default UserModel;
+export default User;

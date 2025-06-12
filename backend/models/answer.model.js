@@ -1,20 +1,29 @@
-import db from "../config/database.js";
+import connection from "../config/database.js";
 
-const AnswerModel = {
+const Answer = {
   getAll: async () => {
-    const [rows] = await db.query("SELECT * FROM answers");
+    const [rows] = await connection.execute("SELECT * FROM answers");
     return rows;
   },
 
-  getById: async (id) => {
-    const [rows] = await db.query("SELECT * FROM answers WHERE id_answer = ?", [
-      id,
-    ]);
+  getById: async (id_answer) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM answers WHERE id_answer = ?",
+      [id_answer]
+    );
     return rows[0];
   },
 
+  getByUser: async (id_user) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM answers WHERE id_user = ?",
+      [id_user]
+    );
+    return rows;
+  },
+
   create: async ({ id_user, id_question, selected_choice }) => {
-    const [result] = await db.query(
+    const [result] = await connection.execute(
       "INSERT INTO answers (id_user, id_question, selected_choice) VALUES (?, ?, ?)",
       [id_user, id_question, selected_choice]
     );
@@ -26,21 +35,22 @@ const AnswerModel = {
     };
   },
 
-  update: async (id, { id_user, id_question, selected_choice }) => {
-    const [result] = await db.query(
+  update: async (id_answer, { id_user, id_question, selected_choice }) => {
+    const [result] = await connection.execute(
       "UPDATE answers SET id_user = ?, id_question = ?, selected_choice = ? WHERE id_answer = ?",
-      [id_user, id_question, selected_choice, id]
+      [id_user, id_question, selected_choice, id_answer]
     );
     if (result.affectedRows === 0) return null;
-    return { id_answer: id, id_user, id_question, selected_choice };
+    return { id_answer, id_user, id_question, selected_choice };
   },
 
-  remove: async (id) => {
-    const [result] = await db.query("DELETE FROM answers WHERE id_answer = ?", [
-      id,
-    ]);
+  remove: async (id_answer) => {
+    const [result] = await connection.execute(
+      "DELETE FROM answers WHERE id_answer = ?",
+      [id_answer]
+    );
     return result.affectedRows > 0;
   },
 };
 
-export default AnswerModel;
+export default Answer;

@@ -1,37 +1,60 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config/database");
+import connection from "../config/database.js";
 
-const Album = sequelize.define(
-  "albums",
-  {
-    id_album: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    id_user: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    month: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: { min: 1, max: 12 },
-    },
-    year: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: { min: 2000 },
-    },
-    total_days: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: { min: 28, max: 31 },
-    },
+const Album = {
+  getAll: async () => {
+    const [rows] = await connection.execute("SELECT * FROM albums");
+    return rows;
   },
-  {
-    timestamps: false,
-  }
-);
 
-module.exports = Album;
+  getById: async (id_album) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM albums WHERE id_album = ?",
+      [id_album]
+    );
+    return rows[0] || null;
+  },
+
+  getByUser: async (id_user) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM albums WHERE id_user = ?",
+      [id_user]
+    );
+    return rows;
+  },
+
+  getByMonth: async (id_user, month, year) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM albums WHERE id_user = ? AND month = ? AND year = ?",
+      [id_user, month, year]
+    );
+    return rows[0] || null;
+  },
+
+  create: async (album) => {
+    const { id_user, month, year, total_days } = album;
+    const [result] = await connection.execute(
+      "INSERT INTO albums (id_user, month, year, total_days) VALUES (?, ?, ?, ?)",
+      [id_user, month, year, total_days]
+    );
+    return { id_album: result.insertId, ...album };
+  },
+
+  update: async (id_album, album) => {
+    const { month, year, total_days } = album;
+    const [result] = await connection.execute(
+      "UPDATE albums SET month = ?, year = ?, total_days = ? WHERE id_album = ?",
+      [month, year, total_days, id_album]
+    );
+    return result.affectedRows > 0;
+  },
+
+  remove: async (id_album) => {
+    const [result] = await connection.execute(
+      "DELETE FROM albums WHERE id_album = ?",
+      [id_album]
+    );
+    return result.affectedRows > 0;
+  },
+};
+
+export default Album;

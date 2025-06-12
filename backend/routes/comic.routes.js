@@ -1,15 +1,19 @@
-const express = require("express");
+import express from "express";
+import * as controller from "../controllers/comic.controller.js";
+import validateFields from "../middlewares/validateFields.js";
+
 const router = express.Router();
-const controller = require("../controllers/comic.controller");
-const validateFields = require("../middlewares/validateFields");
 
 router.get("/", controller.getAll);
+router.get("/user/:id_user", controller.getByUser);
+router.get("/date/:comic_date", controller.getByDate);
+router.get("/image/:comic_date", controller.fetchImage);
 router.get("/:id", controller.getById);
 router.post(
   "/",
-  validateFields(["url", "id_user", "id_album"]),
+  validateFields(["id_user", "comic_date", "image_url"]),
   controller.create
 );
 router.delete("/:id", controller.remove);
 
-module.exports = router;
+export default router;

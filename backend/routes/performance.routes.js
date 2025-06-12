@@ -1,20 +1,14 @@
-const express = require("express");
+import express from "express";
+import * as controller from "../controllers/performance.controller.js";
+
 const router = express.Router();
-const controller = require("../controllers/question.controller");
-const validateFields = require("../middlewares/validateFields");
 
 router.get("/", controller.getAll);
+router.get("/user/:id_user", controller.getByUser);
+router.get("/period/:id_user/:start/:end", controller.getByPeriod);
 router.get("/:id", controller.getById);
-router.post(
-  "/",
-  validateFields(["id_exam", "statement", "answer_key"]),
-  controller.create
-);
-router.put(
-  "/:id",
-  validateFields(["id_exam", "statement", "answer_key"]),
-  controller.update
-);
+router.post("/", controller.create);
+router.put("/:id", controller.update);
 router.delete("/:id", controller.remove);
 
-module.exports = router;
+export default router;

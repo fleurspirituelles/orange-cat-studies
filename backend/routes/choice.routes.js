@@ -1,12 +1,21 @@
 import express from "express";
-import ChoiceController from "../controllers/choice.controller.js";
+import * as controller from "../controllers/choice.controller.js";
+import validateFields from "../middlewares/validateFields.js";
 
 const router = express.Router();
 
-router.get("/", ChoiceController.getAll);
-router.get("/:id", ChoiceController.getById);
-router.post("/", ChoiceController.create);
-router.put("/:id", ChoiceController.update);
-router.delete("/:id", ChoiceController.remove);
+router.get("/", controller.getAll);
+router.get("/:id", controller.getById);
+router.post(
+  "/",
+  validateFields(["id_question", "letter", "description"]),
+  controller.create
+);
+router.put(
+  "/:id",
+  validateFields(["id_question", "letter", "description"]),
+  controller.update
+);
+router.delete("/:id", controller.remove);
 
 export default router;
