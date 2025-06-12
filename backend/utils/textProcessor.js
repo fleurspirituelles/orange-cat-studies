@@ -9,6 +9,18 @@ export function extractQuestionsFromText(examRaw, answerRaw) {
     answerMap[m[1].padStart(2, "0")] = m[2].toUpperCase();
   }
 
+  const supportSegments = [];
+  const supRe =
+    /questões[^\d]*(\d{1,2})\s*(?:a|e)\s*(\d{1,2})[^\n]*\n([\s\S]*?)(?=\n\d{1,2}\.)/gi;
+  let supMatch;
+  while ((supMatch = supRe.exec(text))) {
+    supportSegments.push({
+      start: +supMatch[1],
+      end: +supMatch[2],
+      supText: supMatch[3].trim().replace(/\s+/g, " "),
+    });
+  }
+
   const parts = text.split(/\n(?=\d{1,2}\.)/);
   const questions = [];
 
@@ -37,17 +49,27 @@ export function extractQuestionsFromText(examRaw, answerRaw) {
         .slice(start + tag.length, end > -1 ? end : undefined)
         .replace(/\s+/g, " ")
         .trim();
-      const dotPos = txt.indexOf(".");
-      if (dotPos > -1) txt = txt.slice(0, dotPos + 1);
+      const dot = txt.indexOf(".");
+      if (dot > -1) txt = txt.slice(0, dot + 1);
       choices[lab] = txt;
     }
 
-    questions.push({
+    const q = {
       number,
       statement,
       choices,
       answer_key: answerMap[number] || null,
-    });
+      supportText: "",
+    };
+    const num = +number;
+    for (const seg of supportSegments) {
+      if (num >= seg.start && num <= seg.end) {
+        q.supportText = seg.supText;
+        break;
+      }
+    }
+
+    questions.push(q);
   }
 
   questions.sort((a, b) => parseInt(a.number) - parseInt(b.number));
