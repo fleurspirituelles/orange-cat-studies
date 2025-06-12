@@ -2,6 +2,10 @@ import Exam from "../models/exam.model.js";
 import Question from "../models/question.model.js";
 import Choice from "../models/choice.model.js";
 import { extractQuestionsFromText } from "../utils/textProcessor.js";
+import multer from "multer";
+import pdf from "pdf-parse/lib/pdf-parse.js";
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 export async function listExams(req, res) {
   try {
@@ -94,6 +98,33 @@ export async function previewQuestions(req, res) {
       .json({ message: "Failed to parse text.", error: err.message });
   }
 }
+
+export const previewPdfUpload = [
+  upload.fields([
+    { name: "examPdf", maxCount: 1 },
+    { name: "answerPdf", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const examFile = req.files?.examPdf?.[0];
+      const answerFile = req.files?.answerPdf?.[0];
+      if (!examFile || !answerFile) {
+        return res
+          .status(400)
+          .json({ message: "Missing exam or answer file." });
+      }
+
+      const { text: examText } = await pdf(examFile.buffer);
+      const { text: answerText } = await pdf(answerFile.buffer);
+      const questions = extractQuestionsFromText(examText, answerText);
+      return res.status(200).json(questions);
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ message: "Failed to parse PDF.", error: err.message });
+    }
+  },
+];
 
 export async function importQuestions(req, res) {
   const { id_exam, questions } = req.body;
