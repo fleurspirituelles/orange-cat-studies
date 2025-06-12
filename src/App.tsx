@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import AuthPage from "./pages/AuthPage";
 import AddExamPage from "./pages/AddExamPage";
 import AddQuestionPage from "./pages/AddQuestionPage";
+import ReviewQuestionsPage from "./pages/ReviewQuestionsPage";
 import QuestionsPage from "./pages/QuestionsPage";
 import ComicsPage from "./pages/ComicsPage";
 import ProtectedRoute from "./lib/ProtectedRoute";
@@ -17,6 +18,14 @@ function App() {
         element={
           <ProtectedRoute>
             <AddExamPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/review-questions"
+        element={
+          <ProtectedRoute>
+            <ReviewQuestionsPage />
           </ProtectedRoute>
         }
       />
