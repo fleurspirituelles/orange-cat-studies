@@ -29,6 +29,9 @@ export default function Navbar() {
               <a href="/add-exam" className="hover:text-orange-500">
                 Editais
               </a>
+              <a href="/add-question" className="hover:text-orange-500">
+                Cadastrar Questão
+              </a>
               <a href="/questions" className="hover:text-orange-500">
                 Questões
               </a>
