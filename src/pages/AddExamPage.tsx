@@ -15,8 +15,11 @@ export default function AddExamPage() {
     year: "",
     position: "",
   });
+  const [mode, setMode] = useState<"text" | "pdf">("text");
   const [examText, setExamText] = useState("");
   const [answerText, setAnswerText] = useState("");
+  const [examPdf, setExamPdf] = useState<File | null>(null);
+  const [answerPdf, setAnswerPdf] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -35,18 +38,37 @@ export default function AddExamPage() {
       alert("Preencha todos os campos.");
       return;
     }
-    if (!examText.trim() || !answerText.trim()) {
-      alert("Cole o texto da prova e do gabarito.");
-      return;
-    }
     setLoading(true);
     try {
-      const previewRes = await axios.post(
-        "http://localhost:5000/exams/preview-questions",
-        { examText, answerText },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      const questions = previewRes.data;
+      let questions;
+      if (mode === "text") {
+        if (!examText.trim() || !answerText.trim()) {
+          alert("Cole o texto da prova e do gabarito.");
+          setLoading(false);
+          return;
+        }
+        const previewRes = await axios.post(
+          "http://localhost:5000/exams/preview-questions",
+          { examText, answerText },
+          { headers: { "Content-Type": "application/json" } }
+        );
+        questions = previewRes.data;
+      } else {
+        if (!examPdf || !answerPdf) {
+          alert("Envie ambos os arquivos PDF.");
+          setLoading(false);
+          return;
+        }
+        const fd = new FormData();
+        fd.append("examPdf", examPdf);
+        fd.append("answerPdf", answerPdf);
+        const previewRes = await axios.post(
+          "http://localhost:5000/exams/preview-questions-pdf",
+          fd,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        questions = previewRes.data;
+      }
 
       const createRes = await axios.post("http://localhost:5000/exams", {
         id_user: user.id_user,
@@ -76,38 +98,88 @@ export default function AddExamPage() {
             Cadastro de Provas
           </h2>
           <ExamForm form={form} onChange={handleChange} />
-          <div className="mt-6 space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Texto completo da prova
-              </label>
-              <TextArea
-                rows={8}
-                value={examText}
-                onChange={(e) => setExamText(e.target.value)}
-                placeholder="Cole aqui o texto completo da prova"
+
+          <fieldset className="mt-6 flex gap-6">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                className="mr-2"
+                checked={mode === "text"}
+                onChange={() => setMode("text")}
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Texto do gabarito
-              </label>
-              <TextArea
-                rows={4}
-                value={answerText}
-                onChange={(e) => setAnswerText(e.target.value)}
-                placeholder="Cole aqui o texto do gabarito"
+              Colar texto
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                className="mr-2"
+                checked={mode === "pdf"}
+                onChange={() => setMode("pdf")}
               />
+              Enviar PDF
+            </label>
+          </fieldset>
+
+          {mode === "text" ? (
+            <div className="mt-6 space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Texto completo da prova
+                </label>
+                <TextArea
+                  rows={8}
+                  value={examText}
+                  onChange={(e) => setExamText(e.target.value)}
+                  placeholder="Cole aqui o texto completo da prova"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Texto do gabarito
+                </label>
+                <TextArea
+                  rows={4}
+                  value={answerText}
+                  onChange={(e) => setAnswerText(e.target.value)}
+                  placeholder="Cole aqui o texto do gabarito"
+                />
+              </div>
             </div>
-            <div>
-              <Button
-                onClick={handleSubmit}
-                className="w-full"
-                disabled={loading}
-              >
-                {loading ? "Processando..." : "Avançar para Revisão"}
-              </Button>
+          ) : (
+            <div className="mt-6 space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  PDF da prova
+                </label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => setExamPdf(e.target.files?.[0] || null)}
+                  className="block w-full text-sm text-gray-700"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  PDF do gabarito
+                </label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => setAnswerPdf(e.target.files?.[0] || null)}
+                  className="block w-full text-sm text-gray-700"
+                />
+              </div>
             </div>
+          )}
+
+          <div className="mt-6">
+            <Button
+              onClick={handleSubmit}
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? "Processando..." : "Avançar para Revisão"}
+            </Button>
           </div>
         </div>
       </main>
