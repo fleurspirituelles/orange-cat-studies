@@ -3,20 +3,12 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Input } from "../components/ui/Input";
-import { Button } from "../components/ui/Button";
+import ExamForm, { ExamFormData } from "../components/ExamForm";
 import { TextArea } from "../components/ui/TextArea";
-
-interface ExamForm {
-  exam_name: string;
-  board: string;
-  level: string;
-  year: string;
-  position: string;
-}
+import { Button } from "../components/ui/Button";
 
 export default function AddExamPage() {
-  const [form, setForm] = useState<ExamForm>({
+  const [form, setForm] = useState<ExamFormData>({
     exam_name: "",
     board: "",
     level: "",
@@ -83,62 +75,8 @@ export default function AddExamPage() {
           <h2 className="mb-4 text-center text-2xl font-bold text-gray-900">
             Cadastro de Provas
           </h2>
-          <div className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nome do concurso
-              </label>
-              <Input
-                name="exam_name"
-                value={form.exam_name}
-                onChange={handleChange}
-                placeholder="Ex: Tribunal de Justiça do Estado de São Paulo"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Banca organizadora
-              </label>
-              <Input
-                name="board"
-                value={form.board}
-                onChange={handleChange}
-                placeholder="Ex: VUNESP"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nível do concurso
-              </label>
-              <Input
-                name="level"
-                value={form.level}
-                onChange={handleChange}
-                placeholder="Ex: Ensino Médio"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Ano
-              </label>
-              <Input
-                name="year"
-                value={form.year}
-                onChange={handleChange}
-                placeholder="Ex: 2025"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Cargo
-              </label>
-              <Input
-                name="position"
-                value={form.position}
-                onChange={handleChange}
-                placeholder="Ex: Escrevente Técnico Judiciário"
-              />
-            </div>
+          <ExamForm form={form} onChange={handleChange} />
+          <div className="mt-6 space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Texto completo da prova
@@ -147,8 +85,7 @@ export default function AddExamPage() {
                 rows={8}
                 value={examText}
                 onChange={(e) => setExamText(e.target.value)}
-                className="w-full rounded border-gray-300 p-2"
-                placeholder="Cole aqui o texto completo da prova, incluindo as questões e alternativas."
+                placeholder="Cole aqui o texto completo da prova"
               />
             </div>
             <div>
@@ -159,8 +96,7 @@ export default function AddExamPage() {
                 rows={4}
                 value={answerText}
                 onChange={(e) => setAnswerText(e.target.value)}
-                className="w-full rounded border-gray-300 p-2"
-                placeholder="Cole aqui o texto do gabarito, com as respostas corretas para cada questão."
+                placeholder="Cole aqui o texto do gabarito"
               />
             </div>
             <div>

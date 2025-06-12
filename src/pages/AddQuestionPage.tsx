@@ -1,15 +1,19 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { Input } from "../components/ui/Input";
+import ExamForm, { ExamFormData } from "../components/ExamForm";
 import { Button } from "../components/ui/Button";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import axios from "axios";
 
 export default function AddQuestionPage() {
-  const [searchParams] = useSearchParams();
-  const id_exam = searchParams.get("id_exam") || "";
-
+  const [newExam, setNewExam] = useState<ExamFormData>({
+    exam_name: "",
+    board: "",
+    level: "",
+    year: "",
+    position: "",
+  });
   const [form, setForm] = useState({
     statement: "",
     A: "",
@@ -19,75 +23,101 @@ export default function AddQuestionPage() {
     E: "",
     answer_key: "",
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (
+  const handleNewExamChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewExam({ ...newExam, [e.target.name]: e.target.value });
+  };
+
+  const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async () => {
-    const { statement, A, B, C, D, E, answer_key } = form;
-    if (!id_exam || !statement || !A || !B || !C || !D || !E || !answer_key) {
-      alert("Preencha todos os campos");
-      return;
+    setLoading(true);
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      if (!user?.id_user) {
+        alert("Usuário não identificado.");
+        return;
+      }
+
+      const { exam_name, board, level, year, position } = newExam;
+      if (!exam_name || !board || !level || !year || !position) {
+        alert("Preencha todos os campos do edital.");
+        return;
+      }
+      const examRes = await axios.post("http://localhost:5000/exams", {
+        id_user: user.id_user,
+        exam_name,
+        board,
+        level,
+        year,
+        position,
+      });
+      const id_exam = examRes.data.id_exam;
+
+      const { statement, A, B, C, D, E, answer_key } = form;
+      if (!statement || !A || !B || !C || !D || !E || !answer_key) {
+        alert("Preencha todos os campos da questão.");
+        return;
+      }
+      const qRes = await axios.post("http://localhost:5000/questions", {
+        id_exam,
+        statement,
+        answer_key,
+      });
+      const id_question = qRes.data.id_question;
+
+      await Promise.all(
+        ["A", "B", "C", "D", "E"].map((letter) =>
+          axios.post("http://localhost:5000/choices", {
+            id_question,
+            letter,
+            description: form[letter as keyof typeof form],
+          })
+        )
+      );
+
+      alert("Questão cadastrada com sucesso!");
+      setForm({
+        statement: "",
+        A: "",
+        B: "",
+        C: "",
+        D: "",
+        E: "",
+        answer_key: "",
+      });
+      setNewExam({
+        exam_name: "",
+        board: "",
+        level: "",
+        year: "",
+        position: "",
+      });
+    } catch (err: any) {
+      alert(err.response?.data?.error || err.message);
+    } finally {
+      setLoading(false);
     }
-    const qRes = await axios.post("http://localhost:5000/questions", {
-      id_exam,
-      statement,
-      answer_key,
-    });
-    const id_question = qRes.data.id_question;
-    await Promise.all([
-      axios.post("http://localhost:5000/choices", {
-        id_question,
-        letter: "A",
-        description: A,
-      }),
-      axios.post("http://localhost:5000/choices", {
-        id_question,
-        letter: "B",
-        description: B,
-      }),
-      axios.post("http://localhost:5000/choices", {
-        id_question,
-        letter: "C",
-        description: C,
-      }),
-      axios.post("http://localhost:5000/choices", {
-        id_question,
-        letter: "D",
-        description: D,
-      }),
-      axios.post("http://localhost:5000/choices", {
-        id_question,
-        letter: "E",
-        description: E,
-      }),
-    ]);
-    alert("Questão cadastrada com sucesso!");
-    setForm({
-      statement: "",
-      A: "",
-      B: "",
-      C: "",
-      D: "",
-      E: "",
-      answer_key: "",
-    });
   };
 
   return (
     <>
       <Navbar />
-      <main className="bg-[#f8f8f8] min-h-screen px-4 sm:px-6 lg:px-8 py-12">
+      <main className="bg-gray-100 min-h-screen px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">
             Cadastro de Questões
           </h2>
-          <p className="text-sm text-gray-600 text-center mb-4">
-            Edital: #{id_exam}
-          </p>
+
+          <div className="mb-6">
+            <ExamForm form={newExam} onChange={handleNewExamChange} />
+          </div>
+
           <div className="space-y-5">
             <div>
               <label className="text-sm font-medium mb-1 block text-gray-700">
@@ -96,19 +126,19 @@ export default function AddQuestionPage() {
               <Input
                 name="statement"
                 value={form.statement}
-                onChange={handleChange}
+                onChange={handleFormChange}
                 placeholder="Digite o enunciado"
               />
             </div>
-            {["A", "B", "C", "D", "E"].map((letter) => (
+            {(["A", "B", "C", "D", "E"] as const).map((letter) => (
               <div key={letter}>
                 <label className="text-sm font-medium mb-1 block text-gray-700">
                   Alternativa {letter}
                 </label>
                 <Input
                   name={letter}
-                  value={form[letter as keyof typeof form] as string}
-                  onChange={handleChange}
+                  value={form[letter]}
+                  onChange={handleFormChange}
                   placeholder={`Digite a alternativa ${letter}`}
                 />
               </div>
@@ -120,20 +150,24 @@ export default function AddQuestionPage() {
               <select
                 name="answer_key"
                 value={form.answer_key}
-                onChange={handleChange}
+                onChange={handleFormChange}
                 className="w-full border border-gray-300 rounded-md p-2"
               >
                 <option value="">Selecione</option>
-                {["A", "B", "C", "D", "E"].map((letter) => (
+                {(["A", "B", "C", "D", "E"] as const).map((letter) => (
                   <option key={letter} value={letter}>
                     {letter}
                   </option>
                 ))}
               </select>
             </div>
-            <div className="pt-2">
-              <Button className="w-full" onClick={handleSubmit}>
-                Salvar Questão
+            <div>
+              <Button
+                onClick={handleSubmit}
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? "Salvando..." : "Salvar Questão"}
               </Button>
             </div>
           </div>
