@@ -33,11 +33,12 @@ export function extractQuestionsFromText(examRaw, answerRaw) {
       if (start === -1) continue;
       const nextTag = labels[i + 1] ? `(${labels[i + 1]})` : null;
       const end = nextTag ? block.indexOf(nextTag, start + 1) : block.length;
-      const txt = block
+      let txt = block
         .slice(start + tag.length, end > -1 ? end : undefined)
         .replace(/\s+/g, " ")
-        .trim()
-        .replace(/\.*$/, "");
+        .trim();
+      const dotPos = txt.indexOf(".");
+      if (dotPos > -1) txt = txt.slice(0, dotPos + 1);
       choices[lab] = txt;
     }
 
