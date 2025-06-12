@@ -1,10 +1,14 @@
-import express from "express";
-import * as controller from "../controllers/exam.controller.js";
+import { Router } from "express";
+import {
+  create,
+  previewQuestions,
+  importQuestions,
+} from "../controllers/exam.controller.js";
 
-const router = express.Router();
+const router = new Router();
 
-router.post("/", controller.create);
-router.get("/", controller.getAll);
-router.get("/:id", controller.getById);
+router.post("/", create);
+router.post("/preview-questions", previewQuestions);
+router.post("/import-questions", importQuestions);
 
 export default router;
