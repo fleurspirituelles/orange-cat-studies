@@ -1,7 +1,7 @@
 import Comic from "../models/comic.model.js";
 import axios from "axios";
 
-export async function getAll(req, res) {
+export async function getAll(_req, res) {
   const comics = await Comic.getAll();
   res.status(200).json(comics);
 }
@@ -18,15 +18,23 @@ export async function getByUser(req, res) {
 }
 
 export async function getByDate(req, res) {
-  const comic = await Comic.getByDate(req.params.comic_date);
+  const { id_user, comic_date } = req.params;
+  const comic = await Comic.getByDate(id_user, comic_date);
   if (!comic)
-    return res.status(404).json({ message: "Comic not found for this date." });
+    return res
+      .status(404)
+      .json({ message: "Comic not found for this user/date." });
   res.status(200).json(comic);
 }
 
 export async function create(req, res) {
   const { id_user, comic_date, image_url } = req.body;
-  const created = await Comic.create({ id_user, comic_date, image_url });
+  const created = await Comic.create({
+    id_user,
+    comic_date,
+    image_url,
+    answered_count: 0,
+  });
   res.status(201).json(created);
 }
 
