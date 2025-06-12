@@ -1,19 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input } from "../components/ui/Input";
-import { Button } from "../components/ui/Button";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import axios from "axios";
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
+
+interface ExamForm {
+  exam_name: string;
+  board: string;
+  level: string;
+  year: string;
+  position: string;
+}
 
 export default function AddExamPage() {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<ExamForm>({
     exam_name: "",
     board: "",
     level: "",
     year: "",
     position: "",
   });
+  const [examText, setExamText] = useState("");
+  const [answerText, setAnswerText] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,15 +37,25 @@ export default function AddExamPage() {
       alert("Usuário não identificado.");
       return;
     }
-
     const { exam_name, board, level, year, position } = form;
     if (!exam_name || !board || !level || !year || !position) {
       alert("Preencha todos os campos.");
       return;
     }
-
+    if (!examText.trim() || !answerText.trim()) {
+      alert("Cole o texto da prova e do gabarito.");
+      return;
+    }
+    setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/exams", {
+      const previewRes = await axios.post(
+        "http://localhost:5000/exams/preview-questions",
+        { examText, answerText },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      const questions = previewRes.data;
+
+      const createRes = await axios.post("http://localhost:5000/exams", {
         id_user: user.id_user,
         exam_name,
         board,
@@ -42,27 +63,28 @@ export default function AddExamPage() {
         year,
         position,
       });
-      const id_exam = res.data.id_exam;
-      navigate(`/add-question?id_exam=${id_exam}`);
-    } catch (error: any) {
-      alert("Erro ao cadastrar edital: " + error.message);
+      const id_exam = createRes.data.id_exam;
+
+      navigate("/review-questions", { state: { id_exam, questions } });
+    } catch (err: any) {
+      const msg = err.response?.data?.error || err.message;
+      alert("Erro: " + msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
       <Navbar />
-      <main className="bg-[#f8f8f8] min-h-screen px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
+      <main className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl bg-white p-8 rounded-xl shadow">
+          <h2 className="mb-4 text-center text-2xl font-bold text-gray-900">
             Cadastro de Provas
           </h2>
-          <p className="text-sm text-gray-600 text-center mb-8">
-            Preencha as informações do concurso.
-          </p>
           <div className="space-y-5">
             <div>
-              <label className="text-sm font-medium mb-1 block text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Nome do concurso
               </label>
               <Input
@@ -73,7 +95,7 @@ export default function AddExamPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Banca organizadora
               </label>
               <Input
@@ -84,7 +106,7 @@ export default function AddExamPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Nível do concurso
               </label>
               <Input
@@ -95,7 +117,7 @@ export default function AddExamPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Ano
               </label>
               <Input
@@ -106,7 +128,7 @@ export default function AddExamPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Cargo
               </label>
               <Input
@@ -116,9 +138,37 @@ export default function AddExamPage() {
                 placeholder="Ex: Escrevente Técnico Judiciário"
               />
             </div>
-            <div className="pt-2">
-              <Button className="w-full" onClick={handleSubmit}>
-                Avançar
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Texto completo da prova
+              </label>
+              <textarea
+                rows={8}
+                value={examText}
+                onChange={(e) => setExamText(e.target.value)}
+                className="w-full rounded border-gray-300 p-2"
+                placeholder="Cole aqui o texto completo da prova"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Texto do gabarito
+              </label>
+              <textarea
+                rows={4}
+                value={answerText}
+                onChange={(e) => setAnswerText(e.target.value)}
+                className="w-full rounded border-gray-300 p-2"
+                placeholder="Cole aqui o texto do gabarito"
+              />
+            </div>
+            <div>
+              <Button
+                onClick={handleSubmit}
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? "Processando..." : "Avançar para Revisão"}
               </Button>
             </div>
           </div>
