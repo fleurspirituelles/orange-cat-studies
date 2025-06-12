@@ -31,22 +31,18 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
-
     if (fullName.trim().length < 3) {
       alert("O nome deve ter pelo menos 3 caracteres.");
       return;
     }
-
     if (!emailRegex.test(email)) {
       alert("Digite um e-mail válido.");
       return;
     }
-
     if (password.length < 8) {
       alert("A senha deve ter no mínimo 8 caracteres.");
       return;
     }
-
     if (password !== confirmPassword) {
       alert("As senhas não coincidem.");
       return;
@@ -63,7 +59,7 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
       }
       const user = result.user;
 
-      const response = await axios.post(`${API_URL}/auth`, {
+      const response = await axios.post(`${API_URL}/auth/register`, {
         name: fullName,
         email: user.email,
         password,
@@ -87,9 +83,10 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      const response = await axios.post(`${API_URL}/auth`, {
+      const response = await axios.post(`${API_URL}/auth/register`, {
         name: user.displayName,
         email: user.email,
+        password: null,
       });
 
       localStorage.setItem("user", JSON.stringify(response.data));
