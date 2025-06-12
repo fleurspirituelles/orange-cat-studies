@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
+import { TextArea } from "../components/ui/TextArea";
 
 interface ExamForm {
   exam_name: string;
@@ -91,7 +92,7 @@ export default function AddExamPage() {
                 name="exam_name"
                 value={form.exam_name}
                 onChange={handleChange}
-                placeholder="Ex: Tribunal de Justiça"
+                placeholder="Ex: Tribunal de Justiça do Estado de São Paulo"
               />
             </div>
             <div>
@@ -113,7 +114,7 @@ export default function AddExamPage() {
                 name="level"
                 value={form.level}
                 onChange={handleChange}
-                placeholder="Ex: Médio"
+                placeholder="Ex: Ensino Médio"
               />
             </div>
             <div>
@@ -142,24 +143,24 @@ export default function AddExamPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Texto completo da prova
               </label>
-              <textarea
+              <TextArea
                 rows={8}
                 value={examText}
                 onChange={(e) => setExamText(e.target.value)}
                 className="w-full rounded border-gray-300 p-2"
-                placeholder="Cole aqui o texto completo da prova"
+                placeholder="Cole aqui o texto completo da prova, incluindo as questões e alternativas."
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Texto do gabarito
               </label>
-              <textarea
+              <TextArea
                 rows={4}
                 value={answerText}
                 onChange={(e) => setAnswerText(e.target.value)}
                 className="w-full rounded border-gray-300 p-2"
-                placeholder="Cole aqui o texto do gabarito"
+                placeholder="Cole aqui o texto do gabarito, com as respostas corretas para cada questão."
               />
             </div>
             <div>
