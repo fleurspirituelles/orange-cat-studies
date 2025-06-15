@@ -31,15 +31,18 @@ export async function getByPeriod(req, res) {
   if (!id_user) return res.status(401).json({ message: "Unauthorized." });
 
   const { start, end } = req.params;
-  const rec = await Performance.getByPeriod(id_user, start, end);
 
-  if (rec) {
-    res.status(200).json(rec);
-    return;
+  try {
+    const data = await Performance.getMergedPerformance(id_user, start, end);
+    res.status(200).json({
+      question_count: data?.question_count || 0,
+      correct_count: data?.correct_count || 0,
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Failed to retrieve performance.", message: err.message });
   }
-
-  const dynamic = await Performance.getFromComics(id_user, start, end);
-  res.status(200).json(dynamic);
 }
 
 export async function create(req, res) {

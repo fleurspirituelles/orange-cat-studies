@@ -59,7 +59,7 @@ const Performance = {
 
   getFromComics: async (id_user, start_date, end_date) => {
     const [rows] = await connection.execute(
-      `SELECT COALESCE(SUM(answered_count),0) AS correct_count
+      `SELECT COALESCE(SUM(answered_count), 0) AS correct_count
        FROM comics
        WHERE id_user = ? AND comic_date BETWEEN ? AND ?`,
       [id_user, start_date, end_date]
@@ -75,10 +75,25 @@ const Performance = {
     const days = daysRows[0].days ?? 0;
     const question_count = days * 10;
 
-    return {
-      question_count,
-      correct_count,
-    };
+    return { question_count, correct_count };
+  },
+
+  getMergedPerformance: async (id_user, start_date, end_date) => {
+    const dbPerf = await Performance.getByPeriod(id_user, start_date, end_date);
+
+    if (dbPerf) {
+      return {
+        question_count: dbPerf.question_count,
+        correct_count: dbPerf.correct_count,
+      };
+    }
+
+    const comicsPerf = await Performance.getFromComics(
+      id_user,
+      start_date,
+      end_date
+    );
+    return comicsPerf;
   },
 };
 

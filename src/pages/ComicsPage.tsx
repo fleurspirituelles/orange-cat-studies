@@ -55,32 +55,63 @@ export default function ComicsPage() {
             "0"
           )}`;
 
-          api.get<Album>(`/albums/month/${month}/${year}`).then((r) => {
-            const totalDays = r.data.total_days;
-            const possible = totalDays * 10;
-            setStats((old) => ({
-              ...old,
-              [ym]: {
-                unlocked: list.length,
-                totalDays,
-                correct: 0,
-                possible,
-              },
-            }));
-          });
-
           api
-            .get<Performance>(`/performance/period/${startDate}/${endDate}`)
+            .get<Album>(`/albums/month/${month}/${year}`)
             .then((r) => {
-              setStats((old) => ({
-                ...old,
-                [ym]: {
-                  unlocked: old[ym]?.unlocked ?? list.length,
-                  totalDays: old[ym]?.totalDays ?? daysInMonth,
-                  correct: r.data.correct_count,
-                  possible: old[ym]?.possible ?? daysInMonth * 10,
-                },
-              }));
+              const totalDays = r.data.total_days;
+
+              api
+                .get<Performance>(`/performance/period/${startDate}/${endDate}`)
+                .then((perf) => {
+                  setStats((old) => ({
+                    ...old,
+                    [ym]: {
+                      unlocked: list.length,
+                      totalDays,
+                      correct: perf.data.correct_count,
+                      possible: perf.data.question_count,
+                    },
+                  }));
+                })
+                .catch(() => {
+                  setStats((old) => ({
+                    ...old,
+                    [ym]: {
+                      unlocked: list.length,
+                      totalDays,
+                      correct: 0,
+                      possible: totalDays * 10,
+                    },
+                  }));
+                });
+            })
+            .catch(() => {
+              const totalDaysFallback = daysInMonth;
+
+              api
+                .get<Performance>(`/performance/period/${startDate}/${endDate}`)
+                .then((perf) => {
+                  setStats((old) => ({
+                    ...old,
+                    [ym]: {
+                      unlocked: list.length,
+                      totalDays: totalDaysFallback,
+                      correct: perf.data.correct_count,
+                      possible: perf.data.question_count,
+                    },
+                  }));
+                })
+                .catch(() => {
+                  setStats((old) => ({
+                    ...old,
+                    [ym]: {
+                      unlocked: list.length,
+                      totalDays: totalDaysFallback,
+                      correct: 0,
+                      possible: totalDaysFallback * 10,
+                    },
+                  }));
+                });
             });
         });
       })
@@ -128,7 +159,7 @@ export default function ComicsPage() {
               const start = `01/${month}`;
               const end = `${daysInMonth}/${month}`;
               const s = stats[ym] || {
-                unlocked: 0,
+                unlocked: list.length,
                 totalDays: daysInMonth,
                 correct: 0,
                 possible: daysInMonth * 10,
@@ -150,7 +181,7 @@ export default function ComicsPage() {
                     </div>
                     <button
                       onClick={() => openCarousel(list)}
-                      className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                      className="px-4 py-2 bg-orange-500 text-white rounded"
                     >
                       Ver tirinhas
                     </button>
