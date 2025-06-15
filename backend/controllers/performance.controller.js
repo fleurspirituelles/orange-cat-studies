@@ -19,13 +19,15 @@ export async function getByUser(req, res) {
 export async function getByPeriod(req, res) {
   const { id_user, start, end } = req.params;
   const rec = await Performance.getByPeriod(id_user, start, end);
-  if (!rec) {
-    return res.status(200).json({
-      question_count: 0,
-      correct_count: 0,
-    });
+
+  if (rec) {
+    res.status(200).json(rec);
+    return;
   }
-  res.status(200).json(rec);
+
+  const dynamic = await Performance.getFromComics(id_user, start, end);
+
+  res.status(200).json(dynamic);
 }
 
 export async function create(req, res) {
