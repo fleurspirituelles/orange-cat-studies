@@ -116,15 +116,20 @@ export default function ComicsPage() {
   return (
     <>
       <Navbar />
-      <main className="bg-[#f8f8f8] min-h-screen px-6 py-12">
+      <main className="bg-gray-100 min-h-screen py-14 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Álbuns de Tirinhas</h1>
-          <p className="text-gray-600 mb-8">
-            Colecione tirinhas do Garfield como recompensas diárias ao concluir
-            seus desafios!
-          </p>
+          <div className="grid md:grid-cols-2 gap-10 mb-14">
+            <h2 className="text-4xl font-bold text-gray-900 text-center md:text-left">
+              Álbuns de Tirinhas
+            </h2>
+            <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
+              Colecione tirinhas do Garfield como recompensas diárias ao
+              concluir seus desafios. Acompanhe seu progresso mês a mês,
+              desbloqueie novas tirinhas e complete seu álbum digital.
+            </p>
+          </div>
 
-          <div className="space-y-8">
+          <div className="space-y-10">
             {Object.entries(groups).map(([ym, list]) => {
               const [year, month] = ym.split("-");
               const daysInMonth = new Date(+year, +month, 0).getDate();
@@ -138,14 +143,17 @@ export default function ComicsPage() {
               };
 
               return (
-                <div key={ym} className="bg-white border rounded-lg p-6 shadow">
-                  <div className="flex justify-between items-start mb-4">
+                <div
+                  key={ym}
+                  className="bg-white rounded-2xl shadow p-6 border"
+                >
+                  <div className="flex justify-between items-start mb-6">
                     <div>
-                      <h2 className="text-xl font-semibold">
+                      <h3 className="text-lg font-semibold mb-1">
                         {start} – {end}
-                      </h2>
+                      </h3>
                       <p className="text-sm text-gray-600">
-                        Veja as tirinhas que você desbloqueou esse mês.
+                        Veja as tirinhas que você desbloqueou no mês.
                       </p>
                     </div>
                     <button
@@ -156,21 +164,32 @@ export default function ComicsPage() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    {list.slice(-2).map((c) => (
-                      <img
-                        key={c.id_comic}
-                        src={c.image_url}
-                        alt={`Tirinha de ${new Date(
-                          c.comic_date
-                        ).toLocaleDateString("pt-BR")}`}
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = "/images/placeholder-comic.png";
-                        }}
-                        className="w-full h-48 object-cover rounded-lg shadow-sm"
-                      />
-                    ))}
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    {Array.from({ length: 3 }).map((_, idx) => {
+                      const c = list[list.length - 1 - idx];
+                      if (c) {
+                        return (
+                          <img
+                            key={c.id_comic}
+                            src={c.image_url}
+                            alt="tirinha"
+                            className="w-full h-48 object-cover rounded-xl border"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src =
+                                "/images/placeholder-comic.png";
+                            }}
+                          />
+                        );
+                      } else {
+                        return (
+                          <div
+                            key={idx}
+                            className="w-full h-48 bg-gray-100 rounded-xl border"
+                          />
+                        );
+                      }
+                    })}
                   </div>
 
                   <div className="grid grid-cols-3 text-center pt-4 border-t">
@@ -243,7 +262,7 @@ export default function ComicsPage() {
                 }}
               />
               <p className="text-sm text-gray-600 text-center">
-                Questões respondidas nesse dia: {" "}
+                Questões respondidas nesse dia:{" "}
                 {modalComics[currentIdx].answered_count}.
               </p>
             </div>
