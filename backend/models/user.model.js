@@ -23,12 +23,12 @@ const User = {
   },
 
   create: async (user) => {
-    const { name, email, password } = user;
-    const [result] = await connection.execute(
-      "INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, NOW())",
-      [name, email, password]
+    const { id_user, name, email, password } = user;
+    await connection.execute(
+      "INSERT INTO users (id_user, name, email, password, created_at) VALUES (?, ?, ?, ?, NOW())",
+      [id_user, name, email, password]
     );
-    return { id_user: result.insertId, ...user };
+    return { id_user, name, email, password };
   },
 
   remove: async (id_user) => {

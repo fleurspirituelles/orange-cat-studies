@@ -1,51 +1,51 @@
-import db from "../config/database.js";
+import User from "../models/user.model.js";
 
-export async function registerUser(req, res) {
-  const { name, email, password } = req.body;
-  if (!name || !email) {
+export async function create(req, res) {
+  const { id_user, name, email } = req.body;
+  if (!id_user || !name || !email) {
     return res.status(400).json({ message: "Missing required fields." });
   }
   try {
-    const [existing] = await db.query("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
-    if (existing.length > 0) {
-      return res.status(409).json({ message: "Email already registered." });
+    const existing = await User.getById(id_user);
+    if (existing) {
+      return res.status(409).json({ message: "User already exists." });
     }
-    const [result] = await db.query(
-      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-      [name, email, password]
-    );
-    return res.status(201).json({
-      id_user: result.insertId,
-      name,
-      email,
-    });
+    const newUser = await User.create({ id_user, name, email, password: null });
+    return res.status(201).json(newUser);
   } catch (error) {
-    return res.status(500).json({ message: "Error registering user.", error });
+    return res.status(500).json({ message: "Error creating user", error });
   }
 }
 
-export async function loginUser(req, res) {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ message: "Missing email or password." });
-  }
+export async function getById(req, res) {
   try {
-    const [users] = await db.query(
-      "SELECT * FROM users WHERE email = ? AND password = ?",
-      [email, password]
-    );
-    if (users.length === 0) {
-      return res.status(401).json({ message: "Invalid credentials." });
+    const user = await User.getById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-    const user = users[0];
-    return res.status(200).json({
-      id_user: user.id_user,
-      name: user.name,
-      email: user.email,
-    });
+    return res.status(200).json(user);
   } catch (error) {
-    return res.status(500).json({ message: "Error during login.", error });
+    return res.status(500).json({ message: "Error retrieving user", error });
+  }
+}
+
+export async function getAll(_req, res) {
+  try {
+    const users = await User.getAll();
+    return res.status(200).json(users);
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving users", error });
+  }
+}
+
+export async function remove(req, res) {
+  try {
+    const deleted = await User.remove(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(204).end();
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting user", error });
   }
 }

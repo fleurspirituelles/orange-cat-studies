@@ -35,18 +35,21 @@ export async function getById(req, res) {
 }
 
 export async function create(req, res) {
-  const { id_user, exam_name, board, level, year, position } = req.body;
-  if (!id_user || !exam_name || !board || !level || !year || !position) {
+  const { name, year, exam_board, position, level } = req.body;
+  const id_user = req.user?.uid;
+
+  if (!id_user || !name || !year || !exam_board || !position || !level) {
     return res.status(400).json({ message: "Missing fields." });
   }
+
   try {
     const exam = await Exam.create({
       id_user,
-      exam_name,
-      board,
-      level,
+      name,
       year,
+      exam_board,
       position,
+      level,
     });
     return res.status(201).json(exam);
   } catch (err) {

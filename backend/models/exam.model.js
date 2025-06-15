@@ -22,16 +22,16 @@ const Exam = {
     return rows;
   },
 
-  create: async ({ id_user, exam_name, board, level, year, position }) => {
+  create: async ({ id_user, name, year, exam_board, position, level }) => {
     const [result] = await connection.execute(
       "INSERT INTO exams (id_user, exam_name, board, level, year, position, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())",
-      [id_user, exam_name, board, level, year, position]
+      [id_user, name, exam_board, level, year, position]
     );
     return {
       id_exam: result.insertId,
       id_user,
-      exam_name,
-      board,
+      name,
+      exam_board,
       level,
       year,
       position,

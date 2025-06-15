@@ -1,8 +1,11 @@
 import express from "express";
 import * as controller from "../controllers/choice.controller.js";
 import validateFields from "../middlewares/validateFields.js";
+import verifyFirebaseToken from "../middlewares/verifyFirebaseToken.js";
 
 const router = express.Router();
+
+router.use(verifyFirebaseToken);
 
 router.get("/", controller.getAll);
 router.get("/:id", controller.getById);
