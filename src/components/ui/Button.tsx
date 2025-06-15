@@ -16,7 +16,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const disabledClass =
-      "bg-gray-200 text-gray-500 border-dashed border-2 border-gray-400 cursor-not-allowed";
+      "bg-gray-200 text-gray-500 cursor-not-allowed";
 
     return (
       <button
