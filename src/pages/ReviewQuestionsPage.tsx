@@ -60,96 +60,110 @@ export default function ReviewQuestionsPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl space-y-8">
-          <h2 className="text-center text-2xl font-bold text-gray-900">
-            Revisão de Questões
-          </h2>
-          {questions.map((q, idx) => (
-            <div key={q.number} className="rounded-lg bg-white p-6 shadow">
-              <div className="flex items-start space-x-4">
-                <input
-                  type="checkbox"
-                  checked={q.include}
-                  onChange={() => updateQuestion(idx, { include: !q.include })}
-                  className="mt-1 h-4 w-4 text-orange-600"
-                />
-                <div className="flex-1 space-y-4">
-                  <div className="text-sm font-semibold text-gray-700">
-                    Questão {q.number}
-                  </div>
-                  <textarea
-                    value={q.supportText}
-                    onChange={(e) =>
-                      updateQuestion(idx, { supportText: e.target.value })
+      <main className="min-h-screen bg-gray-100 py-14 px-4">
+        <div className="max-w-7xl mx-auto mb-12">
+          <div className="grid md:grid-cols-2 gap-10 mb-14">
+            <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
+              Revisão de Questões
+            </h2>
+            <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
+              Revise abaixo todas as questões extraídas. Corrija eventuais erros
+              no enunciado, texto de apoio e alternativas. Utilize o seletor de
+              gabarito para indicar a resposta correta de cada questão. Caso
+              deseje excluir alguma questão da importação, desmarque o checkbox
+              ao lado da questão. Apenas as questões selecionadas serão enviadas
+              para o banco de dados.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {questions.map((q, idx) => (
+              <div
+                key={q.number}
+                className="bg-white rounded-2xl shadow p-5 border"
+              >
+                <div className="flex items-start mb-3">
+                  <input
+                    type="checkbox"
+                    checked={q.include}
+                    onChange={() =>
+                      updateQuestion(idx, { include: !q.include })
                     }
-                    placeholder="Texto de apoio (cole aqui, ex: poema ou texto-base)"
-                    className="w-full rounded border-gray-300 p-2 text-sm"
-                    rows={2}
+                    className="mt-1 mr-3 h-4 w-4 text-orange-500"
                   />
-                  <textarea
-                    value={q.statement}
-                    onChange={(e) =>
-                      updateQuestion(idx, { statement: e.target.value })
-                    }
-                    className="w-full rounded border-gray-300 p-2"
-                    rows={3}
-                  />
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    {["A", "B", "C", "D", "E"].map((letter) => (
-                      <div key={letter} className="flex items-center">
-                        <span className="mr-2 font-medium">{letter})</span>
-                        <Input
-                          value={q.choices[letter] || ""}
-                          onChange={(e) =>
-                            updateQuestion(idx, {
-                              choices: {
-                                ...q.choices,
-                                [letter]: e.target.value,
-                              },
-                            })
-                          }
-                          placeholder={`Alternativa ${letter}`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-4 flex items-center space-x-6">
-                    <span className="text-sm font-medium text-gray-700">
-                      Gabarito recomendado:
-                    </span>
-                    {["A", "B", "C", "D", "E"].map((letter) => (
-                      <label
-                        key={letter}
-                        className="inline-flex items-center space-x-1 text-orange-600"
-                      >
-                        <input
-                          type="radio"
-                          name={`answer_${idx}`}
-                          value={letter}
-                          checked={q.answer_key === letter}
-                          onChange={() =>
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-orange-500 mb-2">
+                      Questão {q.number}
+                    </div>
+
+                    <textarea
+                      value={q.supportText}
+                      onChange={(e) =>
+                        updateQuestion(idx, { supportText: e.target.value })
+                      }
+                      placeholder="Texto de apoio (ex: poema, texto-base)"
+                      className="w-full rounded border-gray-300 p-2 text-sm mb-2"
+                      rows={1}
+                    />
+
+                    <textarea
+                      value={q.statement}
+                      onChange={(e) =>
+                        updateQuestion(idx, { statement: e.target.value })
+                      }
+                      className="w-full rounded border-gray-300 p-2 text-sm mb-3"
+                      rows={2}
+                    />
+
+                    <div className="space-y-2 mb-3">
+                      {["A", "B", "C", "D", "E"].map((letter) => (
+                        <div key={letter} className="flex items-center gap-2">
+                          <span className="font-medium text-sm w-5">
+                            {letter})
+                          </span>
+                          <Input
+                            value={q.choices[letter] || ""}
+                            onChange={(e) =>
+                              updateQuestion(idx, {
+                                choices: {
+                                  ...q.choices,
+                                  [letter]: e.target.value,
+                                },
+                              })
+                            }
+                            placeholder={`Alternativa ${letter}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-sm font-medium text-gray-700">
+                        Gabarito:
+                      </span>
+                      {["A", "B", "C", "D", "E"].map((letter) => (
+                        <button
+                          key={letter}
+                          onClick={() =>
                             updateQuestion(idx, { answer_key: letter })
                           }
-                          className="text-orange-600 focus:ring-orange-400"
-                        />
-                        <span
-                          className={
+                          className={`h-8 w-8 rounded-full border flex items-center justify-center text-sm font-medium ${
                             q.answer_key === letter
-                              ? "font-semibold"
-                              : "font-normal"
-                          }
+                              ? "bg-orange-500 text-white border-orange-500"
+                              : "border-gray-300 text-gray-700"
+                          }`}
                         >
                           {letter}
-                        </span>
-                      </label>
-                    ))}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-          <div className="text-center">
+            ))}
+          </div>
+
+          <div className="mt-14 flex justify-center">
             <Button
               onClick={handleImport}
               className="w-full max-w-xs"
