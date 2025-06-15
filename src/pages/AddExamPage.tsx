@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../lib/api";
 import Navbar from "../components/Navbar";
@@ -22,6 +22,9 @@ export default function AddExamPage() {
   const [answerPdf, setAnswerPdf] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const examInputRef = useRef<HTMLInputElement>(null);
+  const answerInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -84,94 +87,157 @@ export default function AddExamPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl bg-white p-8 rounded-xl shadow">
-          <h2 className="mb-4 text-center text-2xl font-bold text-gray-900">
-            Cadastro de Provas
-          </h2>
-          <ExamForm form={form} onChange={handleChange} />
+      <main className="min-h-screen bg-gray-100 py-14 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-10 mb-14">
+            <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
+              Adicione uma nova prova!
+            </h2>
+            <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
+              Escolha abaixo como deseja adicionar sua prova ao sistema. É
+              possível carregar os arquivos PDF da prova e do gabarito para
+              realizar a extração automática das questões, ou, se preferir,
+              preencher manualmente os dados da prova.
+            </p>
+          </div>
 
-          <fieldset className="mt-6 flex gap-6">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                className="mr-2"
-                checked={mode === "text"}
-                onChange={() => setMode("text")}
-              />
-              Colar texto
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                className="mr-2"
-                checked={mode === "pdf"}
-                onChange={() => setMode("pdf")}
-              />
-              Enviar PDF
-            </label>
-          </fieldset>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white rounded-2xl shadow p-6 border">
+              <h3 className="text-lg font-semibold mb-5">
+                Preencher dados da prova
+              </h3>
+              <ExamForm form={form} onChange={handleChange} />
+            </div>
 
-          {mode === "text" ? (
-            <div className="mt-6 space-y-5">
+            <div className="bg-white rounded-2xl shadow p-6 border flex flex-col justify-between">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Texto completo da prova
-                </label>
-                <TextArea
-                  rows={8}
-                  value={examText}
-                  onChange={(e) => setExamText(e.target.value)}
-                  placeholder="Cole aqui o texto completo da prova"
-                />
+                <h3 className="text-lg font-semibold mb-5">
+                  Escolha o método de envio
+                </h3>
+
+                <div className="flex gap-4 mb-8">
+                  <button
+                    className={`px-5 py-2.5 rounded-xl border font-medium text-sm transition ${
+                      mode === "text"
+                        ? "bg-orange-500 text-white"
+                        : "bg-white border-gray-300 text-gray-700"
+                    }`}
+                    onClick={() => setMode("text")}
+                  >
+                    Colar Texto
+                  </button>
+                  <button
+                    className={`px-5 py-2.5 rounded-xl border font-medium text-sm transition ${
+                      mode === "pdf"
+                        ? "bg-orange-500 text-white"
+                        : "bg-white border-gray-300 text-gray-700"
+                    }`}
+                    onClick={() => setMode("pdf")}
+                  >
+                    Enviar PDF
+                  </button>
+                </div>
+
+                <div
+                  className="space-y-5 transition-all duration-300"
+                  style={{ minHeight: 330 }}
+                >
+                  {mode === "text" ? (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Texto completo da prova
+                        </label>
+                        <TextArea
+                          rows={6}
+                          value={examText}
+                          onChange={(e) => setExamText(e.target.value)}
+                          placeholder="Cole aqui o texto integral da prova."
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Texto do gabarito
+                        </label>
+                        <TextArea
+                          rows={4}
+                          value={answerText}
+                          onChange={(e) => setAnswerText(e.target.value)}
+                          placeholder="Cole aqui o texto do gabarito."
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Arquivo PDF da prova
+                        </label>
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          ref={examInputRef}
+                          onChange={(e) =>
+                            setExamPdf(e.target.files?.[0] || null)
+                          }
+                          className="hidden"
+                        />
+                        <Button
+                          className="w-full text-sm"
+                          variant="outline"
+                          type="button"
+                          onClick={() => examInputRef.current?.click()}
+                        >
+                          Selecionar arquivo
+                        </Button>
+                        {examPdf && (
+                          <p className="mt-2 text-sm text-gray-600">
+                            {examPdf.name}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Arquivo PDF do gabarito
+                        </label>
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          ref={answerInputRef}
+                          onChange={(e) =>
+                            setAnswerPdf(e.target.files?.[0] || null)
+                          }
+                          className="hidden"
+                        />
+                        <Button
+                          className="w-full text-sm"
+                          variant="outline"
+                          type="button"
+                          onClick={() => answerInputRef.current?.click()}
+                        >
+                          Selecionar arquivo
+                        </Button>
+                        {answerPdf && (
+                          <p className="mt-2 text-sm text-gray-600">
+                            {answerPdf.name}
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Texto do gabarito
-                </label>
-                <TextArea
-                  rows={4}
-                  value={answerText}
-                  onChange={(e) => setAnswerText(e.target.value)}
-                  placeholder="Cole aqui o texto do gabarito"
-                />
+
+              <div className="mt-8">
+                <Button
+                  onClick={handleSubmit}
+                  className="w-full text-sm"
+                  disabled={loading}
+                >
+                  {loading ? "Processando..." : "Avançar para Revisão"}
+                </Button>
               </div>
             </div>
-          ) : (
-            <div className="mt-6 space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  PDF da prova
-                </label>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(e) => setExamPdf(e.target.files?.[0] || null)}
-                  className="block w-full text-sm text-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  PDF do gabarito
-                </label>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(e) => setAnswerPdf(e.target.files?.[0] || null)}
-                  className="block w-full text-sm text-gray-700"
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="mt-6">
-            <Button
-              onClick={handleSubmit}
-              className="w-full"
-              disabled={loading}
-            >
-              {loading ? "Processando..." : "Avançar para Revisão"}
-            </Button>
           </div>
         </div>
       </main>
