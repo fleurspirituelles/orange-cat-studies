@@ -40,6 +40,8 @@ export default function QuestionsPage() {
     setCorrectAnswers(null);
   }, [questions]);
 
+  const allAnswered = selectedOptions.every((sel) => sel !== -1);
+
   const handleSelect = (questionIndex: number, optionIndex: number) => {
     if (correctAnswers) return;
     const updated = [...selectedOptions];
@@ -48,17 +50,20 @@ export default function QuestionsPage() {
   };
 
   const handleCorrigir = () => {
+    if (!allAnswered) {
+      alert("Por favor, responda todas as questões antes de corrigir.");
+      return;
+    }
+
     const results = questions.map((q, i) => {
       const sel = selectedOptions[i];
-      return sel >= 0 && q.choices[sel].letter === q.answer_key;
+      return q.choices[sel].letter === q.answer_key;
     });
     setCorrectAnswers(results);
   };
 
   const handleEntregar = async () => {
-    const unanswered = selectedOptions.filter((sel) => sel === -1).length;
-
-    if (unanswered > 0) {
+    if (!allAnswered) {
       alert("Por favor, responda todas as questões antes de entregar.");
       return;
     }
@@ -153,10 +158,18 @@ export default function QuestionsPage() {
           </div>
 
           <div className="mt-14 flex justify-center gap-4">
-            <Button className="w-full max-w-xs" onClick={handleCorrigir}>
+            <Button
+              className="w-full max-w-xs"
+              onClick={handleCorrigir}
+              disabled={!allAnswered || correctAnswers !== null}
+            >
               Corrigir
             </Button>
-            <Button className="w-full max-w-xs" onClick={handleEntregar}>
+            <Button
+              className="w-full max-w-xs"
+              onClick={handleEntregar}
+              disabled={!allAnswered}
+            >
               Entregar
             </Button>
           </div>
