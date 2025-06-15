@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function Home() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      navigate("/questions");
+    }
+  }, [navigate]);
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -40,7 +49,6 @@ export default function Home() {
   return (
     <>
       <Navbar />
-
       <section className="bg-white px-6 pt-12 text-center">
         <div className="inline-block px-8 py-8 mx-auto bg-white max-w-3xl mb-16">
           <p className="text-2xl md:text-3xl text-gray-900 font-semibold leading-tight">
@@ -52,7 +60,6 @@ export default function Home() {
             dos editais!
           </p>
         </div>
-
         <img
           src="/logo-large.svg"
           alt="Logo"

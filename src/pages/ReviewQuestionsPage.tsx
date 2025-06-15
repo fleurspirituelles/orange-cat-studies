@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/Button";
@@ -45,7 +45,7 @@ export default function ReviewQuestionsPage() {
     }
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/exams/import-questions", {
+      await api.post("/exams/import-questions", {
         id_exam,
         questions: toImport,
       });

@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import axios from "axios";
+import api from "../lib/api";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 interface Comic {
   id_comic: number;
-  id_user: number;
+  id_user: string;
   comic_date: string;
   image_url: string;
   answered_count: number;
@@ -40,8 +40,8 @@ export default function ComicsPage() {
     if (!stored) return;
     const user = JSON.parse(stored);
 
-    axios
-      .get<Comic[]>(`http://localhost:5000/comics/user/${user.id_user}`)
+    api
+      .get<Comic[]>(`/comics/user/${user.id_user}`)
       .then((res) => {
         const g: Record<string, Comic[]> = {};
         res.data.forEach((c) => {
@@ -59,10 +59,8 @@ export default function ComicsPage() {
             "0"
           )}`;
 
-          axios
-            .get<Album>(
-              `http://localhost:5000/albums/month/${user.id_user}/${month}/${year}`
-            )
+          api
+            .get<Album>(`/albums/month/${user.id_user}/${month}/${year}`)
             .then((r) => {
               const totalDays = r.data.total_days;
               const possible = totalDays * 10;
@@ -75,12 +73,11 @@ export default function ComicsPage() {
                   possible,
                 },
               }));
-            })
-            .catch(() => {});
+            });
 
-          axios
+          api
             .get<Performance>(
-              `http://localhost:5000/performance/period/${user.id_user}/${startDate}/${endDate}`
+              `/performance/period/${user.id_user}/${startDate}/${endDate}`
             )
             .then((r) => {
               setStats((old) => ({
@@ -92,8 +89,7 @@ export default function ComicsPage() {
                   possible: old[ym]?.possible ?? daysInMonth * 10,
                 },
               }));
-            })
-            .catch(() => {});
+            });
         });
       })
       .catch(console.error);
@@ -112,6 +108,7 @@ export default function ComicsPage() {
   function prev() {
     setCurrentIdx((i) => Math.max(0, i - 1));
   }
+
   function next() {
     setCurrentIdx((i) => Math.min(modalComics.length - 1, i + 1));
   }
@@ -246,7 +243,7 @@ export default function ComicsPage() {
                 }}
               />
               <p className="text-sm text-gray-600 text-center">
-                Questões respondidas nesse dia:{" "}
+                Questões respondidas nesse dia: {" "}
                 {modalComics[currentIdx].answered_count}.
               </p>
             </div>

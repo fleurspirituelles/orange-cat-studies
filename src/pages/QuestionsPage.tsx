@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/Button";
+import { getCurrentUser } from "../lib/authUser";
 
 interface Choice {
   letter: string;
@@ -27,7 +28,7 @@ export default function QuestionsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get<Question[]>("http://localhost:5000/questions").then((res) => {
+    api.get<Question[]>("/questions").then((res) => {
       let qs = res.data;
       qs.sort(() => Math.random() - 0.5);
       if (qs.length > 10) qs = qs.slice(0, 10);
@@ -56,12 +57,12 @@ export default function QuestionsPage() {
   };
 
   const handleEntregar = async () => {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
+    const user = getCurrentUser();
     await Promise.all(
       questions.map((q, i) => {
         const sel = selectedOptions[i];
         const letter = sel >= 0 ? q.choices[sel].letter : "";
-        return axios.post("http://localhost:5000/answers", {
+        return api.post("/answers", {
           id_user: user.id_user,
           id_question: q.id_question,
           selected_choice: letter,

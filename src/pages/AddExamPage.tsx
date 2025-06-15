@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ExamForm, { ExamFormData } from "../components/ExamForm";
@@ -28,11 +28,6 @@ export default function AddExamPage() {
   };
 
   const handleSubmit = async () => {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    if (!user?.id_user) {
-      alert("Usuário não identificado.");
-      return;
-    }
     const { exam_name, board, level, year, position } = form;
     if (!exam_name || !board || !level || !year || !position) {
       alert("Preencha todos os campos.");
@@ -47,11 +42,10 @@ export default function AddExamPage() {
           setLoading(false);
           return;
         }
-        const previewRes = await axios.post(
-          "http://localhost:5000/exams/preview-questions",
-          { examText, answerText },
-          { headers: { "Content-Type": "application/json" } }
-        );
+        const previewRes = await api.post("/exams/preview-questions", {
+          examText,
+          answerText,
+        });
         questions = previewRes.data;
       } else {
         if (!examPdf || !answerPdf) {
@@ -62,22 +56,20 @@ export default function AddExamPage() {
         const fd = new FormData();
         fd.append("examPdf", examPdf);
         fd.append("answerPdf", answerPdf);
-        const previewRes = await axios.post(
-          "http://localhost:5000/exams/preview-questions-pdf",
-          fd,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
+        const previewRes = await api.post("/exams/preview-questions-pdf", fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         questions = previewRes.data;
       }
 
-      const createRes = await axios.post("http://localhost:5000/exams", {
-        id_user: user.id_user,
-        exam_name,
-        board,
-        level,
-        year,
+      const createRes = await api.post("/exams", {
+        name: exam_name,
+        year: parseInt(year),
+        exam_board: board,
         position,
+        level,
       });
+
       const id_exam = createRes.data.id_exam;
 
       navigate("/review-questions", { state: { id_exam, questions } });

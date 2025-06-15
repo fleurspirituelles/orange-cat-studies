@@ -5,6 +5,7 @@ import { Button } from "../components/ui/Button";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import axios from "axios";
+import { getCurrentUser } from "../lib/authUser";
 
 export default function AddQuestionPage() {
   const [newExam, setNewExam] = useState<ExamFormData>({
@@ -38,7 +39,7 @@ export default function AddQuestionPage() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const user = JSON.parse(localStorage.getItem("user") || "null");
+      const user = getCurrentUser();
       if (!user?.id_user) {
         alert("Usuário não identificado.");
         return;

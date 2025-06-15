@@ -59,10 +59,10 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
       }
       const user = result.user;
 
-      const response = await axios.post(`${API_URL}/auth/register`, {
+      const response = await axios.post(`${API_URL}/users`, {
+        id_user: user.uid,
         name: fullName,
         email: user.email,
-        password,
       });
 
       localStorage.setItem("user", JSON.stringify(response.data));
@@ -83,10 +83,10 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      const response = await axios.post(`${API_URL}/auth/register`, {
+      const response = await axios.post(`${API_URL}/users`, {
+        id_user: user.uid,
         name: user.displayName,
         email: user.email,
-        password: null,
       });
 
       localStorage.setItem("user", JSON.stringify(response.data));
