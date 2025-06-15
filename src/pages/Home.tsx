@@ -1,18 +1,9 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function Home() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      navigate("/questions");
-    }
-  }, [navigate]);
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
