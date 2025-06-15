@@ -100,7 +100,7 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
           </div>
         </div>
         <div className="text-right text-sm text-muted-foreground mb-1">
-          <a href="#" className="underline">
+          <a href="/" className="underline">
             Esqueceu sua senha?
           </a>
         </div>

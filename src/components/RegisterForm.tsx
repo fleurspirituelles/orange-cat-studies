@@ -162,7 +162,7 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
         </div>
         <div className="text-sm text-muted-foreground mb-2">
           Ao continuar, você concorda com nossos{" "}
-          <a href="#" className="underline">
+          <a href="/" className="underline">
             Termos e Políticas de Privacidade
           </a>
           .
