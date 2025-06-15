@@ -46,18 +46,18 @@ export async function create(req, res) {
   const id_user = await getIdUserByFirebase(req);
   if (!id_user) return res.status(401).json({ message: "Unauthorized." });
 
-  const { name, year, exam_board, position, level } = req.body;
+  const { exam_name, year, board, position, level } = req.body;
 
-  if (!name || !year || !exam_board || !position || !level) {
+  if (!exam_name || !year || !board || !position || !level) {
     return res.status(400).json({ message: "Missing fields." });
   }
 
   try {
     const exam = await Exam.create({
       id_user,
-      exam_name: name,
-      board: exam_board,
+      exam_name,
       year,
+      board,
       position,
       level,
     });
@@ -71,11 +71,11 @@ export async function create(req, res) {
 
 export async function update(req, res) {
   try {
-    const { name, year, exam_board, position, level } = req.body;
+    const { exam_name, year, board, position, level } = req.body;
 
     const updated = await Exam.update(req.params.id, {
-      exam_name: name,
-      board: exam_board,
+      exam_name,
+      board,
       year,
       position,
       level,

@@ -66,9 +66,9 @@ export default function AddExamPage() {
       }
 
       const createRes = await api.post("/exams", {
-        name: exam_name,
+        exam_name,
+        board,
         year: parseInt(year),
-        exam_board: board,
         position,
         level,
       });
