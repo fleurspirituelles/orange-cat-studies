@@ -44,7 +44,6 @@ export default function QuestionsPage() {
 
   const handleSelect = (questionIndex: number, optionIndex: number) => {
     if (correctAnswers) return;
-
     setSelectedOptions((prev) => {
       const updated = [...prev];
       updated[questionIndex] =
@@ -58,7 +57,6 @@ export default function QuestionsPage() {
       alert("Por favor, responda todas as questões antes de corrigir.");
       return;
     }
-
     const results = questions.map((q, i) => {
       const sel = selectedOptions[i];
       return q.choices[sel].letter === q.answer_key;
@@ -71,7 +69,6 @@ export default function QuestionsPage() {
       alert("Por favor, responda todas as questões antes de entregar.");
       return;
     }
-
     try {
       await Promise.all(
         questions.map((q, i) => {
@@ -92,17 +89,18 @@ export default function QuestionsPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gray-100 py-14 px-4">
+      <main className="min-h-screen bg-neutral-100 py-14 px-4">
         <div className="max-w-7xl mx-auto mb-12">
           <div className="grid md:grid-cols-2 gap-10 mb-14">
             <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
-              Resolva suas questões!
+              Resolver Questões Diárias
             </h2>
-            <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
-              Responda abaixo as questões do dia. Após selecionar as
-              alternativas, clique em <strong>Corrigir</strong> para visualizar
-              o resultado. Depois, clique em <strong>Entregar</strong> para
-              registrar suas respostas e desbloquear novas tirinhas.
+            <p className="text-neutral-700 text-base leading-relaxed text-center md:text-left">
+              Responda as questões do dia e acompanhe seu desempenho. Após
+              selecionar suas respostas, clique em <strong>Corrigir</strong>{" "}
+              para visualizar o resultado e, em seguida, em{" "}
+              <strong>Entregar</strong> para registrar seu progresso e
+              desbloquear novas tirinhas.
             </p>
           </div>
 

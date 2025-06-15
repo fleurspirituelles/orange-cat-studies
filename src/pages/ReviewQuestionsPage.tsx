@@ -24,9 +24,16 @@ export default function ReviewQuestionsPage() {
     id_exam: number;
     questions: Omit<QuestionData, "include">[];
   };
+
   const [questions, setQuestions] = useState<QuestionData[]>(
-    initial.map((q) => ({ ...q, include: true }))
+    initial.map((q) => {
+      const allChoicesFilled = ["A", "B", "C", "D", "E"].every((letter) =>
+        q.choices[letter]?.trim()
+      );
+      return { ...q, include: allChoicesFilled };
+    })
   );
+
   const [loading, setLoading] = useState(false);
 
   const updateQuestion = (i: number, upd: Partial<QuestionData>) => {
@@ -39,10 +46,7 @@ export default function ReviewQuestionsPage() {
     const toImport = questions
       .filter((q) => q.include)
       .map(({ include, ...q }) => q);
-    if (!toImport.length) {
-      alert("Marque ao menos uma questão.");
-      return;
-    }
+    if (!toImport.length) return;
     setLoading(true);
     try {
       await api.post("/exams/import-questions", {
@@ -66,20 +70,18 @@ export default function ReviewQuestionsPage() {
             <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
               Revisão de Questões
             </h2>
-            <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
+            <p className="text-neutral-700 text-base leading-relaxed text-center md:text-left">
               Revise abaixo todas as questões extraídas. Corrija eventuais erros
               no enunciado, texto de apoio e alternativas. Utilize o seletor de
-              gabarito para indicar a resposta correta de cada questão. Caso
-              deseje excluir alguma questão da importação, desmarque o checkbox
-              ao lado da questão. Apenas as questões selecionadas serão enviadas
-              para o banco de dados.
+              gabarito para indicar a resposta correta. Desmarque as questões
+              que não deseja importar. Apenas as selecionadas serão salvas.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {questions.map((q, idx) => (
               <div
-                key={q.number}
+                key={q.number + idx}
                 className="bg-white rounded-2xl shadow p-5 border"
               >
                 <div className="flex items-start mb-3">
@@ -92,7 +94,7 @@ export default function ReviewQuestionsPage() {
                     className="mt-1 mr-3 h-4 w-4 text-orange-500"
                   />
                   <div className="flex-1">
-                    <div className="text-sm font-semibold text-orange-500 mb-2">
+                    <div className="text-sm font-semibold text-orange-500 mb-4 uppercase tracking-wide">
                       Questão {q.number}
                     </div>
 
@@ -101,9 +103,9 @@ export default function ReviewQuestionsPage() {
                       onChange={(e) =>
                         updateQuestion(idx, { supportText: e.target.value })
                       }
-                      placeholder="Texto de apoio (ex: poema, texto-base)"
-                      className="w-full rounded border-gray-300 p-2 text-sm mb-2"
-                      rows={1}
+                      placeholder="Texto de apoio (ex: poema, imagem, gráfico ou descrição complementar)"
+                      className="w-full rounded border-gray-300 p-2 text-sm mb-3"
+                      rows={3}
                     />
 
                     <textarea
