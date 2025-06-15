@@ -56,17 +56,28 @@ export default function QuestionsPage() {
   };
 
   const handleEntregar = async () => {
-    await Promise.all(
-      questions.map((q, i) => {
-        const sel = selectedOptions[i];
-        const letter = sel >= 0 ? q.choices[sel].letter : "";
-        return api.post("/answers", {
-          id_question: q.id_question,
-          selected_choice: letter,
-        });
-      })
-    );
-    navigate("/comics");
+    const unanswered = selectedOptions.filter((sel) => sel === -1).length;
+
+    if (unanswered > 0) {
+      alert("Por favor, responda todas as questões antes de entregar.");
+      return;
+    }
+
+    try {
+      await Promise.all(
+        questions.map((q, i) => {
+          const sel = selectedOptions[i];
+          const letter = q.choices[sel].letter;
+          return api.post("/answers", {
+            id_question: q.id_question,
+            selected_choice: letter,
+          });
+        })
+      );
+      navigate("/comics");
+    } catch (err: any) {
+      alert(err.response?.data?.error || err.message);
+    }
   };
 
   return (
