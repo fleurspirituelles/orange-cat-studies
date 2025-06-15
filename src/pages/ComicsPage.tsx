@@ -87,7 +87,6 @@ export default function ComicsPage() {
             })
             .catch(() => {
               const totalDaysFallback = daysInMonth;
-
               api
                 .get<Performance>(`/performance/period/${startDate}/${endDate}`)
                 .then((perf) => {
@@ -136,34 +135,39 @@ export default function ComicsPage() {
     setCurrentIdx((i) => Math.min(modalComics.length - 1, i + 1));
   }
 
+  function getMonthName(month: string) {
+    const date = new Date(2024, parseInt(month) - 1, 1);
+    return date
+      .toLocaleString("pt-BR", { month: "long" })
+      .replace(/^\w/, (c) => c.toUpperCase());
+  }
+
   return (
     <>
       <Navbar />
-      <main className="bg-gray-100 min-h-screen py-14 px-4">
+      <main className="bg-neutral-100 min-h-screen py-14 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10 mb-14">
-            <h2 className="text-4xl font-bold text-gray-900 text-center md:text-left">
-              Álbuns de Tirinhas
+            <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
+              Álbum de Tirinhas
             </h2>
-            <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
-              Colecione tirinhas do Garfield como recompensas diárias ao
-              concluir seus desafios. Acompanhe seu progresso mês a mês,
-              desbloqueie novas tirinhas e complete seu álbum digital.
+            <p className="text-neutral-700 text-base leading-relaxed text-center md:text-left">
+              Acompanhe seu progresso desbloqueando tirinhas conforme completa
+              os desafios diários. Visualize os meses, veja suas conquistas e
+              mantenha sua coleção sempre atualizada.
             </p>
           </div>
 
           <div className="space-y-10">
             {Object.entries(groups).map(([ym, list]) => {
               const [year, month] = ym.split("-");
-              const daysInMonth = new Date(+year, +month, 0).getDate();
-              const start = `01/${month}`;
-              const end = `${daysInMonth}/${month}`;
               const s = stats[ym] || {
                 unlocked: list.length,
-                totalDays: daysInMonth,
+                totalDays: 0,
                 correct: 0,
-                possible: daysInMonth * 10,
+                possible: 0,
               };
+              const monthName = getMonthName(month);
 
               return (
                 <div
@@ -173,17 +177,17 @@ export default function ComicsPage() {
                   <div className="flex justify-between items-start mb-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-1">
-                        {start} – {end}
+                        {monthName} / {year}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        Veja as tirinhas que você desbloqueou no mês.
+                        Visualize suas tirinhas desbloqueadas neste mês.
                       </p>
                     </div>
                     <button
                       onClick={() => openCarousel(list)}
-                      className="px-4 py-2 bg-orange-500 text-white rounded"
+                      className="px-4 py-2 bg-orange-500 text-white rounded text-sm"
                     >
-                      Ver tirinhas
+                      Ver Tirinhas
                     </button>
                   </div>
 
@@ -247,46 +251,60 @@ export default function ComicsPage() {
 
         {modalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg max-w-md w-full p-4 relative">
+            <div className="bg-white rounded-2xl w-full max-w-4xl mx-4 md:mx-0 p-6 relative">
               <button
                 onClick={closeCarousel}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               </button>
-              <div className="flex items-center justify-between mb-4">
+
+              <div className="flex items-center justify-between mb-6">
                 <button
                   onClick={prev}
                   disabled={currentIdx === 0}
-                  className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50"
+                  className="p-3 rounded-full border border-gray-300 hover:bg-gray-100 disabled:opacity-40 transition"
                 >
                   <ChevronLeft className="w-6 h-6 text-gray-700" />
                 </button>
-                <span className="font-semibold">
-                  {new Date(
-                    modalComics[currentIdx].comic_date
-                  ).toLocaleDateString("pt-BR")}
-                </span>
+
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-gray-900">
+                    {new Date(
+                      modalComics[currentIdx].comic_date
+                    ).toLocaleDateString("pt-BR")}
+                  </p>
+                </div>
+
                 <button
                   onClick={next}
                   disabled={currentIdx === modalComics.length - 1}
-                  className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50"
+                  className="p-3 rounded-full border border-gray-300 hover:bg-gray-100 disabled:opacity-40 transition"
                 >
                   <ChevronRight className="w-6 h-6 text-gray-700" />
                 </button>
               </div>
-              <img
-                src={modalComics[currentIdx].image_url}
-                alt="tirinha"
-                className="w-full h-64 object-contain mb-2 rounded-lg"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = "/images/placeholder-comic.png";
-                }}
-              />
-              <p className="text-sm text-gray-600 text-center">
+
+              <div className="w-full flex justify-center mb-4">
+                <div className="w-full md:w-3/4 aspect-[3/2] bg-neutral-100 rounded-lg border overflow-hidden flex items-center justify-center">
+                  <img
+                    src={modalComics[currentIdx].image_url}
+                    alt="tirinha"
+                    className="object-contain w-full h-full"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "/images/placeholder-comic.png";
+                    }}
+                  />
+                </div>
+              </div>
+
+              <p className="text-base text-gray-700 text-center">
                 Questões respondidas nesse dia:{" "}
-                {modalComics[currentIdx].answered_count}.
+                <span className="font-semibold">
+                  {modalComics[currentIdx].answered_count}
+                </span>
+                .
               </p>
             </div>
           </div>
