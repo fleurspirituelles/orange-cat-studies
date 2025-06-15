@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import LoginForm from "../components/LoginForm";
@@ -7,16 +6,8 @@ import RegisterForm from "../components/RegisterForm";
 
 export default function AuthPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const type = searchParams.get("type") || "login";
   const showLogin = type === "login";
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      navigate("/questions");
-    }
-  }, [navigate]);
 
   const handleSwitch = (target: "login" | "register") => {
     setSearchParams({ type: target });

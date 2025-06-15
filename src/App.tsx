@@ -7,54 +7,55 @@ import ReviewQuestionsPage from "./pages/ReviewQuestionsPage";
 import QuestionsPage from "./pages/QuestionsPage";
 import ComicsPage from "./pages/ComicsPage";
 import ProtectedRoute from "./lib/ProtectedRoute";
+import { AuthProvider } from "./lib/AuthProvider";
 
-function App() {
+export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/auth" element={<AuthPage />} />
-      <Route
-        path="/add-exam"
-        element={
-          <ProtectedRoute>
-            <AddExamPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/review-questions"
-        element={
-          <ProtectedRoute>
-            <ReviewQuestionsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/add-question"
-        element={
-          <ProtectedRoute>
-            <AddQuestionPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/questions"
-        element={
-          <ProtectedRoute>
-            <QuestionsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/comics"
-        element={
-          <ProtectedRoute>
-            <ComicsPage />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route
+          path="/add-exam"
+          element={
+            <ProtectedRoute>
+              <AddExamPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/review-questions"
+          element={
+            <ProtectedRoute>
+              <ReviewQuestionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-question"
+          element={
+            <ProtectedRoute>
+              <AddQuestionPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/questions"
+          element={
+            <ProtectedRoute>
+              <QuestionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/comics"
+          element={
+            <ProtectedRoute>
+              <ComicsPage />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </AuthProvider>
   );
 }
-
-export default App;
