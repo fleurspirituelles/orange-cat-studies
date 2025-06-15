@@ -19,28 +19,31 @@ export default function Navbar() {
         </div>
       )}
       <header className="bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <div className="mb-3 text-2xl">😺</div>
-            <nav className="hidden md:flex gap-6 text-sm">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:gap-8">
+            <div className="flex items-center mb-3 md:mb-0">
+              <div className="text-2xl">😺</div>
+            </div>
+            <nav className="flex flex-col md:flex-row md:gap-8 text-sm text-center">
               <a href="/" className="hover:text-orange-500">
                 Início
               </a>
               <a href="/add-exam" className="hover:text-orange-500">
-                Editais
+                Adicionar Prova
               </a>
               <a href="/add-question" className="hover:text-orange-500">
-                Cadastrar Questão
+                Adicionar Questão
               </a>
               <a href="/questions" className="hover:text-orange-500">
-                Questões
+                Resolver Questões
               </a>
               <a href="/comics" className="hover:text-orange-500">
-                Álbuns
+                Álbuns de Figurinhas
               </a>
             </nav>
           </div>
-          <div className="flex gap-2 items-center">
+
+          <div className="flex justify-center md:justify-end gap-2 items-center mt-3 md:mt-0">
             {user ? (
               <>
                 <span className="text-sm font-semibold hidden sm:block">

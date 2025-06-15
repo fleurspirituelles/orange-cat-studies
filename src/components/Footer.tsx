@@ -18,16 +18,16 @@ export default function Footer() {
               <a href="/">Início</a>
             </li>
             <li>
-              <a href="/add-exam">Editais</a>
+              <a href="/add-exam">Adicionar Prova</a>
             </li>
             <li>
-              <a href="/add-question">Cadastrar Questão</a>
+              <a href="/add-question">Adicionar Questão</a>
             </li>
             <li>
-              <a href="/questions">Questões</a>
+              <a href="/questions">Resolver Questões</a>
             </li>
             <li>
-              <a href="/comics">Álbuns</a>
+              <a href="/comics">Álbuns de Figurinhas</a>
             </li>
           </ul>
         </div>
