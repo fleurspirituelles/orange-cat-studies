@@ -14,6 +14,7 @@ export default function AddQuestionPage() {
     year: "",
     position: "",
   });
+
   const [form, setForm] = useState({
     statement: "",
     A: "",
@@ -23,6 +24,7 @@ export default function AddQuestionPage() {
     E: "",
     answer_key: "",
   });
+
   const [loading, setLoading] = useState(false);
 
   const handleNewExamChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +37,10 @@ export default function AddQuestionPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleAnswerKeySelect = (letter: string) => {
+    setForm((prev) => ({ ...prev, answer_key: letter }));
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -43,6 +49,7 @@ export default function AddQuestionPage() {
         alert("Preencha todos os campos do edital.");
         return;
       }
+
       const examRes = await api.post("/exams", {
         exam_name,
         board,
@@ -57,6 +64,7 @@ export default function AddQuestionPage() {
         alert("Preencha todos os campos da questão.");
         return;
       }
+
       const qRes = await api.post("/questions", {
         id_exam,
         statement,
@@ -75,6 +83,7 @@ export default function AddQuestionPage() {
       );
 
       alert("Questão cadastrada com sucesso!");
+
       setForm({
         statement: "",
         A: "",
@@ -101,65 +110,94 @@ export default function AddQuestionPage() {
   return (
     <>
       <Navbar />
-      <main className="bg-gray-100 min-h-screen px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">
-            Cadastro de Questões
-          </h2>
-          <div className="mb-6">
-            <ExamForm form={newExam} onChange={handleNewExamChange} />
+      <main className="min-h-screen bg-neutral-100 py-14 px-4">
+        <div className="max-w-7xl mx-auto mb-12">
+          <div className="grid md:grid-cols-2 gap-10 mb-14">
+            <h2 className="text-4xl font-bold text-gray-900 text-center md:text-left">
+              Cadastro de Questões
+            </h2>
+            <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
+              Insira manualmente novas questões no sistema de forma organizada e
+              detalhada. Primeiro, preencha as informações do edital, informando
+              o concurso, banca, ano e cargo. Em seguida, cadastre o enunciado,
+              alternativas e selecione o gabarito correto. As questões
+              adicionadas serão integradas aos desafios diários automaticamente.
+            </p>
           </div>
-          <div className="space-y-5">
-            <div>
-              <label className="text-sm font-medium mb-1 block text-gray-700">
-                Enunciado
-              </label>
-              <Input
-                name="statement"
-                value={form.statement}
-                onChange={handleFormChange}
-                placeholder="Digite o enunciado"
-              />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white rounded-2xl shadow p-6 border">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                Informações do Edital
+              </h3>
+              <ExamForm form={newExam} onChange={handleNewExamChange} />
             </div>
-            {(["A", "B", "C", "D", "E"] as const).map((letter) => (
-              <div key={letter}>
-                <label className="text-sm font-medium mb-1 block text-gray-700">
-                  Alternativa {letter}
-                </label>
-                <Input
-                  name={letter}
-                  value={form[letter]}
-                  onChange={handleFormChange}
-                  placeholder={`Digite a alternativa ${letter}`}
-                />
-              </div>
-            ))}
-            <div>
-              <label className="text-sm font-medium mb-1 block text-gray-700">
-                Resposta Correta
-              </label>
-              <select
-                name="answer_key"
-                value={form.answer_key}
-                onChange={handleFormChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              >
-                <option value="">Selecione</option>
+
+            <div className="bg-white rounded-2xl shadow p-6 border">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                Cadastro da Questão
+              </h3>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Enunciado
+                  </label>
+                  <Input
+                    name="statement"
+                    value={form.statement}
+                    onChange={handleFormChange}
+                    placeholder="Digite o enunciado"
+                  />
+                </div>
+
                 {(["A", "B", "C", "D", "E"] as const).map((letter) => (
-                  <option key={letter} value={letter}>
-                    {letter}
-                  </option>
+                  <div key={letter}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Alternativa {letter}
+                    </label>
+                    <Input
+                      name={letter}
+                      value={form[letter]}
+                      onChange={handleFormChange}
+                      placeholder={`Digite a alternativa ${letter}`}
+                    />
+                  </div>
                 ))}
-              </select>
-            </div>
-            <div>
-              <Button
-                onClick={handleSubmit}
-                className="w-full"
-                disabled={loading}
-              >
-                {loading ? "Salvando..." : "Salvar Questão"}
-              </Button>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Resposta Correta
+                  </label>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {["A", "B", "C", "D", "E"].map((letter) => (
+                      <button
+                        key={letter}
+                        onClick={() => handleAnswerKeySelect(letter)}
+                        type="button"
+                        className={`h-9 w-9 rounded-full border flex items-center justify-center text-sm font-medium transition
+                          ${
+                            form.answer_key === letter
+                              ? "bg-orange-500 text-white border-orange-500"
+                              : "border-gray-300 text-gray-700 hover:bg-gray-100"
+                          }`}
+                      >
+                        {letter}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-3">
+                  <Button
+                    onClick={handleSubmit}
+                    className="w-full"
+                    disabled={loading}
+                  >
+                    {loading ? "Salvando..." : "Salvar Questão"}
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
