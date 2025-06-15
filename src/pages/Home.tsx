@@ -13,27 +13,27 @@ export default function Home() {
     {
       question: "Como são geradas as questões do desafio diário?",
       answer:
-        "As questões são extraídas automaticamente das provas e gabaritos enviados pelo próprio usuário, garantindo uma preparação personalizada e direcionada.",
+        "As questões são extraídas automaticamente a partir das provas e gabaritos que você mesmo envia, permitindo uma preparação personalizada baseada em provas anteriores.",
     },
     {
       question: "Posso enviar minhas próprias provas?",
       answer:
-        "Sim. O sistema permite o envio de provas anteriores e seus respectivos gabaritos, que serão processados e transformados automaticamente em questões para estudo.",
+        "Sim. Basta enviar provas anteriores e seus respectivos gabaritos. O sistema processa e transforma automaticamente em questões organizadas para seus estudos.",
     },
     {
       question: "Quantas questões preciso resolver por dia?",
       answer:
-        "O desafio diário disponibiliza 10 questões por dia, selecionadas aleatoriamente a partir do banco de dados gerado com as provas enviadas.",
+        "O desafio diário apresenta 10 questões selecionadas aleatoriamente a partir do seu banco de provas, promovendo uma rotina constante e variada.",
     },
     {
-      question: "Como funcionam as recompensas das tirinhas do Garfield?",
+      question: "Como funcionam as recompensas com as tirinhas do Garfield?",
       answer:
-        "A cada sequência diária de estudo e resolução de questões, novas tirinhas do Garfield são desbloqueadas como forma de incentivo à constância e ao progresso.",
+        "Ao manter sua rotina diária de estudos e resolver os desafios propostos, você desbloqueia tirinhas do Garfield, criando um álbum digital divertido que acompanha sua evolução.",
     },
     {
-      question: "É possível visualizar todas as tirinhas já desbloqueadas?",
+      question: "Posso visualizar as tirinhas que já desbloqueei?",
       answer:
-        "Sim. As tirinhas conquistadas ficam armazenadas no seu álbum, que pode ser acessado a qualquer momento para acompanhar sua coleção.",
+        "Sim. Todas as tirinhas conquistadas ficam armazenadas no seu álbum digital, disponível para consulta sempre que desejar.",
     },
   ];
 
@@ -47,9 +47,9 @@ export default function Home() {
             <span className="text-orange-500 font-extrabold">Comece agora</span>{" "}
             a estudar para concursos com{" "}
             <span className="text-orange-500 font-extrabold">
-              questões extraídas
-            </span>{" "}
-            dos editais!
+              questões extraídas de provas anteriores
+            </span>
+            !
           </p>
         </div>
         <img
@@ -65,10 +65,10 @@ export default function Home() {
             Por que utilizar o Orange Cat Studies?
           </h2>
           <p className="text-gray-700 text-lg leading-relaxed max-w-3xl mx-auto">
-            O Orange Cat Studies transforma a preparação para concursos em uma
-            experiência organizada e eficiente. Com extração automatizada de
-            provas anteriores, desafios diários e sistema de recompensas, seus
-            estudos tornam-se mais direcionados e motivadores.
+            Transforme sua preparação com um sistema eficiente e inteligente.
+            Com extração automática de provas anteriores, desafios diários
+            personalizados e recompensas divertidas com tirinhas do Garfield,
+            seus estudos ganham constância e leveza.
           </p>
         </div>
 
@@ -79,9 +79,8 @@ export default function Home() {
               Extração Inteligente de Provas
             </h3>
             <p className="text-base text-neutral-700">
-              Envie provas anteriores e seus respectivos gabaritos. O sistema
-              realiza a extração automatizada das questões e organiza o conteúdo
-              de forma estruturada para seus estudos.
+              Envie provas anteriores com gabaritos. O sistema extrai e organiza
+              automaticamente as questões, criando seu próprio banco de estudos.
             </p>
           </div>
 
@@ -91,31 +90,32 @@ export default function Home() {
               Desafios Diários Personalizados
             </h3>
             <p className="text-base text-neutral-700">
-              Diariamente, são disponibilizadas 10 questões selecionadas a
-              partir do banco gerado pelas provas enviadas, proporcionando uma
-              preparação direcionada e consistente.
+              Todos os dias, 10 questões são sorteadas do seu banco de provas,
+              oferecendo prática constante e baseada no conteúdo que você
+              inseriu.
             </p>
           </div>
 
           <div className="p-8 border rounded-2xl shadow bg-white transition hover:shadow-md">
             <p className="text-5xl font-bold text-orange-500 mb-6">03</p>
             <h3 className="text-xl font-semibold mb-4">
-              Álbum de Tirinhas do Garfield
+              Álbum de Figurinhas do Garfield
             </h3>
             <p className="text-base text-neutral-700">
-              Estude com constância e desbloqueie tirinhas exclusivas do
-              Garfield como forma de incentivo e acompanhamento da sua evolução.
+              Com o avanço diário nos estudos, você desbloqueia tirinhas do
+              Garfield, formando um divertido álbum digital que acompanha seu
+              desempenho.
             </p>
           </div>
         </div>
       </section>
 
       <section className="bg-neutral-50 py-20 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-16">
-          <div className="md:w-1/3">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16">
+          <div>
             <h2 className="text-2xl font-bold mb-6">Perguntas Frequentes</h2>
             <p className="text-base text-neutral-700">
-              Ainda tem dúvidas? Entre em contato com nossa equipe pelo e-mail{" "}
+              Ainda tem dúvidas? Entre em contato pelo e-mail{" "}
               <a
                 href="mailto:suporte@garfieldstudies.com"
                 className="text-orange-500 underline"
@@ -126,7 +126,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="md:w-2/3 space-y-4">
+          <div className="md:col-span-2 space-y-4">
             {faqs.map((item, index) => (
               <div key={index} className="border rounded-xl bg-white shadow">
                 <button
