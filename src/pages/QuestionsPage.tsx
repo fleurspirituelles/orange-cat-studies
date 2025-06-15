@@ -44,9 +44,13 @@ export default function QuestionsPage() {
 
   const handleSelect = (questionIndex: number, optionIndex: number) => {
     if (correctAnswers) return;
-    const updated = [...selectedOptions];
-    updated[questionIndex] = optionIndex;
-    setSelectedOptions(updated);
+
+    setSelectedOptions((prev) => {
+      const updated = [...prev];
+      updated[questionIndex] =
+        updated[questionIndex] === optionIndex ? -1 : optionIndex;
+      return updated;
+    });
   };
 
   const handleCorrigir = () => {
