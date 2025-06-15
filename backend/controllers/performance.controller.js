@@ -19,7 +19,12 @@ export async function getByUser(req, res) {
 export async function getByPeriod(req, res) {
   const { id_user, start, end } = req.params;
   const rec = await Performance.getByPeriod(id_user, start, end);
-  if (!rec) return res.status(404).json({ error: "Performance not found." });
+  if (!rec) {
+    return res.status(200).json({
+      question_count: 0,
+      correct_count: 0,
+    });
+  }
   res.status(200).json(rec);
 }
 
