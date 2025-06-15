@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
@@ -109,7 +109,7 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
             Nome completo
           </label>
           <Input
-            placeholder="Digite seu nome completo."
+            placeholder="Informe seu nome completo."
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
           />
@@ -117,7 +117,7 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
         <div>
           <label className="text-sm font-medium mb-1 block">E-mail</label>
           <Input
-            placeholder="Digite seu melhor e-mail."
+            placeholder="Informe seu e-mail."
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -160,6 +160,13 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
             </div>
           </div>
         </div>
+        <div className="text-sm text-muted-foreground mb-2">
+          Ao continuar, você concorda com nossos{" "}
+          <a href="#" className="underline">
+            Termos e Políticas de Privacidade
+          </a>
+          .
+        </div>
         <Button className="w-full" onClick={handleRegister}>
           Criar conta
         </Button>
@@ -168,7 +175,7 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
           className="w-full"
           onClick={handleGoogleRegister}
         >
-          <img src="/google-icon.svg" alt="Google" className="h-4 w-4 mr-2" />
+          <img src="/google-icon.svg" alt="Google" className="h-5 w-5 mr-2" />
           Cadastrar-se com Google
         </Button>
         <p className="text-sm text-center">

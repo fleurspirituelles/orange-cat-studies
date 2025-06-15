@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
@@ -70,13 +70,13 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
     <div className="w-full max-w-md p-8 rounded-xl bg-white shadow-md">
       <h2 className="text-2xl font-bold mb-2 text-center">Entrar</h2>
       <p className="text-sm text-center text-muted-foreground mb-6">
-        Bem-vindo(a) de volta! Acesse sua conta para continuar.
+        Bem-vindo(a) de volta! Acesse sua conta para continuar com seus estudos.
       </p>
       <div className="space-y-4">
         <div>
           <label className="text-sm font-medium mb-1 block">E-mail</label>
           <Input
-            placeholder="Digite seu e-mail."
+            placeholder="Informe seu e-mail."
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -85,7 +85,7 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
           <label className="text-sm font-medium mb-1 block">Senha</label>
           <div className="relative">
             <Input
-              placeholder="Digite sua senha."
+              placeholder="Informe sua senha."
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -100,28 +100,23 @@ export default function LoginForm({ switchToRegister }: LoginFormProps) {
           </div>
         </div>
         <div className="text-right text-sm text-muted-foreground mb-1">
-          <a href="#" className="hover:underline">
+          <a href="#" className="underline">
             Esqueceu sua senha?
           </a>
         </div>
-        <div className="text-xs text-muted-foreground mb-2">
-          Ao continuar, você concorda com nossos{" "}
-          <a href="#" className="underline">
-            Termos e Políticas de Privacidade
-          </a>
-          .
+        <div className="space-y-3">
+          <Button className="w-full" onClick={handleLogin}>
+            Entrar
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleLogin}
+          >
+            <img src="/google-icon.svg" alt="Google" className="h-5 w-5 mr-2" />
+            Entrar com Google
+          </Button>
         </div>
-        <Button className="w-full" onClick={handleLogin}>
-          Entrar
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={handleGoogleLogin}
-        >
-          <img src="/google-icon.svg" alt="Google" className="h-4 w-4 mr-2" />
-          Entrar com Google
-        </Button>
         <p className="text-sm text-center">
           Não tem uma conta?{" "}
           <span
