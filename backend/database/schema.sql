@@ -4,7 +4,7 @@ USE purrfect_studies;
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
-    id_user INT AUTO_INCREMENT PRIMARY KEY,
+    id_user VARCHAR(28) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) DEFAULT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS albums;
 CREATE TABLE albums (
     id_album INT AUTO_INCREMENT PRIMARY KEY,
-    id_user INT NOT NULL,
+    id_user VARCHAR(28) NOT NULL,
     month INT NOT NULL CHECK (month BETWEEN 1 AND 12),
     year INT NOT NULL CHECK (year >= 2000),
     total_days INT NOT NULL CHECK (total_days BETWEEN 28 AND 31),
@@ -24,7 +24,7 @@ CREATE TABLE albums (
 DROP TABLE IF EXISTS exams;
 CREATE TABLE exams (
     id_exam INT AUTO_INCREMENT PRIMARY KEY,
-    id_user INT NOT NULL,
+    id_user VARCHAR(28) NOT NULL,
     exam_name VARCHAR(100) NOT NULL,
     board VARCHAR(50),
     level VARCHAR(50),
@@ -55,7 +55,7 @@ CREATE TABLE choices (
 DROP TABLE IF EXISTS answers;
 CREATE TABLE answers (
     id_answer INT AUTO_INCREMENT PRIMARY KEY,
-    id_user INT NOT NULL,
+    id_user VARCHAR(28) NOT NULL,
     id_question INT NOT NULL,
     selected_choice CHAR(1) NOT NULL CHECK (selected_choice IN ('A','B','C','D','E')),
     answer_date DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -66,7 +66,7 @@ CREATE TABLE answers (
 DROP TABLE IF EXISTS performance;
 CREATE TABLE performance (
     id_performance INT AUTO_INCREMENT PRIMARY KEY,
-    id_user INT NOT NULL,
+    id_user VARCHAR(28) NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     question_count INT CHECK (question_count >= 0),
@@ -77,7 +77,7 @@ CREATE TABLE performance (
 DROP TABLE IF EXISTS comics;
 CREATE TABLE comics (
     id_comic INT AUTO_INCREMENT PRIMARY KEY,
-    id_user INT NOT NULL,
+    id_user VARCHAR(28) NOT NULL,
     comic_date DATE NOT NULL,
     image_url VARCHAR(255) NOT NULL,
     answered_count INT NOT NULL DEFAULT 0,
