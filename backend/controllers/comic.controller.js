@@ -1,5 +1,12 @@
 import Comic from "../models/comic.model.js";
 import axios from "axios";
+import User from "../models/user.model.js";
+
+async function getIdUserByFirebase(req) {
+  const uid = req.user.uid;
+  const user = await User.getByUID(uid);
+  return user?.id_user;
+}
 
 export async function getAll(_req, res) {
   const comics = await Comic.getAll();
@@ -13,12 +20,16 @@ export async function getById(req, res) {
 }
 
 export async function getByUser(req, res) {
-  const comics = await Comic.getByUser(req.params.id_user);
+  const id_user = await getIdUserByFirebase(req);
+  if (!id_user) return res.status(401).json({ message: "Unauthorized." });
+  const comics = await Comic.getByUser(id_user);
   res.status(200).json(comics);
 }
 
 export async function getByDate(req, res) {
-  const { id_user, comic_date } = req.params;
+  const id_user = await getIdUserByFirebase(req);
+  if (!id_user) return res.status(401).json({ message: "Unauthorized." });
+  const { comic_date } = req.params;
   const comic = await Comic.getByDate(id_user, comic_date);
   if (!comic)
     return res
@@ -28,7 +39,10 @@ export async function getByDate(req, res) {
 }
 
 export async function create(req, res) {
-  const { id_user, comic_date, image_url } = req.body;
+  const id_user = await getIdUserByFirebase(req);
+  if (!id_user) return res.status(401).json({ message: "Unauthorized." });
+
+  const { comic_date, image_url } = req.body;
   const created = await Comic.create({
     id_user,
     comic_date,

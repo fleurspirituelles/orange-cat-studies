@@ -1,19 +1,23 @@
 import User from "../models/user.model.js";
 
-export async function create(req, res) {
-  const { id_user, name, email } = req.body;
-  if (!id_user || !name || !email) {
+export async function sync(req, res) {
+  const { name, email } = req.body;
+  const uid = req.user.uid;
+
+  if (!uid || !name || !email) {
     return res.status(400).json({ message: "Missing required fields." });
   }
+
   try {
-    const existing = await User.getById(id_user);
+    const existing = await User.getByUID(uid);
     if (existing) {
-      return res.status(409).json({ message: "User already exists." });
+      return res.status(200).json(existing);
     }
-    const newUser = await User.create({ id_user, name, email, password: null });
+
+    const newUser = await User.create({ uid, name, email });
     return res.status(201).json(newUser);
   } catch (error) {
-    return res.status(500).json({ message: "Error creating user", error });
+    return res.status(500).json({ message: "Error syncing user", error });
   }
 }
 

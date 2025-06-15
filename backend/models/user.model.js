@@ -22,13 +22,26 @@ const User = {
     return rows[0];
   },
 
-  create: async (user) => {
-    const { id_user, name, email, password } = user;
-    await connection.execute(
-      "INSERT INTO users (id_user, name, email, password, created_at) VALUES (?, ?, ?, ?, NOW())",
-      [id_user, name, email, password]
+  getByUID: async (uid) => {
+    const [rows] = await connection.execute(
+      "SELECT * FROM users WHERE uid = ?",
+      [uid]
     );
-    return { id_user, name, email, password };
+    return rows[0];
+  },
+
+  create: async (user) => {
+    const { uid, name, email } = user;
+    const [result] = await connection.execute(
+      "INSERT INTO users (uid, name, email, created_at) VALUES (?, ?, ?, NOW())",
+      [uid, name, email]
+    );
+    return {
+      id_user: result.insertId,
+      uid,
+      name,
+      email,
+    };
   },
 
   remove: async (id_user) => {

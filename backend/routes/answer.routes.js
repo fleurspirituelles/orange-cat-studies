@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.use(verifyFirebaseToken);
 
-router.get("/count/:id_user/:date", controller.countByUserDate);
 router.get("/", controller.getAll);
+router.get("/count/:date", controller.countByUserDate);
 router.get("/:id", controller.getById);
 router.post(
   "/",

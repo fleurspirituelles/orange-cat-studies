@@ -8,8 +8,8 @@ const router = express.Router();
 router.use(verifyFirebaseToken);
 
 router.get("/", controller.getAll);
-router.get("/user/:id_user", controller.getByUser);
-router.get("/user/:id_user/date/:comic_date", controller.getByDate);
+router.get("/my", controller.getByUser);
+router.get("/my/date/:comic_date", controller.getByDate);
 router.get("/date/:comic_date", controller.fetchImage);
 router.get("/:id", controller.getById);
 router.post(

@@ -4,14 +4,22 @@ import Choice from "../models/choice.model.js";
 import { extractQuestionsFromText } from "../utils/textProcessor.js";
 import multer from "multer";
 import pdf from "pdf-parse/lib/pdf-parse.js";
+import User from "../models/user.model.js";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+async function getIdUserByFirebase(req) {
+  const uid = req.user.uid;
+  const user = await User.getByUID(uid);
+  return user?.id_user;
+}
+
 export async function listExams(req, res) {
   try {
-    const { id_user } = req.query;
-    const where = id_user ? { id_user } : {};
-    const exams = await Exam.findAll({ where, order: [["createdAt", "DESC"]] });
+    const id_user = await getIdUserByFirebase(req);
+    if (!id_user) return res.status(401).json({ message: "Unauthorized." });
+
+    const exams = await Exam.getByUser(id_user);
     return res.status(200).json(exams);
   } catch (err) {
     return res
@@ -35,19 +43,21 @@ export async function getById(req, res) {
 }
 
 export async function create(req, res) {
-  const { name, year, exam_board, position, level } = req.body;
-  const id_user = req.user?.uid;
+  const id_user = await getIdUserByFirebase(req);
+  if (!id_user) return res.status(401).json({ message: "Unauthorized." });
 
-  if (!id_user || !name || !year || !exam_board || !position || !level) {
+  const { name, year, exam_board, position, level } = req.body;
+
+  if (!name || !year || !exam_board || !position || !level) {
     return res.status(400).json({ message: "Missing fields." });
   }
 
   try {
     const exam = await Exam.create({
       id_user,
-      name,
+      exam_name: name,
+      board: exam_board,
       year,
-      exam_board,
       position,
       level,
     });
@@ -61,7 +71,16 @@ export async function create(req, res) {
 
 export async function update(req, res) {
   try {
-    const updated = await Exam.update(req.params.id, req.body);
+    const { name, year, exam_board, position, level } = req.body;
+
+    const updated = await Exam.update(req.params.id, {
+      exam_name: name,
+      board: exam_board,
+      year,
+      position,
+      level,
+    });
+
     if (!updated) {
       return res.status(404).json({ error: "Exam not found." });
     }
@@ -90,7 +109,9 @@ export async function remove(req, res) {
 export async function previewQuestions(req, res) {
   const { examText, answerText } = req.body;
   if (!examText || !answerText) {
-    return res.status(400).json({ message: "Missing examText or answerText." });
+    return res
+      .status(400)
+      .json({ message: "Missing exam text or answer text." });
   }
   try {
     const questions = extractQuestionsFromText(examText, answerText);
@@ -132,7 +153,7 @@ export const previewPdfUpload = [
 export async function importQuestions(req, res) {
   const { id_exam, questions } = req.body;
   if (!id_exam || !Array.isArray(questions)) {
-    return res.status(400).json({ message: "Missing id_exam or questions." });
+    return res.status(400).json({ message: "Missing exam ID or questions." });
   }
   try {
     for (const q of questions) {

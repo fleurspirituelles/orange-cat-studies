@@ -3,6 +3,7 @@ import Comic from "../models/comic.model.js";
 import Performance from "../models/performance.model.js";
 import Album from "../models/album.model.js";
 import connection from "../config/database.js";
+import User from "../models/user.model.js";
 
 function randomComicDate() {
   const start = new Date(1980, 0, 1).getTime();
@@ -21,6 +22,12 @@ function todayIsoLocal() {
   const MM = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
   return `${yyyy}-${MM}-${dd}`;
+}
+
+async function getIdUserByFirebase(req) {
+  const uid = req.user.uid;
+  const user = await User.getByUID(uid);
+  return user?.id_user;
 }
 
 export async function getAll(_req, res) {
@@ -43,8 +50,11 @@ export async function getById(req, res) {
 }
 
 export async function create(req, res) {
-  const { id_user, id_question, selected_choice } = req.body;
-  if (!id_user || !id_question || !selected_choice) {
+  const id_user = await getIdUserByFirebase(req);
+  if (!id_user) return res.status(401).json({ message: "Unauthorized." });
+
+  const { id_question, selected_choice } = req.body;
+  if (!id_question || !selected_choice) {
     return res.status(400).json({ message: "Missing required fields." });
   }
 
@@ -109,7 +119,8 @@ export async function create(req, res) {
       });
     }
 
-    const monthNum = +MM, yearNum = +yyyy;
+    const monthNum = +MM,
+      yearNum = +yyyy;
     if (!(await Album.getByMonth(id_user, monthNum, yearNum))) {
       const totalDays = new Date(yyyy, monthNum, 0).getDate();
       await Album.create({
@@ -147,7 +158,10 @@ export async function remove(req, res) {
 }
 
 export async function countByUserDate(req, res) {
-  const { id_user, date } = req.params;
+  const id_user = await getIdUserByFirebase(req);
+  if (!id_user) return res.status(401).json({ message: "Unauthorized." });
+
+  const { date } = req.params;
   try {
     const [[{ cnt }]] = await connection.execute(
       "SELECT COUNT(*) AS cnt FROM answers WHERE id_user = ? AND DATE(answer_date) = ?",

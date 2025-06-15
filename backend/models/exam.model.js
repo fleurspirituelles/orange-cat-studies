@@ -22,20 +22,29 @@ const Exam = {
     return rows;
   },
 
-  create: async ({ id_user, name, year, exam_board, position, level }) => {
+  create: async ({ id_user, exam_name, year, board, position, level }) => {
     const [result] = await connection.execute(
       "INSERT INTO exams (id_user, exam_name, board, level, year, position, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())",
-      [id_user, name, exam_board, level, year, position]
+      [id_user, exam_name, board, level, year, position]
     );
     return {
       id_exam: result.insertId,
       id_user,
-      name,
-      exam_board,
+      exam_name,
+      board,
       level,
       year,
       position,
     };
+  },
+
+  update: async (id_exam, exam) => {
+    const { exam_name, board, level, year, position } = exam;
+    const [result] = await connection.execute(
+      "UPDATE exams SET exam_name = ?, board = ?, level = ?, year = ?, position = ? WHERE id_exam = ?",
+      [exam_name, board, level, year, position, id_exam]
+    );
+    return result.affectedRows > 0;
   },
 
   remove: async (id_exam) => {

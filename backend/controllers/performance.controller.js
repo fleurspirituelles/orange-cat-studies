@@ -1,4 +1,11 @@
 import Performance from "../models/performance.model.js";
+import User from "../models/user.model.js";
+
+async function getIdUserByFirebase(req) {
+  const uid = req.user.uid;
+  const user = await User.getByUID(uid);
+  return user?.id_user;
+}
 
 export async function getAll(req, res) {
   const records = await Performance.getAll();
@@ -12,12 +19,18 @@ export async function getById(req, res) {
 }
 
 export async function getByUser(req, res) {
-  const recs = await Performance.getByUser(req.params.id_user);
+  const id_user = await getIdUserByFirebase(req);
+  if (!id_user) return res.status(401).json({ message: "Unauthorized." });
+
+  const recs = await Performance.getByUser(id_user);
   res.status(200).json(recs);
 }
 
 export async function getByPeriod(req, res) {
-  const { id_user, start, end } = req.params;
+  const id_user = await getIdUserByFirebase(req);
+  if (!id_user) return res.status(401).json({ message: "Unauthorized." });
+
+  const { start, end } = req.params;
   const rec = await Performance.getByPeriod(id_user, start, end);
 
   if (rec) {
@@ -26,12 +39,15 @@ export async function getByPeriod(req, res) {
   }
 
   const dynamic = await Performance.getFromComics(id_user, start, end);
-
   res.status(200).json(dynamic);
 }
 
 export async function create(req, res) {
-  const rec = await Performance.create(req.body);
+  const id_user = await getIdUserByFirebase(req);
+  if (!id_user) return res.status(401).json({ message: "Unauthorized." });
+
+  const data = { ...req.body, id_user };
+  const rec = await Performance.create(data);
   res.status(201).json(rec);
 }
 

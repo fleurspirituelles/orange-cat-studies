@@ -13,7 +13,6 @@ const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "root",
-  database: "purrfect_studies",
   multipleStatements: true,
 });
 
