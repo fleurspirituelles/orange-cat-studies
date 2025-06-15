@@ -75,57 +75,82 @@ export default function QuestionsPage() {
   return (
     <>
       <Navbar />
-      <main className="bg-[#f8f8f8] min-h-screen px-4 sm:px-8 lg:px-16 py-16">
-        <div className="max-w-7xl mx-auto space-y-10">
-          {questions.map((q, i) => (
-            <div key={q.id_question} className="space-y-4">
-              <h2 className="text-sm font-semibold text-gray-900">
-                ({q.year}) {q.board} – {q.exam_name}
-              </h2>
-              <p className="text-sm text-gray-700">{q.statement}</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {q.choices.map((choice, idx) => {
-                  const isSelected = selectedOptions[i] === idx;
-                  const isCorrect = correctAnswers?.[i] ?? false;
-                  const correctLetter = q.answer_key;
-                  const baseClass =
-                    "rounded-lg border px-4 py-4 text-sm font-medium transition-all duration-200 text-left";
-                  let variantClass = "";
+      <main className="min-h-screen bg-gray-100 py-14 px-4">
+        <div className="max-w-7xl mx-auto mb-12">
+          <div className="grid md:grid-cols-2 gap-10 mb-14">
+            <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
+              Resolva suas questões!
+            </h2>
+            <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
+              Responda abaixo as questões do dia. Após selecionar as
+              alternativas, clique em <strong>Corrigir</strong> para visualizar
+              o resultado. Depois, clique em <strong>Entregar</strong> para
+              registrar suas respostas e desbloquear novas tirinhas.
+            </p>
+          </div>
 
-                  if (correctAnswers) {
-                    if (choice.letter === correctLetter) {
-                      variantClass = "bg-green-500 text-white border-green-500";
-                    } else if (isSelected && !isCorrect) {
-                      variantClass = "bg-red-500 text-white border-red-500";
+          <div className="space-y-8">
+            {questions.map((q, i) => (
+              <div
+                key={q.id_question}
+                className="bg-white rounded-2xl shadow p-6 border"
+              >
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-orange-500 mb-2">
+                    ({q.year}) {q.board} – {q.exam_name}
+                  </h3>
+                  <p className="text-sm text-gray-700">{q.statement}</p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {q.choices.map((choice, idx) => {
+                    const isSelected = selectedOptions[i] === idx;
+                    const isCorrect = correctAnswers?.[i] ?? false;
+                    const correctLetter = q.answer_key;
+                    const baseClass =
+                      "rounded-xl border px-4 py-4 text-sm font-medium transition-all duration-200 text-left";
+                    let variantClass = "";
+
+                    if (correctAnswers) {
+                      if (choice.letter === correctLetter) {
+                        variantClass =
+                          "bg-green-500 text-white border-green-500";
+                      } else if (isSelected && !isCorrect) {
+                        variantClass = "bg-red-500 text-white border-red-500";
+                      } else {
+                        variantClass = "bg-white text-gray-700 border-gray-200";
+                      }
                     } else {
-                      variantClass = "bg-white text-gray-700 border-gray-200";
+                      variantClass = isSelected
+                        ? "bg-orange-500 text-white border-orange-500"
+                        : "bg-white text-gray-700 border-gray-200 hover:border-orange-500";
                     }
-                  } else {
-                    variantClass = isSelected
-                      ? "bg-orange-500 text-white border-orange-500"
-                      : "bg-white text-gray-700 border-gray-200 hover:border-orange-500";
-                  }
 
-                  return (
-                    <button
-                      key={choice.letter}
-                      onClick={() => handleSelect(i, idx)}
-                      className={`${baseClass} ${variantClass}`}
-                    >
-                      <span className="block font-bold mb-1">
-                        {choice.letter})
-                      </span>
-                      {choice.description}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={choice.letter}
+                        onClick={() => handleSelect(i, idx)}
+                        className={`${baseClass} ${variantClass}`}
+                      >
+                        <span className="block font-bold mb-1">
+                          {choice.letter})
+                        </span>
+                        {choice.description}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
-          <div className="flex gap-4 justify-center">
-            <Button onClick={handleCorrigir}>Corrigir</Button>
-            <Button onClick={handleEntregar}>Entregar</Button>
+          <div className="mt-14 flex justify-center gap-4">
+            <Button className="w-full max-w-xs" onClick={handleCorrigir}>
+              Corrigir
+            </Button>
+            <Button className="w-full max-w-xs" onClick={handleEntregar}>
+              Entregar
+            </Button>
           </div>
         </div>
       </main>
