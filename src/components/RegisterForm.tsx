@@ -8,13 +8,11 @@ import {
   signInWithPopup,
   updateProfile,
 } from "firebase/auth";
-import axios from "axios";
+import { syncUser } from "../lib/syncUser";
 
 interface RegisterFormProps {
   switchToLogin: () => void;
 }
-
-const API_URL = "http://localhost:5000";
 
 export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
   const [fullName, setFullName] = useState("");
@@ -58,14 +56,8 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
         await updateProfile(auth.currentUser, { displayName: fullName });
       }
       const user = result.user;
-
-      const response = await axios.post(`${API_URL}/users`, {
-        id_user: user.uid,
-        name: fullName,
-        email: user.email,
-      });
-
-      localStorage.setItem("user", JSON.stringify(response.data));
+      const syncedUser = await syncUser(fullName, user.email || "");
+      localStorage.setItem("user", JSON.stringify(syncedUser));
       window.location.href = "/";
     } catch (error: any) {
       const code = error.code;
@@ -82,14 +74,11 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-
-      const response = await axios.post(`${API_URL}/users`, {
-        id_user: user.uid,
-        name: user.displayName,
-        email: user.email,
-      });
-
-      localStorage.setItem("user", JSON.stringify(response.data));
+      const syncedUser = await syncUser(
+        user.displayName || "Sem Nome",
+        user.email || ""
+      );
+      localStorage.setItem("user", JSON.stringify(syncedUser));
       window.location.href = "/";
     } catch (error: any) {
       alert(error.message);

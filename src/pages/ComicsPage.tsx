@@ -36,12 +36,8 @@ export default function ComicsPage() {
   const [currentIdx, setCurrentIdx] = useState(0);
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (!stored) return;
-    const user = JSON.parse(stored);
-
     api
-      .get<Comic[]>(`/comics/user/${user.id_user}`)
+      .get<Comic[]>(`/comics`)
       .then((res) => {
         const g: Record<string, Comic[]> = {};
         res.data.forEach((c) => {
@@ -59,26 +55,22 @@ export default function ComicsPage() {
             "0"
           )}`;
 
-          api
-            .get<Album>(`/albums/month/${user.id_user}/${month}/${year}`)
-            .then((r) => {
-              const totalDays = r.data.total_days;
-              const possible = totalDays * 10;
-              setStats((old) => ({
-                ...old,
-                [ym]: {
-                  unlocked: list.length,
-                  totalDays,
-                  correct: 0,
-                  possible,
-                },
-              }));
-            });
+          api.get<Album>(`/albums/month/${month}/${year}`).then((r) => {
+            const totalDays = r.data.total_days;
+            const possible = totalDays * 10;
+            setStats((old) => ({
+              ...old,
+              [ym]: {
+                unlocked: list.length,
+                totalDays,
+                correct: 0,
+                possible,
+              },
+            }));
+          });
 
           api
-            .get<Performance>(
-              `/performance/period/${user.id_user}/${startDate}/${endDate}`
-            )
+            .get<Performance>(`/performance/period/${startDate}/${endDate}`)
             .then((r) => {
               setStats((old) => ({
                 ...old,

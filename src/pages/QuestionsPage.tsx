@@ -4,7 +4,6 @@ import api from "../lib/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/Button";
-import { getCurrentUser } from "../lib/authUser";
 
 interface Choice {
   letter: string;
@@ -57,13 +56,11 @@ export default function QuestionsPage() {
   };
 
   const handleEntregar = async () => {
-    const user = getCurrentUser();
     await Promise.all(
       questions.map((q, i) => {
         const sel = selectedOptions[i];
         const letter = sel >= 0 ? q.choices[sel].letter : "";
         return api.post("/answers", {
-          id_user: user.id_user,
           id_question: q.id_question,
           selected_choice: letter,
         });

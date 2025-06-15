@@ -4,8 +4,7 @@ import ExamForm, { ExamFormData } from "../components/ExamForm";
 import { Button } from "../components/ui/Button";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import axios from "axios";
-import { getCurrentUser } from "../lib/authUser";
+import api from "../lib/api";
 
 export default function AddQuestionPage() {
   const [newExam, setNewExam] = useState<ExamFormData>({
@@ -39,19 +38,12 @@ export default function AddQuestionPage() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const user = getCurrentUser();
-      if (!user?.id_user) {
-        alert("Usuário não identificado.");
-        return;
-      }
-
       const { exam_name, board, level, year, position } = newExam;
       if (!exam_name || !board || !level || !year || !position) {
         alert("Preencha todos os campos do edital.");
         return;
       }
-      const examRes = await axios.post("http://localhost:5000/exams", {
-        id_user: user.id_user,
+      const examRes = await api.post("/exams", {
         exam_name,
         board,
         level,
@@ -65,7 +57,7 @@ export default function AddQuestionPage() {
         alert("Preencha todos os campos da questão.");
         return;
       }
-      const qRes = await axios.post("http://localhost:5000/questions", {
+      const qRes = await api.post("/questions", {
         id_exam,
         statement,
         answer_key,
@@ -74,7 +66,7 @@ export default function AddQuestionPage() {
 
       await Promise.all(
         ["A", "B", "C", "D", "E"].map((letter) =>
-          axios.post("http://localhost:5000/choices", {
+          api.post("/choices", {
             id_question,
             letter,
             description: form[letter as keyof typeof form],
@@ -114,11 +106,9 @@ export default function AddQuestionPage() {
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">
             Cadastro de Questões
           </h2>
-
           <div className="mb-6">
             <ExamForm form={newExam} onChange={handleNewExamChange} />
           </div>
-
           <div className="space-y-5">
             <div>
               <label className="text-sm font-medium mb-1 block text-gray-700">
