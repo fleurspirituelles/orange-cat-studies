@@ -91,7 +91,7 @@ export default function AddExamPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10 mb-14">
             <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
-              Adicione uma nova prova!
+              Adição de Provas
             </h2>
             <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
               Escolha abaixo como deseja adicionar sua prova ao sistema. É
