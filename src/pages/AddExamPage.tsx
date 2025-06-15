@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../lib/api";
 import Navbar from "../components/Navbar";
@@ -30,35 +30,44 @@ export default function AddExamPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const isFormValid = useMemo(() => {
+    return (
+      form.exam_name.trim() &&
+      form.board.trim() &&
+      form.level.trim() &&
+      form.year.trim() &&
+      form.position.trim()
+    );
+  }, [form]);
+
+  const isTextModeValid = useMemo(() => {
+    return examText.trim() && answerText.trim();
+  }, [examText, answerText]);
+
+  const isPdfModeValid = useMemo(() => {
+    return examPdf !== null && answerPdf !== null;
+  }, [examPdf, answerPdf]);
+
+  const canSubmit = useMemo(() => {
+    if (!isFormValid) return false;
+    if (mode === "text") return isTextModeValid;
+    return isPdfModeValid;
+  }, [isFormValid, isTextModeValid, isPdfModeValid, mode]);
+
   const handleSubmit = async () => {
-    const { exam_name, board, level, year, position } = form;
-    if (!exam_name || !board || !level || !year || !position) {
-      alert("Preencha todos os campos.");
-      return;
-    }
     setLoading(true);
     try {
       let questions;
       if (mode === "text") {
-        if (!examText.trim() || !answerText.trim()) {
-          alert("Cole o texto da prova e do gabarito.");
-          setLoading(false);
-          return;
-        }
         const previewRes = await api.post("/exams/preview-questions", {
           examText,
           answerText,
         });
         questions = previewRes.data;
       } else {
-        if (!examPdf || !answerPdf) {
-          alert("Envie ambos os arquivos PDF.");
-          setLoading(false);
-          return;
-        }
         const fd = new FormData();
-        fd.append("examPdf", examPdf);
-        fd.append("answerPdf", answerPdf);
+        fd.append("examPdf", examPdf!);
+        fd.append("answerPdf", answerPdf!);
         const previewRes = await api.post("/exams/preview-questions-pdf", fd, {
           headers: { "Content-Type": "multipart/form-data" },
         });
@@ -66,11 +75,11 @@ export default function AddExamPage() {
       }
 
       const createRes = await api.post("/exams", {
-        exam_name,
-        board,
-        year: parseInt(year),
-        position,
-        level,
+        exam_name: form.exam_name,
+        board: form.board,
+        year: parseInt(form.year),
+        position: form.position,
+        level: form.level,
       });
 
       const id_exam = createRes.data.id_exam;
@@ -87,33 +96,29 @@ export default function AddExamPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gray-100 py-14 px-4">
+      <main className="min-h-screen bg-neutral-100 py-14 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10 mb-14">
             <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
-              Adição de Provas
+              Adicionar Nova Prova
             </h2>
-            <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
-              Escolha abaixo como deseja adicionar sua prova ao sistema. É
-              possível carregar os arquivos PDF da prova e do gabarito para
-              realizar a extração automática das questões, ou, se preferir,
-              preencher manualmente os dados da prova.
+            <p className="text-neutral-700 text-base leading-relaxed text-center md:text-left">
+              Preencha abaixo os dados da prova e escolha como deseja enviar o
+              conteúdo: colando o texto ou enviando arquivos PDF. O sistema
+              realizará a leitura automática das informações para geração das
+              questões.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-2xl shadow p-6 border">
-              <h3 className="text-lg font-semibold mb-5">
-                Preencher dados da prova
-              </h3>
+            <div className="bg-white rounded-2xl shadow p-8 border">
+              <h3 className="text-lg font-semibold mb-6">Dados da Prova</h3>
               <ExamForm form={form} onChange={handleChange} />
             </div>
 
-            <div className="bg-white rounded-2xl shadow p-6 border flex flex-col justify-between">
+            <div className="bg-white rounded-2xl shadow p-8 border flex flex-col justify-between">
               <div>
-                <h3 className="text-lg font-semibold mb-5">
-                  Escolha o método de envio
-                </h3>
+                <h3 className="text-lg font-semibold mb-6">Método de Envio</h3>
 
                 <div className="flex gap-4 mb-8">
                   <button
@@ -232,7 +237,7 @@ export default function AddExamPage() {
                 <Button
                   onClick={handleSubmit}
                   className="w-full text-sm"
-                  disabled={loading}
+                  disabled={!canSubmit || loading}
                 >
                   {loading ? "Processando..." : "Avançar para Revisão"}
                 </Button>

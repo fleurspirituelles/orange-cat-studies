@@ -15,6 +15,9 @@ interface ExamFormProps {
 }
 
 export default function ExamForm({ form, onChange }: ExamFormProps) {
+  const isYearValid =
+    /^\d{4}$/.test(form.year.trim()) || form.year.trim() === "";
+
   return (
     <div className="space-y-5">
       <div>
@@ -28,6 +31,7 @@ export default function ExamForm({ form, onChange }: ExamFormProps) {
           placeholder="Ex: Tribunal de Justiça do Estado de São Paulo"
         />
       </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Banca organizadora
@@ -39,6 +43,7 @@ export default function ExamForm({ form, onChange }: ExamFormProps) {
           placeholder="Ex: VUNESP"
         />
       </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Nível do concurso
@@ -50,6 +55,7 @@ export default function ExamForm({ form, onChange }: ExamFormProps) {
           placeholder="Ex: Ensino Médio"
         />
       </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Ano
@@ -60,7 +66,13 @@ export default function ExamForm({ form, onChange }: ExamFormProps) {
           onChange={onChange}
           placeholder="Ex: 2025"
         />
+        {!isYearValid && (
+          <p className="text-sm text-red-500 mt-1">
+            Digite um ano válido com 4 dígitos.
+          </p>
+        )}
       </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Cargo

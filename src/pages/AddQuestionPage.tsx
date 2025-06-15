@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Input } from "../components/ui/Input";
 import ExamForm, { ExamFormData } from "../components/ExamForm";
 import { Button } from "../components/ui/Button";
@@ -31,9 +31,7 @@ export default function AddQuestionPage() {
     setNewExam({ ...newExam, [e.target.name]: e.target.value });
   };
 
-  const handleFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -41,34 +39,48 @@ export default function AddQuestionPage() {
     setForm((prev) => ({ ...prev, answer_key: letter }));
   };
 
+  const isExamValid = useMemo(() => {
+    return (
+      newExam.exam_name.trim() &&
+      newExam.board.trim() &&
+      newExam.level.trim() &&
+      /^\d{4}$/.test(newExam.year.trim()) &&
+      newExam.position.trim()
+    );
+  }, [newExam]);
+
+  const isQuestionValid = useMemo(() => {
+    return (
+      form.statement.trim() &&
+      form.A.trim() &&
+      form.B.trim() &&
+      form.C.trim() &&
+      form.D.trim() &&
+      form.E.trim() &&
+      form.answer_key
+    );
+  }, [form]);
+
+  const canSubmit = useMemo(() => {
+    return isExamValid && isQuestionValid;
+  }, [isExamValid, isQuestionValid]);
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const { exam_name, board, level, year, position } = newExam;
-      if (!exam_name || !board || !level || !year || !position) {
-        alert("Preencha todos os campos do edital.");
-        return;
-      }
-
       const examRes = await api.post("/exams", {
-        exam_name,
-        board,
-        level,
-        year,
-        position,
+        exam_name: newExam.exam_name,
+        board: newExam.board,
+        level: newExam.level,
+        year: newExam.year,
+        position: newExam.position,
       });
       const id_exam = examRes.data.id_exam;
 
-      const { statement, A, B, C, D, E, answer_key } = form;
-      if (!statement || !A || !B || !C || !D || !E || !answer_key) {
-        alert("Preencha todos os campos da questão.");
-        return;
-      }
-
       const qRes = await api.post("/questions", {
         id_exam,
-        statement,
-        answer_key,
+        statement: form.statement,
+        answer_key: form.answer_key,
       });
       const id_question = qRes.data.id_question;
 
@@ -82,8 +94,6 @@ export default function AddQuestionPage() {
         )
       );
 
-      alert("Questão cadastrada com sucesso!");
-
       setForm({
         statement: "",
         A: "",
@@ -93,6 +103,7 @@ export default function AddQuestionPage() {
         E: "",
         answer_key: "",
       });
+
       setNewExam({
         exam_name: "",
         board: "",
@@ -101,7 +112,8 @@ export default function AddQuestionPage() {
         position: "",
       });
     } catch (err: any) {
-      alert(err.response?.data?.error || err.message);
+      const msg = err.response?.data?.error || err.message;
+      alert("Erro: " + msg);
     } finally {
       setLoading(false);
     }
@@ -113,12 +125,12 @@ export default function AddQuestionPage() {
       <main className="min-h-screen bg-neutral-100 py-14 px-4">
         <div className="max-w-7xl mx-auto mb-12">
           <div className="grid md:grid-cols-2 gap-10 mb-14">
-            <h2 className="text-4xl font-bold text-gray-900 text-center md:text-left">
-              Cadastro de Questões
+            <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
+              Adicionar Nova Questão
             </h2>
-            <p className="text-neutral-700 text-sm leading-relaxed text-center md:text-left">
+            <p className="text-neutral-700 text-base leading-relaxed text-center md:text-left">
               Insira manualmente novas questões no sistema de forma organizada e
-              detalhada. Primeiro, preencha as informações do edital, informando
+              detalhada. Primeiro, preencha as informações da prova, informando
               o concurso, banca, ano e cargo. Em seguida, cadastre o enunciado,
               alternativas e selecione o gabarito correto. As questões
               adicionadas serão integradas aos desafios diários automaticamente.
@@ -126,14 +138,14 @@ export default function AddQuestionPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-2xl shadow p-6 border">
+            <div className="bg-white rounded-2xl shadow p-8 border">
               <h3 className="text-lg font-semibold text-gray-900 mb-6">
-                Informações do Edital
+                Informações da Prova
               </h3>
               <ExamForm form={newExam} onChange={handleNewExamChange} />
             </div>
 
-            <div className="bg-white rounded-2xl shadow p-6 border">
+            <div className="bg-white rounded-2xl shadow p-8 border">
               <h3 className="text-lg font-semibold text-gray-900 mb-6">
                 Cadastro da Questão
               </h3>
@@ -175,12 +187,11 @@ export default function AddQuestionPage() {
                         key={letter}
                         onClick={() => handleAnswerKeySelect(letter)}
                         type="button"
-                        className={`h-9 w-9 rounded-full border flex items-center justify-center text-sm font-medium transition
-                          ${
-                            form.answer_key === letter
-                              ? "bg-orange-500 text-white border-orange-500"
-                              : "border-gray-300 text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`h-9 w-9 rounded-full border flex items-center justify-center text-sm font-medium transition ${
+                          form.answer_key === letter
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : "border-gray-300 text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         {letter}
                       </button>
@@ -192,7 +203,7 @@ export default function AddQuestionPage() {
                   <Button
                     onClick={handleSubmit}
                     className="w-full"
-                    disabled={loading}
+                    disabled={!canSubmit || loading}
                   >
                     {loading ? "Salvando..." : "Salvar Questão"}
                   </Button>
