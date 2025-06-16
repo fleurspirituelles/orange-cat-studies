@@ -12,10 +12,11 @@ import questionRoutes from "./routes/question.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: FRONTEND_URL,
     credentials: true,
   })
 );
@@ -33,15 +34,16 @@ app.use("/performance", performanceRoutes);
 app.use("/questions", questionRoutes);
 
 app.use((err, req, res, next) => {
-  console.error("Uncaught error:", err.stack || err);
-  res
-    .status(500)
-    .json({ message: "Internal server error.", error: err.message });
+  console.error("Erro não tratado:", err.stack || err);
+  res.status(500).json({
+    message: "Erro interno do servidor.",
+    error: err.message,
+  });
 });
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}.`);
+    console.log(`Servidor rodando na porta ${PORT}.`);
   });
 }
 
