@@ -2,8 +2,8 @@ import Answer from "../models/answer.model.js";
 import Comic from "../models/comic.model.js";
 import Performance from "../models/performance.model.js";
 import Album from "../models/album.model.js";
-import connection from "../config/database.js";
 import User from "../models/user.model.js";
+import connection from "../config/database.js";
 
 function randomComicDate() {
   const start = new Date(1980, 0, 1).getTime();
@@ -91,6 +91,8 @@ export async function create(req, res) {
         image_url: imageUrl,
         answered_count: todayCount,
       });
+    } else if (todayCount >= 10) {
+      await Comic.updateAnsweredCount(id_user, today, todayCount);
     }
 
     const [[{ cnt: correctCount }]] = await connection.execute(

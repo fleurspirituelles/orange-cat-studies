@@ -38,6 +38,14 @@ const Comic = {
     return rows.length > 0;
   },
 
+  updateAnsweredCount: async (id_user, comic_date, count) => {
+    const [result] = await connection.execute(
+      "UPDATE comics SET answered_count = ? WHERE id_user = ? AND comic_date = ?",
+      [count, id_user, comic_date]
+    );
+    return result.affectedRows > 0;
+  },
+
   create: async (comic) => {
     const { id_user, comic_date, image_url, answered_count } = comic;
     try {
