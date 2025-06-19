@@ -62,15 +62,15 @@ export default function ReviewQuestionsPage() {
   };
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="min-h-screen bg-gray-100 py-14 px-4">
-        <div className="max-w-7xl mx-auto mb-12">
-          <div className="grid md:grid-cols-2 gap-10 mb-14">
-            <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
+      <main className="flex-1 bg-gray-100 pt-8 pb-2 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            <h2 className="text-2xl font-bold text-gray-900 text-center md:text-left">
               Revisão de Questões
             </h2>
-            <p className="text-neutral-700 text-base leading-relaxed text-center md:text-left">
+            <p className="text-sm text-neutral-700 leading-relaxed text-center md:text-left">
               Revise abaixo todas as questões extraídas. Corrija eventuais erros
               no enunciado, texto de apoio e alternativas. Utilize o seletor de
               gabarito para indicar a resposta correta. Desmarque as questões
@@ -165,7 +165,7 @@ export default function ReviewQuestionsPage() {
             ))}
           </div>
 
-          <div className="mt-14 flex justify-center">
+          <div className="mt-12 flex justify-center">
             <Button
               onClick={handleImport}
               className="w-full max-w-xs"
@@ -177,6 +177,6 @@ export default function ReviewQuestionsPage() {
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import api from "../lib/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import LayoutWrapper from "../components/ui/LayoutWrapper";
 import ExamForm, { ExamFormData } from "../components/ExamForm";
 import { TextArea } from "../components/ui/TextArea";
 import { Button } from "../components/ui/Button";
@@ -95,11 +94,10 @@ export default function AddExamPage() {
   };
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-1 bg-neutral-100 py-8 px-4 pb-4">
-        {" "}
-        <LayoutWrapper>
+      <main className="flex-1 bg-neutral-100 pt-8 pb-2 px-4">
+        <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-6 mb-10">
             <h2 className="text-2xl font-bold text-gray-900 text-center md:text-left">
               Adicionar Nova Prova
@@ -244,9 +242,9 @@ export default function AddExamPage() {
               </div>
             </div>
           </div>
-        </LayoutWrapper>
+        </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

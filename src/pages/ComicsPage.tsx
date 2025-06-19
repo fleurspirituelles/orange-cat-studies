@@ -141,7 +141,8 @@ export default function ComicsPage() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 bg-neutral-100 py-8 px-4 pb-4">        <div className="max-w-7xl mx-auto">
+      <main className="flex-1 bg-neutral-100 py-8 px-4 pb-4">
+        <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <h2 className="text-2xl font-bold text-gray-900 text-center md:text-left">
               Álbum de Tirinhas
@@ -240,7 +241,6 @@ export default function ComicsPage() {
             })}
           </div>
         </div>
-
         {modalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl w-full max-w-4xl mx-4 md:mx-0 p-6 relative">
