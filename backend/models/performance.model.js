@@ -57,30 +57,8 @@ const Performance = {
     return result.affectedRows > 0;
   },
 
-  getFromComics: async (id_user, start_date, end_date) => {
-    const [rows] = await connection.execute(
-      `SELECT COALESCE(SUM(answered_count), 0) AS correct_count
-       FROM comics
-       WHERE id_user = ? AND comic_date BETWEEN ? AND ?`,
-      [id_user, start_date, end_date]
-    );
-
-    const correct_count = rows[0].correct_count ?? 0;
-
-    const [daysRows] = await connection.execute(
-      `SELECT DATEDIFF(?, ?) + 1 AS days`,
-      [end_date, start_date]
-    );
-
-    const days = daysRows[0].days ?? 0;
-    const question_count = days * 10;
-
-    return { question_count, correct_count };
-  },
-
   getMergedPerformance: async (id_user, start_date, end_date) => {
     const dbPerf = await Performance.getByPeriod(id_user, start_date, end_date);
-
     if (dbPerf) {
       return {
         question_count: dbPerf.question_count,
@@ -88,12 +66,16 @@ const Performance = {
       };
     }
 
-    const comicsPerf = await Performance.getFromComics(
-      id_user,
-      start_date,
-      end_date
+    const [rows] = await connection.execute(
+      `SELECT SUM(answered_count) AS total FROM comics WHERE id_user = ? AND comic_date BETWEEN ? AND ?`,
+      [id_user, start_date, end_date]
     );
-    return comicsPerf;
+
+    const question_count = rows[0].total || 0;
+    return {
+      question_count,
+      correct_count: 0,
+    };
   },
 };
 

@@ -70,11 +70,6 @@ export async function create(req, res) {
     const startDate = `${yyyy}-${MM}-01`;
     const endDate = `${yyyy}-${MM}-${new Date(yyyy, +MM, 0).getDate()}`;
 
-    const [[{ cnt: monthlyCount }]] = await connection.execute(
-      "SELECT COUNT(*) AS cnt FROM answers WHERE id_user = ? AND DATE(answer_date) BETWEEN ? AND ?",
-      [id_user, startDate, today]
-    );
-
     const [[{ cnt: todayCount }]] = await connection.execute(
       "SELECT COUNT(*) AS cnt FROM answers WHERE id_user = ? AND DATE(answer_date) = CURDATE()",
       [id_user]
@@ -95,34 +90,39 @@ export async function create(req, res) {
       await Comic.updateAnsweredCount(id_user, today, todayCount);
     }
 
-    const [[{ cnt: correctCount }]] = await connection.execute(
+    const [[{ cnt: correctFromAnswers }]] = await connection.execute(
       `SELECT COUNT(*) AS cnt
        FROM answers a
        JOIN questions q ON a.id_question = q.id_question
        WHERE a.id_user = ?
          AND DATE(a.answer_date) BETWEEN ? AND ?
          AND a.selected_choice = q.answer_key`,
-      [id_user, startDate, today]
+      [id_user, startDate, endDate]
+    );
+
+    const [[{ cnt: totalAnsweredFromComics }]] = await connection.execute(
+      "SELECT COALESCE(SUM(answered_count), 0) AS cnt FROM comics WHERE id_user = ? AND comic_date BETWEEN ? AND ?",
+      [id_user, startDate, endDate]
     );
 
     let perf = await Performance.getByPeriod(id_user, startDate, endDate);
     if (perf) {
       await Performance.update(perf.id_performance, {
-        question_count: monthlyCount,
-        correct_count: correctCount,
+        question_count: totalAnsweredFromComics,
+        correct_count: correctFromAnswers,
       });
     } else {
       await Performance.create({
         id_user,
         start_date: startDate,
         end_date: endDate,
-        question_count: monthlyCount,
-        correct_count: correctCount,
+        question_count: totalAnsweredFromComics,
+        correct_count: correctFromAnswers,
       });
     }
 
-    const monthNum = +MM,
-      yearNum = +yyyy;
+    const monthNum = +MM;
+    const yearNum = +yyyy;
     if (!(await Album.getByMonth(id_user, monthNum, yearNum))) {
       const totalDays = new Date(yyyy, monthNum, 0).getDate();
       await Album.create({

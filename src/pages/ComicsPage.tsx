@@ -36,6 +36,10 @@ export default function ComicsPage() {
   const [currentIdx, setCurrentIdx] = useState(0);
 
   useEffect(() => {
+    loadComics();
+  }, []);
+
+  function loadComics() {
     api.get<Comic[]>(`/comics`).then((res) => {
       const g: Record<string, Comic[]> = {};
       res.data.forEach((c) => {
@@ -111,7 +115,7 @@ export default function ComicsPage() {
           });
       });
     });
-  }, []);
+  }
 
   function openCarousel(list: Comic[]) {
     setModalComics(list);
@@ -169,8 +173,10 @@ export default function ComicsPage() {
                 today.getFullYear() === +year &&
                 today.getMonth() + 1 === +month;
               const todayDay = today.getDate();
+              const todayStr = today.toISOString().slice(0, 10);
+              const hasComicToday = list.some((c) => c.comic_date === todayStr);
               const remainingDays = isCurrentMonth
-                ? Math.max(0, s.totalDays - todayDay)
+                ? Math.max(0, s.totalDays - todayDay + (hasComicToday ? 0 : 1))
                 : 0;
 
               return (
