@@ -139,7 +139,7 @@ export default function ComicsPage() {
   }
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1 bg-neutral-100 py-8 px-4 pb-4">
         <div className="max-w-7xl mx-auto">
@@ -164,6 +164,14 @@ export default function ComicsPage() {
                 possible: 0,
               };
               const monthName = getMonthName(month);
+              const today = new Date();
+              const isCurrentMonth =
+                today.getFullYear() === +year &&
+                today.getMonth() + 1 === +month;
+              const todayDay = today.getDate();
+              const remainingDays = isCurrentMonth
+                ? Math.max(0, s.totalDays - todayDay)
+                : 0;
 
               return (
                 <div key={ym} className="bg-white rounded-xl shadow p-6 border">
@@ -222,11 +230,9 @@ export default function ComicsPage() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-2xl font-bold">
-                        {s.totalDays} / {s.totalDays}
-                      </p>
+                      <p className="text-2xl font-bold">{remainingDays}</p>
                       <p className="text-sm text-gray-600">
-                        Total de tirinhas no mês
+                        Tirinhas restantes no mês
                       </p>
                     </div>
                     <div>
@@ -241,6 +247,7 @@ export default function ComicsPage() {
             })}
           </div>
         </div>
+
         {modalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl w-full max-w-4xl mx-4 md:mx-0 p-6 relative">
@@ -303,6 +310,6 @@ export default function ComicsPage() {
         )}
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
