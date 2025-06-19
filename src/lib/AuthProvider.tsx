@@ -1,7 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import {
+  getAuth,
+  onAuthStateChanged,
+  browserLocalPersistence,
+  setPersistence,
+  User,
+} from "firebase/auth";
 import { app } from "../firebase/config";
-import { initUserSync } from "./initUserSync";
 
 interface AuthContextType {
   user: User | null;
@@ -19,14 +24,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const auth = getAuth(app);
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (user) {
-        await initUserSync();
-      }
-      setLoading(false);
+
+    setPersistence(auth, browserLocalPersistence).then(() => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        setLoading(false);
+      });
+
+      return unsubscribe;
     });
-    return () => unsubscribe();
   }, []);
 
   return (
