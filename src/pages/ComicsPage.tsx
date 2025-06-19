@@ -36,85 +36,81 @@ export default function ComicsPage() {
   const [currentIdx, setCurrentIdx] = useState(0);
 
   useEffect(() => {
-    api
-      .get<Comic[]>(`/comics`)
-      .then((res) => {
-        const g: Record<string, Comic[]> = {};
-        res.data.forEach((c) => {
-          const ym = c.comic_date.slice(0, 7);
-          (g[ym] ||= []).push(c);
-        });
-        setGroups(g);
+    api.get<Comic[]>(`/comics`).then((res) => {
+      const g: Record<string, Comic[]> = {};
+      res.data.forEach((c) => {
+        const ym = c.comic_date.slice(0, 7);
+        (g[ym] ||= []).push(c);
+      });
+      setGroups(g);
 
-        Object.entries(g).forEach(([ym, list]) => {
-          const [year, month] = ym.split("-");
-          const daysInMonth = new Date(+year, +month, 0).getDate();
-          const startDate = `${year}-${month}-01`;
-          const endDate = `${year}-${month}-${String(daysInMonth).padStart(
-            2,
-            "0"
-          )}`;
+      Object.entries(g).forEach(([ym, list]) => {
+        const [year, month] = ym.split("-");
+        const daysInMonth = new Date(+year, +month, 0).getDate();
+        const startDate = `${year}-${month}-01`;
+        const endDate = `${year}-${month}-${String(daysInMonth).padStart(
+          2,
+          "0"
+        )}`;
 
-          api
-            .get<Album>(`/albums/month/${month}/${year}`)
-            .then((r) => {
-              const totalDays = r.data.total_days;
-
-              api
-                .get<Performance>(`/performance/period/${startDate}/${endDate}`)
-                .then((perf) => {
-                  setStats((old) => ({
-                    ...old,
-                    [ym]: {
-                      unlocked: list.length,
-                      totalDays,
-                      correct: perf.data.correct_count,
-                      possible: perf.data.question_count,
-                    },
-                  }));
-                })
-                .catch(() => {
-                  setStats((old) => ({
-                    ...old,
-                    [ym]: {
-                      unlocked: list.length,
-                      totalDays,
-                      correct: 0,
-                      possible: totalDays * 10,
-                    },
-                  }));
-                });
-            })
-            .catch(() => {
-              const totalDaysFallback = daysInMonth;
-              api
-                .get<Performance>(`/performance/period/${startDate}/${endDate}`)
-                .then((perf) => {
-                  setStats((old) => ({
-                    ...old,
-                    [ym]: {
-                      unlocked: list.length,
-                      totalDays: totalDaysFallback,
-                      correct: perf.data.correct_count,
-                      possible: perf.data.question_count,
-                    },
-                  }));
-                })
-                .catch(() => {
-                  setStats((old) => ({
-                    ...old,
-                    [ym]: {
-                      unlocked: list.length,
-                      totalDays: totalDaysFallback,
-                      correct: 0,
-                      possible: totalDaysFallback * 10,
-                    },
-                  }));
-                });
-            });
-        });
-      })
-      .catch(console.error);
+        api
+          .get<Album>(`/albums/month/${month}/${year}`)
+          .then((r) => {
+            const totalDays = r.data.total_days;
+            api
+              .get<Performance>(`/performance/period/${startDate}/${endDate}`)
+              .then((perf) => {
+                setStats((old) => ({
+                  ...old,
+                  [ym]: {
+                    unlocked: list.length,
+                    totalDays,
+                    correct: perf.data.correct_count,
+                    possible: perf.data.question_count,
+                  },
+                }));
+              })
+              .catch(() => {
+                setStats((old) => ({
+                  ...old,
+                  [ym]: {
+                    unlocked: list.length,
+                    totalDays,
+                    correct: 0,
+                    possible: totalDays * 10,
+                  },
+                }));
+              });
+          })
+          .catch(() => {
+            const totalDaysFallback = daysInMonth;
+            api
+              .get<Performance>(`/performance/period/${startDate}/${endDate}`)
+              .then((perf) => {
+                setStats((old) => ({
+                  ...old,
+                  [ym]: {
+                    unlocked: list.length,
+                    totalDays: totalDaysFallback,
+                    correct: perf.data.correct_count,
+                    possible: perf.data.question_count,
+                  },
+                }));
+              })
+              .catch(() => {
+                setStats((old) => ({
+                  ...old,
+                  [ym]: {
+                    unlocked: list.length,
+                    totalDays: totalDaysFallback,
+                    correct: 0,
+                    possible: totalDaysFallback * 10,
+                  },
+                }));
+              });
+          });
+      });
+    });
   }, []);
 
   function openCarousel(list: Comic[]) {
@@ -145,20 +141,19 @@ export default function ComicsPage() {
   return (
     <>
       <Navbar />
-      <main className="bg-neutral-100 min-h-screen py-14 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-10 mb-14">
-            <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
+      <main className="flex-1 bg-neutral-100 py-8 px-4 pb-4">        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 text-center md:text-left">
               Álbum de Tirinhas
             </h2>
-            <p className="text-neutral-700 text-base leading-relaxed text-center md:text-left">
+            <p className="text-sm text-neutral-700 leading-relaxed text-center md:text-left">
               Acompanhe seu progresso desbloqueando tirinhas conforme completa
               os desafios diários. Visualize os meses, veja suas conquistas e
               mantenha sua coleção sempre atualizada.
             </p>
           </div>
 
-          <div className="space-y-10">
+          <div className="space-y-8">
             {Object.entries(groups).map(([ym, list]) => {
               const [year, month] = ym.split("-");
               const s = stats[ym] || {
@@ -170,13 +165,10 @@ export default function ComicsPage() {
               const monthName = getMonthName(month);
 
               return (
-                <div
-                  key={ym}
-                  className="bg-white rounded-2xl shadow p-6 border"
-                >
-                  <div className="flex justify-between items-start mb-6">
+                <div key={ym} className="bg-white rounded-xl shadow p-6 border">
+                  <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-lg font-semibold mb-1">
+                      <h3 className="text-base font-semibold mb-1">
                         {monthName} / {year}
                       </h3>
                       <p className="text-sm text-gray-600">
@@ -191,7 +183,7 @@ export default function ComicsPage() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="grid grid-cols-3 gap-4 mb-4">
                     {Array.from({ length: 3 }).map((_, idx) => {
                       const c = list[list.length - 1 - idx];
                       if (c) {
@@ -200,7 +192,7 @@ export default function ComicsPage() {
                             key={c.id_comic}
                             src={c.image_url}
                             alt="tirinha"
-                            className="w-full h-48 object-cover rounded-xl border"
+                            className="w-full h-48 object-cover rounded-lg border"
                             onError={(e) => {
                               e.currentTarget.onerror = null;
                               e.currentTarget.src =
@@ -212,7 +204,7 @@ export default function ComicsPage() {
                         return (
                           <div
                             key={idx}
-                            className="w-full h-48 bg-gray-100 rounded-xl border"
+                            className="w-full h-48 bg-gray-100 rounded-lg border"
                           />
                         );
                       }

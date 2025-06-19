@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="px-6 py-12 bg-gray-100 text-sm text-gray-700 mt-16 border-t">
+    <footer className="px-2 py-2 bg-gray-100 text-sm text-gray-700 mt-8 border-t">
       <div className="max-w-7xl mx-auto grid grid-cols-5 gap-x-10 items-start text-xs md:text-sm">
         <div className="col-span-2">
           <div className="mb-3 text-2xl">😺</div>
@@ -55,7 +55,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="text-center mt-14 text-xs text-gray-500 leading-snug">
+      <div className="text-center mt-6 mb-2 text-xs text-gray-500 leading-snug">
         <p>© 2025 Orange Cat Studies. Todos os direitos reservados.</p>
       </div>
     </footer>

@@ -12,50 +12,52 @@ import { AuthProvider } from "./lib/AuthProvider";
 export default function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth" element={<AuthPage />} />
-        <Route
-          path="/add-exam"
-          element={
-            <ProtectedRoute>
-              <AddExamPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/review-questions"
-          element={
-            <ProtectedRoute>
-              <ReviewQuestionsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/add-question"
-          element={
-            <ProtectedRoute>
-              <AddQuestionPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/questions"
-          element={
-            <ProtectedRoute>
-              <QuestionsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/comics"
-          element={
-            <ProtectedRoute>
-              <ComicsPage />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+      <div className="flex flex-col min-h-screen">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route
+            path="/add-exam"
+            element={
+              <ProtectedRoute>
+                <AddExamPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/review-questions"
+            element={
+              <ProtectedRoute>
+                <ReviewQuestionsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-question"
+            element={
+              <ProtectedRoute>
+                <AddQuestionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/questions"
+            element={
+              <ProtectedRoute>
+                <QuestionsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/comics"
+            element={
+              <ProtectedRoute>
+                <ComicsPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </div>
     </AuthProvider>
   );
 }

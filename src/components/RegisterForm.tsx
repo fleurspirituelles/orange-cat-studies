@@ -86,7 +86,7 @@ export default function RegisterForm({ switchToLogin }: RegisterFormProps) {
   };
 
   return (
-    <div className="w-full max-w-md p-8 rounded-xl bg-white shadow-md">
+    <div className="w-full max-w-md p-8 py-2 rounded-xl bg-white shadow-md">
       <h2 className="text-2xl font-bold mb-2 text-center">Cadastrar</h2>
       <p className="text-sm text-center text-muted-foreground mb-6">
         Crie sua conta e transforme sua preparação para concursos em uma

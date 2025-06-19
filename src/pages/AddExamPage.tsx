@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../lib/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import LayoutWrapper from "../components/ui/LayoutWrapper";
 import ExamForm, { ExamFormData } from "../components/ExamForm";
 import { TextArea } from "../components/ui/TextArea";
 import { Button } from "../components/ui/Button";
@@ -96,33 +97,35 @@ export default function AddExamPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-neutral-100 py-14 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-10 mb-14">
-            <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
+      <main className="flex-1 bg-neutral-100 py-8 px-4 pb-4">
+        {" "}
+        <LayoutWrapper>
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            <h2 className="text-2xl font-bold text-gray-900 text-center md:text-left">
               Adicionar Nova Prova
             </h2>
-            <p className="text-neutral-700 text-base leading-relaxed text-center md:text-left">
-              Preencha abaixo os dados da prova e escolha como deseja enviar o
-              conteúdo: colando o texto ou enviando arquivos PDF. O sistema
-              realizará a leitura automática das informações para geração das
-              questões.
+            <p className="text-sm text-neutral-700 leading-relaxed text-center md:text-left">
+              Preencha os dados da prova e escolha como deseja enviar o
+              conteúdo: colando o texto ou enviando arquivos PDF. O sistema fará
+              a leitura automática para geração das questões.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-2xl shadow p-8 border">
-              <h3 className="text-lg font-semibold mb-6">Dados da Prova</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl shadow p-6 border">
+              <h3 className="text-base font-semibold mb-4">Dados da Prova</h3>
               <ExamForm form={form} onChange={handleChange} />
             </div>
 
-            <div className="bg-white rounded-2xl shadow p-8 border flex flex-col justify-between">
+            <div className="bg-white rounded-xl shadow p-6 border flex flex-col justify-between">
               <div>
-                <h3 className="text-lg font-semibold mb-6">Método de Envio</h3>
+                <h3 className="text-base font-semibold mb-4">
+                  Método de Envio
+                </h3>
 
-                <div className="flex gap-4 mb-8">
+                <div className="flex gap-3 mb-6">
                   <button
-                    className={`px-5 py-2.5 rounded-xl border font-medium text-sm transition ${
+                    className={`px-4 py-2 rounded-lg border text-sm font-medium transition ${
                       mode === "text"
                         ? "bg-orange-500 text-white"
                         : "bg-white border-gray-300 text-gray-700"
@@ -132,7 +135,7 @@ export default function AddExamPage() {
                     Colar Texto
                   </button>
                   <button
-                    className={`px-5 py-2.5 rounded-xl border font-medium text-sm transition ${
+                    className={`px-4 py-2 rounded-lg border text-sm font-medium transition ${
                       mode === "pdf"
                         ? "bg-orange-500 text-white"
                         : "bg-white border-gray-300 text-gray-700"
@@ -143,10 +146,7 @@ export default function AddExamPage() {
                   </button>
                 </div>
 
-                <div
-                  className="space-y-5 transition-all duration-300"
-                  style={{ minHeight: 330 }}
-                >
+                <div className="space-y-2">
                   {mode === "text" ? (
                     <>
                       <div>
@@ -154,7 +154,7 @@ export default function AddExamPage() {
                           Texto completo da prova
                         </label>
                         <TextArea
-                          rows={6}
+                          rows={4}
                           value={examText}
                           onChange={(e) => setExamText(e.target.value)}
                           placeholder="Cole aqui o texto integral da prova."
@@ -165,7 +165,7 @@ export default function AddExamPage() {
                           Texto do gabarito
                         </label>
                         <TextArea
-                          rows={4}
+                          rows={3}
                           value={answerText}
                           onChange={(e) => setAnswerText(e.target.value)}
                           placeholder="Cole aqui o texto do gabarito."
@@ -233,7 +233,7 @@ export default function AddExamPage() {
                 </div>
               </div>
 
-              <div className="mt-8">
+              <div className="mt-6">
                 <Button
                   onClick={handleSubmit}
                   className="w-full text-sm"
@@ -244,7 +244,7 @@ export default function AddExamPage() {
               </div>
             </div>
           </div>
-        </div>
+        </LayoutWrapper>
       </main>
       <Footer />
     </>

@@ -87,28 +87,27 @@ export default function QuestionsPage() {
   };
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="min-h-screen bg-neutral-100 py-14 px-4">
-        <div className="max-w-7xl mx-auto mb-12">
-          <div className="grid md:grid-cols-2 gap-10 mb-14">
-            <h2 className="text-3xl font-bold text-gray-900 text-center md:text-left">
+      <main className="flex-1 bg-neutral-100 py-6 px-4 pb-2">
+        <div className="max-w-7xl mx-auto mb-6">
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 text-center md:text-left">
               Resolver Questões Diárias
             </h2>
-            <p className="text-neutral-700 text-base leading-relaxed text-center md:text-left">
+            <p className="text-sm text-neutral-700 leading-relaxed text-center md:text-left">
               Responda as questões do dia e acompanhe seu desempenho. Após
-              selecionar suas respostas, clique em <strong>Corrigir</strong>{" "}
-              para visualizar o resultado e, em seguida, em{" "}
-              <strong>Entregar</strong> para registrar seu progresso e
-              desbloquear novas tirinhas.
+              selecionar suas respostas, clique em Corrigir para visualizar o
+              resultado e, em seguida, em Entregar para registrar seu progresso
+              e desbloquear novas tirinhas.
             </p>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-6">
             {questions.map((q, i) => (
               <div
                 key={q.id_question}
-                className="bg-white rounded-2xl shadow p-6 border"
+                className="bg-white rounded-xl shadow p-6 border"
               >
                 <div className="mb-4">
                   <h3 className="text-sm font-semibold text-orange-500 mb-2">
@@ -159,16 +158,16 @@ export default function QuestionsPage() {
             ))}
           </div>
 
-          <div className="mt-14 flex justify-center gap-4">
+          <div className="mt-6 mb-2 flex justify-center gap-4">
             <Button
-              className="w-full max-w-xs"
+              className="w-full max-w-xs text-sm"
               onClick={handleCorrigir}
               disabled={!allAnswered || correctAnswers !== null}
             >
               Corrigir
             </Button>
             <Button
-              className="w-full max-w-xs"
+              className="w-full max-w-xs text-sm"
               onClick={handleEntregar}
               disabled={!allAnswered}
             >
@@ -178,6 +177,6 @@ export default function QuestionsPage() {
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

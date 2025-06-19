@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -14,6 +20,8 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
 }
 
 code {

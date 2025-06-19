@@ -19,7 +19,7 @@ export default function ExamForm({ form, onChange }: ExamFormProps) {
     /^\d{4}$/.test(form.year.trim()) || form.year.trim() === "";
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Nome do concurso

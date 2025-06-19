@@ -14,30 +14,32 @@ export default function AuthPage() {
   };
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-6 py-16 flex flex-col lg:flex-row items-center justify-between">
-        <div className="max-w-lg mb-10 lg:mb-0">
-          <h1 className="text-2xl lg:text-4xl font-bold mb-4">
-            Bem-vinda(o) ao Orange Cat Studies!
-          </h1>
-          <p className="text-neutral-700 text-base lg:text-lg leading-relaxed">
-            Organize sua preparação para concursos com um sistema inteligente de
-            extração de questões a partir de provas anteriores. Resolva desafios
-            diários e desbloqueie tirinhas exclusivas do Garfield como
-            recompensa pela sua constância.
-          </p>
-        </div>
+      <main className="flex-1 flex items-center">
+        <div className="max-w-7xl mx-auto px-6 w-full flex flex-col lg:flex-row items-center justify-between gap-10">
+          <div className="max-w-lg w-full">
+            <h1 className="text-2xl lg:text-4xl font-bold mb-4">
+              Bem-vinda(o) ao Orange Cat Studies!
+            </h1>
+            <p className="text-neutral-700 text-base lg:text-lg leading-relaxed">
+              Organize sua preparação para concursos com um sistema inteligente
+              de extração de questões a partir de provas anteriores. Resolva
+              desafios diários e desbloqueie tirinhas exclusivas do Garfield
+              como recompensa pela sua constância.
+            </p>
+          </div>
 
-        <div className="w-full max-w-md flex items-center">
-          {showLogin ? (
-            <LoginForm switchToRegister={() => handleSwitch("register")} />
-          ) : (
-            <RegisterForm switchToLogin={() => handleSwitch("login")} />
-          )}
+          <div className="w-full max-w-md self-start">
+            {showLogin ? (
+              <LoginForm switchToRegister={() => handleSwitch("register")} />
+            ) : (
+              <RegisterForm switchToLogin={() => handleSwitch("login")} />
+            )}
+          </div>
         </div>
-      </div>
+      </main>
       <Footer />
-    </>
+    </div>
   );
 }
